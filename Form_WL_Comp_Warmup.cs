@@ -10,7 +10,7 @@ namespace Weightlifting_Comp_Warmup
     {
         #region Variables
         private const string
-            strVersion = "1.10.0";
+            strVersion = "1.11.0";
         private DataTable
             dt_snatch_extras = null
             , dt_snatch_jumps = null
@@ -43,6 +43,7 @@ namespace Weightlifting_Comp_Warmup
             , str_col_Jump = "jump"
             , str_col_PanelLiveStep = "pls"
             , str_col_LabelAction = "la"
+            , str_col_LabelTime = "lt"
             , str_col_LabelWeight = "lw"
             , str_col_ProgressBarStep = "pbs"
             , str_col_GraphicPanel = "gp"
@@ -58,26 +59,28 @@ namespace Weightlifting_Comp_Warmup
             , int_snatch_Wgt_Opener
             , int_snatch_Sec_End
             , int_snatch_Lifts_Out
+            , int_snatch_Lifts_Passed
             , int_snatch_Warmup_Step
             , int_cj_Sec_Stage
             , int_cj_Wgt_Opener
             , int_cj_Sec_End
             , int_cj_Lifts_Out
+            , int_cj_Lifts_Passed
             , int_cj_snLifts_Out
             , int_cj_Warmup_Step
             , int_cj_Sec_Break
             ;
         private bool
-            bool_snatch_Live
-            , bool_snatch_LiveLifting
-            , bool_snatch_AutoAdvance = false
-            , bool_cj_Live
-            , bool_cj_LiveLifting
-            , bool_cj_BreakRunning
-            , bool_cj_sn_Lifting
-            , bool_cj_AutoAdvance = false
-            , bool_Beep = false
-            , bool_Loading = true,
+            bool_snatch_Live, 
+            bool_snatch_LiveLifting,
+            bool_snatch_AutoAdvance = false,
+            bool_cj_Live,
+            bool_cj_LiveLifting,
+            bool_cj_BreakRunning,
+            bool_cj_sn_Lifting,
+            bool_cj_AutoAdvance = false,
+            bool_Beep = false,
+            bool_Loading = true,
             bool_snatch_OpenerWarmup,
             bool_cj_OpenerWarmup
             ;
@@ -120,7 +123,7 @@ namespace Weightlifting_Comp_Warmup
             int_cj_Sec_End = -1;
             int_cj_Lifts_Out = -1;
             int_cj_snLifts_Out = -1;
-            bool_snatch_OpenerWarmup = false;
+            bool_snatch_OpenerWarmup = true;
             bool_cj_OpenerWarmup = false;
 
             Get_Settings_Defaults_Lists();
@@ -203,10 +206,16 @@ namespace Weightlifting_Comp_Warmup
         {
             this.Close();
         }
+        private void buttonRestore_Click(object sender, EventArgs e)
+        {
+            buttonRestore.Dispose();
+            buttonClose.Dispose();
+            FormBorderStyle = FormBorderStyle.Sizable;
+            WindowState = FormWindowState.Normal;
+        }
         private void Form_WL_Comp_Warmup_Load(object sender, EventArgs e)
         {
             Bounds = Screen.PrimaryScreen.Bounds;
-
             Initialise_Form();
         }
         private void Initialise_Form()
@@ -233,13 +242,13 @@ namespace Weightlifting_Comp_Warmup
 
             if (int_snatch_Wgt_Opener < int_Barbell)
             {
-                int_snatch_Wgt_Opener = 90;
+                int_snatch_Wgt_Opener = 85;
             }
             numericUpDown_snatch_weight_opener.Value = int_snatch_Wgt_Opener;
 
             if (int_snatch_Sec_End < numericUpDown_snatch_time_PostWarmup.Minimum)
             {
-                int_snatch_Sec_End = 90;
+                int_snatch_Sec_End = 60;
             }
             numericUpDown_snatch_time_PostWarmup.Value = int_snatch_Sec_End;
 
@@ -247,7 +256,12 @@ namespace Weightlifting_Comp_Warmup
             {
                 int_snatch_Lifts_Out = 3;
             }
+            else if (int_snatch_Lifts_Out > 99)
+            {
+                int_snatch_Lifts_Out = 99;
+            }
             label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+            label_snatch_Live_LiftsPassed.Text = string.Empty;
             snatch_Stop_Live();
 
 
@@ -265,13 +279,13 @@ namespace Weightlifting_Comp_Warmup
 
             if (int_cj_Wgt_Opener < int_Barbell)
             {
-                int_cj_Wgt_Opener = 110;
+                int_cj_Wgt_Opener = 108;
             }
             numericUpDown_cj_weight_opener.Value = int_cj_Wgt_Opener;
 
             if (int_cj_Sec_End < numericUpDown_cj_time_PostWarmup.Minimum)
             {
-                int_cj_Sec_End = 120;
+                int_cj_Sec_End = 75;
             }
             numericUpDown_cj_time_PostWarmup.Value = int_cj_Sec_End;
 
@@ -279,8 +293,13 @@ namespace Weightlifting_Comp_Warmup
             {
                 int_cj_Lifts_Out = 3;
             }
+            else if (int_cj_Lifts_Out > 99)
+            {
+                int_cj_Lifts_Out = 99;
+            }
             label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
-            
+            label_cj_Live_LiftsPassed.Text = string.Empty;
+
             if (int_cj_snLifts_Out < 0)
             {
                 int_cj_snLifts_Out = 0;
@@ -2406,14 +2425,17 @@ namespace Weightlifting_Comp_Warmup
                 catch { }
                 timer_snatch_Live = null;
             }
+            textBox_snatch_Live_LiftsOut.Visible = false;
             label_snatch_Live_TimeTillStart.Text = String.Empty;
             label_snatch_Live_TimeTillOpener.Text = String.Empty;
+            label_snatch_Live_LiftsPassed.Text = String.Empty;
             Clear_snatch_Live_Steps();
             progressBar_snatch_Live_StageLift.Value = 0;
             button_snatch_Live_StageAdvance.BackColor = color_snatch_Live_BG;
             button_snatch_Live_StageAdvance.Tag = 0;
             bool_snatch_LiveLifting = false;
             button_snatch_Live_StartStop.Text = "start";
+            panel_snatch_Live_Times.Visible = false;
         }
         private void snatch_Start_Live()
         {
@@ -2430,6 +2452,9 @@ namespace Weightlifting_Comp_Warmup
                 }
             }
             datetime_snatch_Start = DateTime.Today.AddHours(dateTimePicker_snatch_Start.Value.Hour).AddMinutes(dateTimePicker_snatch_Start.Value.Minute);
+            int_snatch_Lifts_Passed = 0;
+            textBox_snatch_Live_LiftsOut.Visible = false;
+            label_snatch_Live_LiftsPassed.Text = "0";
             Populate_snatch_Live_Steps();
             progressBar_snatch_Live_StageLift.Value = 0;
             progressBar_snatch_Live_StageLift.Maximum = int_snatch_Sec_Stage;
@@ -2478,6 +2503,7 @@ namespace Weightlifting_Comp_Warmup
                 {
                     new DataColumn(str_col_PanelLiveStep, typeof(Panel))
                     , new DataColumn(str_col_LabelAction, typeof(Label))
+                    , new DataColumn(str_col_LabelTime, typeof(Label))
                     , new DataColumn(str_col_LabelProgressTime, typeof(Label))
                     , new DataColumn(str_col_LabelWeight, typeof(Label))
                     , new DataColumn(str_col_ProgressBarStep, typeof(ProgressBar))
@@ -2485,8 +2511,23 @@ namespace Weightlifting_Comp_Warmup
                 });
 
             int intY = 1;
+            int _int_panel_Live_Step_Width = panel_snatch_Live_Steps.Width - 4;
+            int _int_progressBar_Step_Width_NoScroll = _int_panel_Live_Step_Width - 350;
+            int _int_progressBar_Step_Width_Scroll = _int_progressBar_Step_Width_NoScroll - SystemInformation.VerticalScrollBarWidth;
+            int _int_progressBar_Step_Width;
+            Point _point_progressBar_Step_Location = new(300, 6);
+
+            SuspendLayout();
             foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
             {
+                if (panel_snatch_Live_Steps.VerticalScroll.Visible)
+                {
+                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_Scroll;
+                }
+                else
+                {
+                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_NoScroll;
+                }
                 string strActionText;
                 bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
                 if (boolIsLift)
@@ -2503,7 +2544,7 @@ namespace Weightlifting_Comp_Warmup
                 }
                 Panel panel_Live_Step = new()
                 {
-                    Size = new Size(panel_snatch_Live_Steps.Width - 4, 80),
+                    Size = new Size(_int_panel_Live_Step_Width, 80),
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                     BackColor = color_snatch_Live_BG,
                     ForeColor = color_Live_Default_FG,
@@ -2519,9 +2560,10 @@ namespace Weightlifting_Comp_Warmup
                 };
                 ProgressBar progressBar_Step = new()
                 {
-                    Size = new Size(1002, 65),
-                    Location = new Point(300, 6),
-                    Maximum = dataRow.Field<int>(str_col_Length)
+                    Size = new Size(_int_progressBar_Step_Width, 65),
+                    Location = _point_progressBar_Step_Location,
+                    Maximum = dataRow.Field<int>(str_col_Length),
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 };
                 if (progressBar_Step.Maximum == 0)
                 {
@@ -2537,10 +2579,11 @@ namespace Weightlifting_Comp_Warmup
                         BackColor = Color.Black,
                         AutoSize = false,
                         Size = new Size(105, 30),
-                        Location = new Point(progressBar_Step.Left + progressBar_Step.Width - 105, 6),
+                        Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
                         ForeColor = SystemColors.Window,
                         Text = "lift " + dataRow.Field<int>(str_col_Weight).ToString(),
-                        TextAlign = ContentAlignment.MiddleCenter
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Anchor = AnchorStyles.Top | AnchorStyles.Right,
                     };
                     label_Weight.Text = "lift " + dataRow.Field<int>(str_col_Weight).ToString();
 
@@ -2555,22 +2598,36 @@ namespace Weightlifting_Comp_Warmup
                         label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold);
                     }
                 }
+                Label label_Time = new()
+                {
+                    Text = String.Empty,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    AutoSize = false,
+                    Size = new Size(120, 30),
+                    Location = _point_progressBar_Step_Location,
+                    Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
+                    Visible = false,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                };
                 Label label_Progress_Time = new()
                 {
                     Text = String.Empty,
                     BorderStyle = BorderStyle.FixedSingle,
                     AutoSize = false,
                     Size = new Size(105, 30),
-                    Location = new Point(progressBar_Step.Left + progressBar_Step.Width - 105, 6),
+                    Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
                     Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
                     Visible = false,
                     TextAlign = ContentAlignment.MiddleCenter,
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
                 };
                 panel_Live_Step.Controls.AddRange(new Control[]
                 {
                     label_Action,
                     progressBar_Step,
-                    label_Progress_Time
+                    label_Progress_Time,
+                    label_Time
                 });
                 WeightBox weightBoxGraphic = null;
                 if (boolIsLift)
@@ -2591,7 +2648,6 @@ namespace Weightlifting_Comp_Warmup
                     weightBoxGraphic.Paint += Apply_Vector_Weight_Graphic;
                     panel_Live_Step.Controls.Add(weightBoxGraphic);
                 }
-                panel_snatch_Live_Steps.Controls.Add(panel_Live_Step);
                 progressBar_Step.BringToFront();
                 dataRow[str_col_PanelLiveStep] = panel_Live_Step;
                 dataRow[str_col_LabelAction] = label_Action;
@@ -2603,21 +2659,28 @@ namespace Weightlifting_Comp_Warmup
                     dataRow[str_col_LabelWeight] = label_Weight;
                     label_Weight.BringToFront();
                 }
+                label_Time.BringToFront();
+                dataRow[str_col_LabelTime] = label_Time;
                 label_Progress_Time.BringToFront();
                 dataRow[str_col_LabelProgressTime] = label_Progress_Time;
+                panel_snatch_Live_Steps.Controls.Add(panel_Live_Step);
 
                 intY += 81;
             }
             dt_snatch_LIVE.AcceptChanges();
             int_snatch_Warmup_Step = -1;
+            label_snatch_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
+            panel_snatch_Live_Times.Visible = true;
+            ResumeLayout();
         }
         private void timer_snatch_Live_Tick(object sender, EventArgs e)
         {
             sim_timer_snatch_Live_Tick();
         }
         private void sim_timer_snatch_Live_Tick()
-        { 
-            int intSecondsToStart = (int)datetime_snatch_Start.Subtract(DateTime.Now).TotalSeconds;
+        {
+            DateTime _dateTime_Now = DateTime.Now;
+            int intSecondsToStart = (int)datetime_snatch_Start.Subtract(_dateTime_Now).TotalSeconds;
             int intSecondsToOpen = 0;
 
             if (intSecondsToStart > 0)
@@ -2628,12 +2691,8 @@ namespace Weightlifting_Comp_Warmup
                     button_snatch_Live_StageAdvance.BackColor = color_snatch_Live_BG;
                 }
                 label_snatch_Live_TimeTillStart.Text = Seconds_To_String(intSecondsToStart);
-                intSecondsToOpen = intSecondsToStart;
+                intSecondsToOpen = intSecondsToStart + (int_snatch_Lifts_Out * int_snatch_Sec_Stage);
                 bool_snatch_LiveLifting = false;
-                if (int_snatch_Lifts_Out > 0)
-                {
-                    intSecondsToOpen += (int_snatch_Lifts_Out * int_snatch_Sec_Stage);
-                }
             }
             else
             {
@@ -2676,13 +2735,16 @@ namespace Weightlifting_Comp_Warmup
             }
 
 
-            if (intSecondsToOpen == 0)
+            DateTime _dateTime_Open = _dateTime_Now.AddSeconds(intSecondsToOpen);
+            if (intSecondsToOpen > 0)
             {
-                label_snatch_Live_TimeTillOpener.Text = "passed";
+                label_snatch_Live_TimeTillOpener.Text = Seconds_To_String(intSecondsToOpen);
+                label_snatch_Live_OpenTime.Text = _dateTime_Open.ToString("HH:mm:ss");
             }
             else
             {
-                label_snatch_Live_TimeTillOpener.Text = Seconds_To_String(intSecondsToOpen);
+                label_snatch_Live_TimeTillOpener.Text = "-";
+                label_snatch_Live_OpenTime.Text = "passed";
             }
 
             int _intStep = -1;
@@ -2744,9 +2806,26 @@ namespace Weightlifting_Comp_Warmup
                 ProgressBar progressBar_Step;
                 Label label_Progress_Time;
                 bool boolUpdBGsFGs = (_intStep != int_snatch_Warmup_Step);
+
                 foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
                 {
-                    if (dataRow.Field<int>(str_col_Order) == _intStep)
+                    int _int_Order = dataRow.Field<int>(str_col_Order);
+                    Label label_Time = dataRow.Field<Label>(str_col_LabelTime);
+                    if (_int_Order > _intStep)
+                    {
+                        label_Time.Visible = true;
+                        label_Time.Text = _dateTime_Open.AddSeconds(-dataRow.Field<int>(str_col_TotalLengthReverse)).ToString("HH:mm:ss");
+                    }
+                    else
+                    {
+                        label_Time.Visible = false;
+                    }
+                }
+
+                foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
+                {
+                    int _int_Order = dataRow.Field<int>(str_col_Order);
+                    if (_int_Order == _intStep)
                     {
                         panel_Live_Step = dataRow.Field<Panel>(str_col_PanelLiveStep);
                         label_Progress_Time = dataRow.Field<Label>(str_col_LabelProgressTime);
@@ -2796,7 +2875,7 @@ namespace Weightlifting_Comp_Warmup
                         string strActionText;
                         bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
 
-                        if (dataRow.Field<int>(str_col_Order) < _intStep)
+                        if (_int_Order < _intStep)
                         {
                             progressBar_Step.Value = progressBar_Step.Maximum;
                             if (boolIsLift)
@@ -2838,6 +2917,8 @@ namespace Weightlifting_Comp_Warmup
             {
                 snatch_Stop_Live();
             }
+
+            label_snatch_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
         }
         private void progressBar_snatch_Live_StageLift_MouseClick(object sender, MouseEventArgs e)
         {
@@ -2868,8 +2949,11 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_snatch_Live_LiftsIncr_Click(object sender, EventArgs e)
         {
-            int_snatch_Lifts_Out++;
-            label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+            if (int_snatch_Lifts_Out < 99)
+            {
+                int_snatch_Lifts_Out++;
+                label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+            }
         }
         private void button_snatch_Live_StageAdvance_Click(object sender, EventArgs e)
         {
@@ -2878,18 +2962,70 @@ namespace Weightlifting_Comp_Warmup
                 snatch_Advance_StageLift();
             }
         }
+        private void label_snatch_Live_LiftsOut_Click(object sender, EventArgs e)
+        {
+            bool_Loading = true;
+            textBox_snatch_Live_LiftsOut.Location = label_snatch_Live_LiftsOut.Location;
+            textBox_snatch_Live_LiftsOut.Size = label_snatch_Live_LiftsOut.Size;
+            textBox_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+            textBox_snatch_Live_LiftsOut.Visible = true;
+            textBox_snatch_Live_LiftsOut.BringToFront();
+            textBox_snatch_Live_LiftsOut.Select();
+            bool_Loading = false;
+        }
+        private void textBox_snatch_Live_LiftsOut_TextChanged(object sender, EventArgs e)
+        {
+            if (bool_Loading) { return; }
+            string _str_Input = textBox_snatch_Live_LiftsOut.Text;
+            if (int.TryParse(s: _str_Input, result: out int _int_snatch_Lifts_Out) &&
+                _int_snatch_Lifts_Out > 0 &&
+                _int_snatch_Lifts_Out < 100 &&
+                int_snatch_Lifts_Out != _int_snatch_Lifts_Out)
+            {
+                int_snatch_Lifts_Out = _int_snatch_Lifts_Out;
+                label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+            }
+        }
+        private void textBox_snatch_Live_LiftsOut_Leave(object sender, EventArgs e)
+        {
+            if (bool_Loading) { return; }
+            string _str_Input = textBox_snatch_Live_LiftsOut.Text;
+            if (int.TryParse(s: _str_Input, result: out int _int_snatch_Lifts_Out) &&
+                _int_snatch_Lifts_Out > 0 &&
+                _int_snatch_Lifts_Out < 100 &&
+                int_snatch_Lifts_Out != _int_snatch_Lifts_Out)
+            {
+                int_snatch_Lifts_Out = _int_snatch_Lifts_Out;
+                label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+            }
+            textBox_snatch_Live_LiftsOut.Visible = false;
+        }
         private void snatch_Advance_StageLift()
         {
             if (int_snatch_Lifts_Out > 0)
             {
                 int_snatch_Lifts_Out--;
                 label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+                if (bool_snatch_Live && datetime_snatch_Start < DateTime.Now)
+                {
+                    int_snatch_Lifts_Passed++;
+                }
+                else
+                {
+                    int_snatch_Lifts_Passed = 0;
+                }
+                label_snatch_Live_LiftsPassed.Text = (bool_snatch_Live ? int_snatch_Lifts_Passed.ToString() : string.Empty);
             }
             progressBar_snatch_Live_StageLift.Value = 0;
         }
         private void dateTimePicker_snatch_Start_ValueChanged(object sender, EventArgs e)
         {
             datetime_snatch_Start = DateTime.Today.AddHours(dateTimePicker_snatch_Start.Value.Hour).AddMinutes(dateTimePicker_snatch_Start.Value.Minute);
+            if (datetime_snatch_Start > DateTime.Now && int_snatch_Lifts_Passed != 0)
+            {
+                int_snatch_Lifts_Passed = 0;
+                label_snatch_Live_LiftsPassed.Text = (bool_snatch_Live ? int_snatch_Lifts_Passed.ToString() : string.Empty);
+            }
         }
         private void checkBox_snatch_Live_Auto_CheckedChanged(object sender, EventArgs e)
         {
@@ -2905,6 +3041,10 @@ namespace Weightlifting_Comp_Warmup
                 checkBox_cj_Live_Beep.Checked = bool_Beep;
                 bool_Loading = false;
             }
+        }
+        private void splitContainer_snatch_DoubleClick(object sender, EventArgs e)
+        {
+            splitContainer_snatch.SplitterDistance = 0;
         }
 
         #endregion
@@ -4272,6 +4412,9 @@ namespace Weightlifting_Comp_Warmup
                 timer_cj_Live = null;
             }
             label_cj_Live_TimeTillOpener.Text = String.Empty;
+            textBox_cj_Live_snLeft.Visible = false;
+            textBox_cj_Live_LiftsOut.Visible = false;
+            label_cj_Live_LiftsPassed.Text = string.Empty;
             Clear_cj_Live_Steps();
             progressBar_cj_Live_StageLift.Value = 0;
             progressBar_cj_Live_sn.Value = 0;
@@ -4285,6 +4428,7 @@ namespace Weightlifting_Comp_Warmup
             bool_cj_BreakRunning = false;
             bool_cj_sn_Lifting = false;
             button_cj_Live_StartStop.Text = "start";
+            panel_cj_Live_Times.Visible = false;
         }
         private void cj_Start_Live()
         {
@@ -4300,6 +4444,10 @@ namespace Weightlifting_Comp_Warmup
                     } catch { }
                 }
             }
+            textBox_cj_Live_snLeft.Visible = false;
+            int_cj_Lifts_Passed = 0;
+            textBox_cj_Live_LiftsOut.Visible = false;
+            label_cj_Live_LiftsPassed.Text = "0";
             Populate_cj_Live_Steps();
             progressBar_cj_Live_StageLift.Value = 0;
             progressBar_cj_Live_StageLift.Maximum = int_cj_Sec_Stage;
@@ -4352,6 +4500,7 @@ namespace Weightlifting_Comp_Warmup
                 {
                     new DataColumn(str_col_PanelLiveStep, typeof(Panel))
                     , new DataColumn(str_col_LabelAction, typeof(Label))
+                    , new DataColumn(str_col_LabelTime, typeof(Label))
                     , new DataColumn(str_col_LabelProgressTime, typeof(Label))
                     , new DataColumn(str_col_LabelWeight, typeof(Label))
                     , new DataColumn(str_col_ProgressBarStep, typeof(ProgressBar))
@@ -4359,8 +4508,23 @@ namespace Weightlifting_Comp_Warmup
                 });
 
             int intY = 1;
+            int _int_panel_Live_Step_Width = panel_cj_Live_Steps.Width - 4;
+            int _int_progressBar_Step_Width_NoScroll = _int_panel_Live_Step_Width - 350;
+            int _int_progressBar_Step_Width_Scroll = _int_progressBar_Step_Width_NoScroll - SystemInformation.VerticalScrollBarWidth;
+            int _int_progressBar_Step_Width;
+            Point _point_progressBar_Step_Location = new(300, 6);
+
+            SuspendLayout();
             foreach (DataRow dataRow in dt_cj_LIVE.Rows)
             {
+                if (panel_cj_Live_Steps.VerticalScroll.Visible)
+                {
+                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_Scroll;
+                }
+                else
+                {
+                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_NoScroll;
+                }
                 string strActionText;
                 bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
                 if (boolIsLift)
@@ -4377,7 +4541,7 @@ namespace Weightlifting_Comp_Warmup
                 }
                 Panel panel_Live_Step = new()
                 {
-                    Size = new Size(panel_cj_Live_Steps.Width - 4, 80),
+                    Size = new Size(_int_panel_Live_Step_Width, 80),
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                     BackColor = color_cj_Live_BG,
                     ForeColor = color_Live_Default_FG,
@@ -4393,9 +4557,10 @@ namespace Weightlifting_Comp_Warmup
                 };
                 ProgressBar progressBar_Step = new()
                 {
-                    Size = new Size(1002, 65),
-                    Location = new Point(300, 6),
-                    Maximum = dataRow.Field<int>(str_col_Length)
+                    Size = new Size(_int_progressBar_Step_Width, 65),
+                    Location = _point_progressBar_Step_Location,
+                    Maximum = dataRow.Field<int>(str_col_Length),
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 };
                 if (progressBar_Step.Maximum == 0)
                 {
@@ -4411,10 +4576,11 @@ namespace Weightlifting_Comp_Warmup
                         BackColor = Color.Black,
                         AutoSize = false,
                         Size = new Size(105, 30),
-                        Location = new Point(progressBar_Step.Left + progressBar_Step.Width - 105, 6),
+                        Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
                         ForeColor = SystemColors.Window,
                         Text = "lift " + dataRow.Field<int>(str_col_Weight).ToString(),
-                        TextAlign = ContentAlignment.MiddleCenter
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Anchor = AnchorStyles.Top | AnchorStyles.Right,
                     };
                     label_Weight.Text = "lift " + dataRow.Field<int>(str_col_Weight).ToString();
 
@@ -4429,22 +4595,36 @@ namespace Weightlifting_Comp_Warmup
                         label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold);
                     }
                 }
+                Label label_Time = new()
+                {
+                    Text = String.Empty,
+                    BorderStyle = BorderStyle.FixedSingle,
+                    AutoSize = false,
+                    Size = new Size(120, 30),
+                    Location = _point_progressBar_Step_Location,
+                    Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
+                    Visible = false,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                };
                 Label label_Progress_Time = new()
                 {
                     Text = String.Empty,
                     BorderStyle = BorderStyle.FixedSingle,
                     AutoSize = false,
                     Size = new Size(105, 30),
-                    Location = new Point(progressBar_Step.Left + progressBar_Step.Width - 105, 6),
+                    Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
                     Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
                     Visible = false,
                     TextAlign = ContentAlignment.MiddleCenter,
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
                 };
                 panel_Live_Step.Controls.AddRange(new Control[]
                 {
                     label_Action,
                     progressBar_Step,
-                    label_Progress_Time
+                    label_Progress_Time,
+                    label_Time
                 });
                 WeightBox weightBoxGraphic = null;
                 if (boolIsLift)
@@ -4465,7 +4645,6 @@ namespace Weightlifting_Comp_Warmup
                     weightBoxGraphic.Paint += Apply_Vector_Weight_Graphic;
                     panel_Live_Step.Controls.Add(weightBoxGraphic);
                 }
-                panel_cj_Live_Steps.Controls.Add(panel_Live_Step);
                 progressBar_Step.BringToFront();
                 dataRow[str_col_PanelLiveStep] = panel_Live_Step;
                 dataRow[str_col_LabelAction] = label_Action;
@@ -4477,13 +4656,19 @@ namespace Weightlifting_Comp_Warmup
                     dataRow[str_col_LabelWeight] = label_Weight;
                     label_Weight.BringToFront();
                 }
+                label_Time.BringToFront();
+                dataRow[str_col_LabelTime] = label_Time;
                 label_Progress_Time.BringToFront();
                 dataRow[str_col_LabelProgressTime] = label_Progress_Time;
+                panel_cj_Live_Steps.Controls.Add(panel_Live_Step);
 
                 intY += 81;
             }
             dt_cj_LIVE.AcceptChanges();
             int_cj_Warmup_Step = -1;
+            label_cj_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
+            panel_cj_Live_Times.Visible = true;
+            ResumeLayout();
         }
         private void timer_cj_Live_Tick(object sender, EventArgs e)
         {
@@ -4491,6 +4676,7 @@ namespace Weightlifting_Comp_Warmup
         }
         private void sim_timer_cj_Live_Tick()
         {
+            DateTime _dateTime_Now = DateTime.Now;
             int intSecondsToOpen = 0;
 
             if (bool_cj_sn_Lifting) // snatches still running
@@ -4655,6 +4841,17 @@ namespace Weightlifting_Comp_Warmup
             {
                 label_cj_Live_TimeTillOpener.Text = Seconds_To_String(intSecondsToOpen);
             }
+            DateTime _dateTime_Open = _dateTime_Now.AddSeconds(intSecondsToOpen);
+            if (intSecondsToOpen > 0)
+            {
+                label_cj_Live_TimeTillOpener.Text = Seconds_To_String(intSecondsToOpen);
+                label_cj_Live_OpenTime.Text = _dateTime_Open.ToString("HH:mm:ss");
+            }
+            else
+            {
+                label_cj_Live_TimeTillOpener.Text = "-";
+                label_cj_Live_OpenTime.Text = "passed";
+            }
 
             int _intStep = -1;
             foreach (DataRow dataRow in dt_cj_LIVE.Rows)
@@ -4715,9 +4912,26 @@ namespace Weightlifting_Comp_Warmup
                 ProgressBar progressBar_Step;
                 Label label_Progress_Time;
                 bool boolUpdBGsFGs = (_intStep != int_cj_Warmup_Step);
+
                 foreach (DataRow dataRow in dt_cj_LIVE.Rows)
                 {
-                    if (dataRow.Field<int>(str_col_Order) == _intStep)
+                    int _int_Order = dataRow.Field<int>(str_col_Order);
+                    Label label_Time = dataRow.Field<Label>(str_col_LabelTime);
+                    if (_int_Order > _intStep)
+                    {
+                        label_Time.Visible = true;
+                        label_Time.Text = _dateTime_Open.AddSeconds(-dataRow.Field<int>(str_col_TotalLengthReverse)).ToString("HH:mm:ss");
+                    }
+                    else
+                    {
+                        label_Time.Visible = false;
+                    }
+                }
+
+                foreach (DataRow dataRow in dt_cj_LIVE.Rows)
+                {
+                    int _int_Order = dataRow.Field<int>(str_col_Order);
+                    if (_int_Order == _intStep)
                     {
                         panel_Live_Step = dataRow.Field<Panel>(str_col_PanelLiveStep);
                         label_Progress_Time = dataRow.Field<Label>(str_col_LabelProgressTime);
@@ -4767,7 +4981,7 @@ namespace Weightlifting_Comp_Warmup
                         string strActionText;
                         bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
 
-                        if (dataRow.Field<int>(str_col_Order) < _intStep)
+                        if (_int_Order < _intStep)
                         {
                             progressBar_Step.Value = progressBar_Step.Maximum;
                             if (boolIsLift)
@@ -4809,6 +5023,8 @@ namespace Weightlifting_Comp_Warmup
             {
                 cj_Stop_Live();
             }
+
+            label_cj_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
         }
         private void progressBar_cj_Live_StageLift_MouseClick(object sender, MouseEventArgs e)
         {
@@ -4861,8 +5077,49 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_cj_Live_LiftsIncr_Click(object sender, EventArgs e)
         {
-            int_cj_Lifts_Out++;
-            label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+            if (int_cj_Lifts_Out < 99)
+            {
+                int_cj_Lifts_Out++;
+                label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+            }
+        }
+        private void label_cj_Live_LiftsOut_Click(object sender, EventArgs e)
+        {
+            bool_Loading = true;
+            textBox_cj_Live_LiftsOut.Location = label_cj_Live_LiftsOut.Location;
+            textBox_cj_Live_LiftsOut.Size = label_cj_Live_LiftsOut.Size;
+            textBox_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+            textBox_cj_Live_LiftsOut.Visible = true;
+            textBox_cj_Live_LiftsOut.BringToFront();
+            textBox_cj_Live_LiftsOut.Select();
+            bool_Loading = false;
+        }
+        private void textBox_cj_Live_LiftsOut_TextChanged(object sender, EventArgs e)
+        {
+            if (bool_Loading) { return; }
+            string _str_Input = textBox_cj_Live_LiftsOut.Text;
+            if (int.TryParse(s: _str_Input, result: out int _int_cj_Lifts_Out) &&
+                _int_cj_Lifts_Out > 0 &&
+                _int_cj_Lifts_Out < 100 &&
+                int_cj_Lifts_Out != _int_cj_Lifts_Out)
+            {
+                int_cj_Lifts_Out = _int_cj_Lifts_Out;
+                label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+            }
+        }
+        private void textBox_cj_Live_LiftsOut_Leave(object sender, EventArgs e)
+        {
+            if (bool_Loading) { return; }
+            string _str_Input = textBox_cj_Live_LiftsOut.Text;
+            if (int.TryParse(s: _str_Input, result: out int _int_cj_Lifts_Out) &&
+                _int_cj_Lifts_Out > 0 &&
+                _int_cj_Lifts_Out < 100 &&
+                int_cj_Lifts_Out != _int_cj_Lifts_Out)
+            {
+                int_cj_Lifts_Out = _int_cj_Lifts_Out;
+                label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+            }
+            textBox_cj_Live_LiftsOut.Visible = false;
         }
         private void button_cj_Live_StageAdvance_Click(object sender, EventArgs e)
         {
@@ -4881,6 +5138,15 @@ namespace Weightlifting_Comp_Warmup
             {
                 int_cj_Lifts_Out--;
                 label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+                if (bool_cj_Live && !bool_cj_sn_Lifting && !bool_cj_BreakRunning)
+                {
+                    int_cj_Lifts_Passed++;
+                }
+                else
+                {
+                    int_cj_Lifts_Passed = 0;
+                }
+                label_cj_Live_LiftsPassed.Text = (bool_cj_Live ? int_cj_Lifts_Passed.ToString() : string.Empty);
             }
             progressBar_cj_Live_StageLift.Value = 0;
         }
@@ -4922,8 +5188,49 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_cj_Live_snIncr_Click(object sender, EventArgs e)
         {
-            int_cj_snLifts_Out++;
-            label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+            if (int_cj_snLifts_Out < 98)
+            {
+                int_cj_snLifts_Out++;
+                label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+            }
+        }
+        private void label_cj_Live_snLeft_Click(object sender, EventArgs e)
+        {
+            bool_Loading = true;
+            textBox_cj_Live_snLeft.Location = label_cj_Live_snLeft.Location;
+            textBox_cj_Live_snLeft.Size = label_cj_Live_snLeft.Size;
+            textBox_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+            textBox_cj_Live_snLeft.Visible = true;
+            textBox_cj_Live_snLeft.BringToFront();
+            textBox_cj_Live_snLeft.Select();
+            bool_Loading = false;
+        }
+        private void textBox_cj_Live_snLeft_TextChanged(object sender, EventArgs e)
+        {
+            if (bool_Loading) { return; }
+            string _str_Input = textBox_cj_Live_snLeft.Text;
+            if (int.TryParse(s: _str_Input, result: out int _int_cj_snLifts_Out) &&
+                _int_cj_snLifts_Out > 0 &&
+                _int_cj_snLifts_Out < 100 &&
+                int_cj_snLifts_Out != _int_cj_snLifts_Out)
+            {
+                int_cj_snLifts_Out = _int_cj_snLifts_Out;
+                label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+            }
+        }
+        private void textBox_cj_Live_snLeft_Leave(object sender, EventArgs e)
+        {
+            if (bool_Loading) { return; }
+            string _str_Input = textBox_cj_Live_snLeft.Text;
+            if (int.TryParse(s: _str_Input, result: out int _int_cj_snLifts_Out) &&
+                _int_cj_snLifts_Out > 0 &&
+                _int_cj_snLifts_Out < 100 &&
+                int_cj_snLifts_Out != _int_cj_snLifts_Out)
+            {
+                int_cj_snLifts_Out = _int_cj_snLifts_Out;
+                label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+            }
+            textBox_cj_Live_snLeft.Visible = false;
         }
         private void button_cj_Live_snStageAdvance_Click(object sender, EventArgs e)
         {
@@ -4944,6 +5251,10 @@ namespace Weightlifting_Comp_Warmup
                 label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
             }
             progressBar_cj_Live_sn.Value = 0;
+        }
+        private void splitContainer_cj_DoubleClick(object sender, EventArgs e)
+        {
+            splitContainer_cj.SplitterDistance = 0;
         }
 
         #endregion
