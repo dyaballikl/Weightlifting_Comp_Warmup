@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControl_Competition = new System.Windows.Forms.TabControl();
             this.tabPage_snatch = new System.Windows.Forms.TabPage();
             this.splitContainer_snatch = new System.Windows.Forms.SplitContainer();
             this.label_snatch_Setup_StepCount = new System.Windows.Forms.Label();
@@ -67,14 +67,22 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.textBox_snatch_Live_LiftsOut = new System.Windows.Forms.TextBox();
+            this.label_snatch_Live_LiftsPassed = new System.Windows.Forms.Label();
+            this.label49 = new System.Windows.Forms.Label();
+            this.panel_snatch_Live_Times = new System.Windows.Forms.Panel();
+            this.label_snatch_Live_TimeTillOpener = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label_snatch_Live_OpenTime = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.label_snatch_Live_CurrentTime = new System.Windows.Forms.Label();
             this.checkBox_snatch_Live_Beep = new System.Windows.Forms.CheckBox();
             this.checkBox_snatch_Live_Auto = new System.Windows.Forms.CheckBox();
             this.button_snatch_Live_StageAdvance = new System.Windows.Forms.Button();
             this.progressBar_snatch_Live_StageLift = new System.Windows.Forms.ProgressBar();
             this.button_snatch_Live_StartStop = new System.Windows.Forms.Button();
             this.panel_snatch_Live_Steps = new System.Windows.Forms.Panel();
-            this.label_snatch_Live_TimeTillOpener = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
             this.button_snatch_Live_LiftsIncr = new System.Windows.Forms.Button();
             this.button_snatch_Live_LiftsDecr = new System.Windows.Forms.Button();
             this.label_snatch_Live_LiftsOut = new System.Windows.Forms.Label();
@@ -119,8 +127,18 @@
             this.label42 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
+            this.panel_cj_Live_Times = new System.Windows.Forms.Panel();
+            this.label_cj_Live_TimeTillOpener = new System.Windows.Forms.Label();
+            this.label51 = new System.Windows.Forms.Label();
+            this.label53 = new System.Windows.Forms.Label();
+            this.label_cj_Live_OpenTime = new System.Windows.Forms.Label();
+            this.label55 = new System.Windows.Forms.Label();
+            this.label_cj_Live_CurrentTime = new System.Windows.Forms.Label();
             this.checkBox_cj_Live_Beep = new System.Windows.Forms.CheckBox();
             this.panel12 = new System.Windows.Forms.Panel();
+            this.label_cj_Live_LiftsPassed = new System.Windows.Forms.Label();
+            this.label50 = new System.Windows.Forms.Label();
+            this.textBox_cj_Live_LiftsOut = new System.Windows.Forms.TextBox();
             this.button_cj_Live_StageAdvance = new System.Windows.Forms.Button();
             this.progressBar_cj_Live_StageLift = new System.Windows.Forms.ProgressBar();
             this.button_cj_Live_LiftsIncr = new System.Windows.Forms.Button();
@@ -133,6 +151,7 @@
             this.numericUpDown_cj_Live_Break = new System.Windows.Forms.NumericUpDown();
             this.label23 = new System.Windows.Forms.Label();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.textBox_cj_Live_snLeft = new System.Windows.Forms.TextBox();
             this.button_cj_Live_snStageAdvance = new System.Windows.Forms.Button();
             this.progressBar_cj_Live_sn = new System.Windows.Forms.ProgressBar();
             this.button_cj_Live_snIncr = new System.Windows.Forms.Button();
@@ -142,12 +161,11 @@
             this.checkBox_cj_Live_Auto = new System.Windows.Forms.CheckBox();
             this.button_cj_Live_StartStop = new System.Windows.Forms.Button();
             this.panel_cj_Live_Steps = new System.Windows.Forms.Panel();
-            this.label_cj_Live_TimeTillOpener = new System.Windows.Forms.Label();
-            this.label46 = new System.Windows.Forms.Label();
             this.label52 = new System.Windows.Forms.Label();
             this.buttonClose = new System.Windows.Forms.Button();
             this.label_Version = new System.Windows.Forms.Label();
-            this.tabControl1.SuspendLayout();
+            this.buttonRestore = new System.Windows.Forms.Button();
+            this.tabControl_Competition.SuspendLayout();
             this.tabPage_snatch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_snatch)).BeginInit();
             this.splitContainer_snatch.Panel1.SuspendLayout();
@@ -162,6 +180,7 @@
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel_snatch_Live_Times.SuspendLayout();
             this.tabPage_cj.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_cj)).BeginInit();
             this.splitContainer_cj.Panel1.SuspendLayout();
@@ -175,24 +194,25 @@
             this.panel9.SuspendLayout();
             this.panel11.SuspendLayout();
             this.panel13.SuspendLayout();
+            this.panel_cj_Live_Times.SuspendLayout();
             this.panel12.SuspendLayout();
             this.panel10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_cj_Live_Break)).BeginInit();
             this.panel8.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tabControl_Competition
             // 
-            this.tabControl1.Controls.Add(this.tabPage_snatch);
-            this.tabControl1.Controls.Add(this.tabPage_cj);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1920, 1080);
-            this.tabControl1.TabIndex = 0;
-            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
+            this.tabControl_Competition.Controls.Add(this.tabPage_snatch);
+            this.tabControl_Competition.Controls.Add(this.tabPage_cj);
+            this.tabControl_Competition.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl_Competition.Location = new System.Drawing.Point(0, 0);
+            this.tabControl_Competition.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabControl_Competition.Name = "tabControl_Competition";
+            this.tabControl_Competition.SelectedIndex = 0;
+            this.tabControl_Competition.Size = new System.Drawing.Size(1920, 1080);
+            this.tabControl_Competition.TabIndex = 0;
+            this.tabControl_Competition.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tabPage_snatch
             // 
@@ -236,14 +256,16 @@
             // 
             this.splitContainer_snatch.Panel2.AutoScroll = true;
             this.splitContainer_snatch.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.splitContainer_snatch.Panel2.Controls.Add(this.textBox_snatch_Live_LiftsOut);
+            this.splitContainer_snatch.Panel2.Controls.Add(this.label_snatch_Live_LiftsPassed);
+            this.splitContainer_snatch.Panel2.Controls.Add(this.label49);
+            this.splitContainer_snatch.Panel2.Controls.Add(this.panel_snatch_Live_Times);
             this.splitContainer_snatch.Panel2.Controls.Add(this.checkBox_snatch_Live_Beep);
             this.splitContainer_snatch.Panel2.Controls.Add(this.checkBox_snatch_Live_Auto);
             this.splitContainer_snatch.Panel2.Controls.Add(this.button_snatch_Live_StageAdvance);
             this.splitContainer_snatch.Panel2.Controls.Add(this.progressBar_snatch_Live_StageLift);
             this.splitContainer_snatch.Panel2.Controls.Add(this.button_snatch_Live_StartStop);
             this.splitContainer_snatch.Panel2.Controls.Add(this.panel_snatch_Live_Steps);
-            this.splitContainer_snatch.Panel2.Controls.Add(this.label_snatch_Live_TimeTillOpener);
-            this.splitContainer_snatch.Panel2.Controls.Add(this.label25);
             this.splitContainer_snatch.Panel2.Controls.Add(this.button_snatch_Live_LiftsIncr);
             this.splitContainer_snatch.Panel2.Controls.Add(this.button_snatch_Live_LiftsDecr);
             this.splitContainer_snatch.Panel2.Controls.Add(this.label_snatch_Live_LiftsOut);
@@ -256,6 +278,7 @@
             this.splitContainer_snatch.Size = new System.Drawing.Size(1904, 1045);
             this.splitContainer_snatch.SplitterDistance = 442;
             this.splitContainer_snatch.TabIndex = 0;
+            this.splitContainer_snatch.DoubleClick += new System.EventHandler(this.splitContainer_snatch_DoubleClick);
             // 
             // label_snatch_Setup_StepCount
             // 
@@ -681,10 +704,121 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Snatch Setup";
             // 
+            // textBox_snatch_Live_LiftsOut
+            // 
+            this.textBox_snatch_Live_LiftsOut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.textBox_snatch_Live_LiftsOut.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.textBox_snatch_Live_LiftsOut.Location = new System.Drawing.Point(636, 46);
+            this.textBox_snatch_Live_LiftsOut.MaxLength = 2;
+            this.textBox_snatch_Live_LiftsOut.Name = "textBox_snatch_Live_LiftsOut";
+            this.textBox_snatch_Live_LiftsOut.Size = new System.Drawing.Size(41, 25);
+            this.textBox_snatch_Live_LiftsOut.TabIndex = 31;
+            this.textBox_snatch_Live_LiftsOut.Text = "textBox_snatch_Live_LiftsOut";
+            this.textBox_snatch_Live_LiftsOut.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_snatch_Live_LiftsOut.Visible = false;
+            this.textBox_snatch_Live_LiftsOut.TextChanged += new System.EventHandler(this.textBox_snatch_Live_LiftsOut_TextChanged);
+            this.textBox_snatch_Live_LiftsOut.Leave += new System.EventHandler(this.textBox_snatch_Live_LiftsOut_Leave);
+            // 
+            // label_snatch_Live_LiftsPassed
+            // 
+            this.label_snatch_Live_LiftsPassed.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_snatch_Live_LiftsPassed.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.label_snatch_Live_LiftsPassed.Location = new System.Drawing.Point(636, 87);
+            this.label_snatch_Live_LiftsPassed.Name = "label_snatch_Live_LiftsPassed";
+            this.label_snatch_Live_LiftsPassed.Size = new System.Drawing.Size(41, 27);
+            this.label_snatch_Live_LiftsPassed.TabIndex = 29;
+            this.label_snatch_Live_LiftsPassed.Text = "label_snatch_Live_LiftsPassed";
+            this.label_snatch_Live_LiftsPassed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(461, 88);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(75, 17);
+            this.label49.TabIndex = 28;
+            this.label49.Text = "lifts passed";
+            // 
+            // panel_snatch_Live_Times
+            // 
+            this.panel_snatch_Live_Times.AutoSize = true;
+            this.panel_snatch_Live_Times.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel_snatch_Live_Times.Controls.Add(this.label_snatch_Live_TimeTillOpener);
+            this.panel_snatch_Live_Times.Controls.Add(this.label25);
+            this.panel_snatch_Live_Times.Controls.Add(this.label45);
+            this.panel_snatch_Live_Times.Controls.Add(this.label_snatch_Live_OpenTime);
+            this.panel_snatch_Live_Times.Controls.Add(this.label47);
+            this.panel_snatch_Live_Times.Controls.Add(this.label_snatch_Live_CurrentTime);
+            this.panel_snatch_Live_Times.Location = new System.Drawing.Point(1302, 10);
+            this.panel_snatch_Live_Times.Name = "panel_snatch_Live_Times";
+            this.panel_snatch_Live_Times.Size = new System.Drawing.Size(213, 83);
+            this.panel_snatch_Live_Times.TabIndex = 27;
+            this.panel_snatch_Live_Times.Visible = false;
+            // 
+            // label_snatch_Live_TimeTillOpener
+            // 
+            this.label_snatch_Live_TimeTillOpener.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_snatch_Live_TimeTillOpener.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_snatch_Live_TimeTillOpener.Location = new System.Drawing.Point(123, 58);
+            this.label_snatch_Live_TimeTillOpener.Name = "label_snatch_Live_TimeTillOpener";
+            this.label_snatch_Live_TimeTillOpener.Size = new System.Drawing.Size(87, 25);
+            this.label_snatch_Live_TimeTillOpener.TabIndex = 31;
+            this.label_snatch_Live_TimeTillOpener.Text = "label_snatch_Live_TimeTillOpener";
+            this.label_snatch_Live_TimeTillOpener.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(4, 60);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(113, 17);
+            this.label25.TabIndex = 30;
+            this.label25.Text = "time until opener";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(34, 2);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(83, 17);
+            this.label45.TabIndex = 29;
+            this.label45.Text = "current time";
+            // 
+            // label_snatch_Live_OpenTime
+            // 
+            this.label_snatch_Live_OpenTime.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_snatch_Live_OpenTime.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_snatch_Live_OpenTime.Location = new System.Drawing.Point(123, 29);
+            this.label_snatch_Live_OpenTime.Name = "label_snatch_Live_OpenTime";
+            this.label_snatch_Live_OpenTime.Size = new System.Drawing.Size(87, 25);
+            this.label_snatch_Live_OpenTime.TabIndex = 27;
+            this.label_snatch_Live_OpenTime.Text = "label_snatch_OpenTime";
+            this.label_snatch_Live_OpenTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(47, 31);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(70, 17);
+            this.label47.TabIndex = 28;
+            this.label47.Text = "open time";
+            // 
+            // label_snatch_Live_CurrentTime
+            // 
+            this.label_snatch_Live_CurrentTime.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_snatch_Live_CurrentTime.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_snatch_Live_CurrentTime.Location = new System.Drawing.Point(123, 0);
+            this.label_snatch_Live_CurrentTime.Name = "label_snatch_Live_CurrentTime";
+            this.label_snatch_Live_CurrentTime.Size = new System.Drawing.Size(87, 25);
+            this.label_snatch_Live_CurrentTime.TabIndex = 25;
+            this.label_snatch_Live_CurrentTime.Text = "label_snatch_CurrentTime";
+            this.label_snatch_Live_CurrentTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // checkBox_snatch_Live_Beep
             // 
             this.checkBox_snatch_Live_Beep.AutoSize = true;
-            this.checkBox_snatch_Live_Beep.Location = new System.Drawing.Point(1054, 58);
+            this.checkBox_snatch_Live_Beep.Location = new System.Drawing.Point(1016, 58);
             this.checkBox_snatch_Live_Beep.Name = "checkBox_snatch_Live_Beep";
             this.checkBox_snatch_Live_Beep.Size = new System.Drawing.Size(168, 21);
             this.checkBox_snatch_Live_Beep.TabIndex = 24;
@@ -695,7 +829,7 @@
             // checkBox_snatch_Live_Auto
             // 
             this.checkBox_snatch_Live_Auto.AutoSize = true;
-            this.checkBox_snatch_Live_Auto.Location = new System.Drawing.Point(1054, 31);
+            this.checkBox_snatch_Live_Auto.Location = new System.Drawing.Point(1016, 31);
             this.checkBox_snatch_Live_Auto.Name = "checkBox_snatch_Live_Auto";
             this.checkBox_snatch_Live_Auto.Size = new System.Drawing.Size(248, 21);
             this.checkBox_snatch_Live_Auto.TabIndex = 23;
@@ -730,7 +864,7 @@
             this.button_snatch_Live_StartStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button_snatch_Live_StartStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button_snatch_Live_StartStop.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_snatch_Live_StartStop.Location = new System.Drawing.Point(1672, 78);
+            this.button_snatch_Live_StartStop.Location = new System.Drawing.Point(1825, 78);
             this.button_snatch_Live_StartStop.Name = "button_snatch_Live_StartStop";
             this.button_snatch_Live_StartStop.Size = new System.Drawing.Size(74, 36);
             this.button_snatch_Live_StartStop.TabIndex = 20;
@@ -749,26 +883,6 @@
             this.panel_snatch_Live_Steps.Name = "panel_snatch_Live_Steps";
             this.panel_snatch_Live_Steps.Size = new System.Drawing.Size(1891, 463);
             this.panel_snatch_Live_Steps.TabIndex = 19;
-            // 
-            // label_snatch_Live_TimeTillOpener
-            // 
-            this.label_snatch_Live_TimeTillOpener.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label_snatch_Live_TimeTillOpener.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_snatch_Live_TimeTillOpener.Location = new System.Drawing.Point(613, 92);
-            this.label_snatch_Live_TimeTillOpener.Name = "label_snatch_Live_TimeTillOpener";
-            this.label_snatch_Live_TimeTillOpener.Size = new System.Drawing.Size(87, 25);
-            this.label_snatch_Live_TimeTillOpener.TabIndex = 18;
-            this.label_snatch_Live_TimeTillOpener.Text = "label_snatch_Live_TimeTillOpener";
-            this.label_snatch_Live_TimeTillOpener.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(461, 95);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(113, 17);
-            this.label25.TabIndex = 16;
-            this.label25.Text = "time until opener";
             // 
             // button_snatch_Live_LiftsIncr
             // 
@@ -803,6 +917,7 @@
             this.label_snatch_Live_LiftsOut.TabIndex = 13;
             this.label_snatch_Live_LiftsOut.Text = "label_snatch_Live_LiftsOut";
             this.label_snatch_Live_LiftsOut.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label_snatch_Live_LiftsOut.Click += new System.EventHandler(this.label_snatch_Live_LiftsOut_Click);
             // 
             // label24
             // 
@@ -906,6 +1021,7 @@
             // 
             this.splitContainer_cj.Panel2.AutoScroll = true;
             this.splitContainer_cj.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.splitContainer_cj.Panel2.Controls.Add(this.panel_cj_Live_Times);
             this.splitContainer_cj.Panel2.Controls.Add(this.checkBox_cj_Live_Beep);
             this.splitContainer_cj.Panel2.Controls.Add(this.panel12);
             this.splitContainer_cj.Panel2.Controls.Add(this.panel10);
@@ -913,12 +1029,11 @@
             this.splitContainer_cj.Panel2.Controls.Add(this.checkBox_cj_Live_Auto);
             this.splitContainer_cj.Panel2.Controls.Add(this.button_cj_Live_StartStop);
             this.splitContainer_cj.Panel2.Controls.Add(this.panel_cj_Live_Steps);
-            this.splitContainer_cj.Panel2.Controls.Add(this.label_cj_Live_TimeTillOpener);
-            this.splitContainer_cj.Panel2.Controls.Add(this.label46);
             this.splitContainer_cj.Panel2.Controls.Add(this.label52);
             this.splitContainer_cj.Size = new System.Drawing.Size(1904, 1045);
             this.splitContainer_cj.SplitterDistance = 442;
             this.splitContainer_cj.TabIndex = 1;
+            this.splitContainer_cj.DoubleClick += new System.EventHandler(this.splitContainer_cj_DoubleClick);
             // 
             // label_cj_Setup_StepCount
             // 
@@ -1294,10 +1409,86 @@
             this.label44.TabIndex = 0;
             this.label44.Text = "Clean && Jerk Setup";
             // 
+            // panel_cj_Live_Times
+            // 
+            this.panel_cj_Live_Times.AutoSize = true;
+            this.panel_cj_Live_Times.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel_cj_Live_Times.Controls.Add(this.label_cj_Live_TimeTillOpener);
+            this.panel_cj_Live_Times.Controls.Add(this.label51);
+            this.panel_cj_Live_Times.Controls.Add(this.label53);
+            this.panel_cj_Live_Times.Controls.Add(this.label_cj_Live_OpenTime);
+            this.panel_cj_Live_Times.Controls.Add(this.label55);
+            this.panel_cj_Live_Times.Controls.Add(this.label_cj_Live_CurrentTime);
+            this.panel_cj_Live_Times.Location = new System.Drawing.Point(1385, 32);
+            this.panel_cj_Live_Times.Name = "panel_cj_Live_Times";
+            this.panel_cj_Live_Times.Size = new System.Drawing.Size(213, 83);
+            this.panel_cj_Live_Times.TabIndex = 37;
+            this.panel_cj_Live_Times.Visible = false;
+            // 
+            // label_cj_Live_TimeTillOpener
+            // 
+            this.label_cj_Live_TimeTillOpener.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_cj_Live_TimeTillOpener.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_cj_Live_TimeTillOpener.Location = new System.Drawing.Point(123, 58);
+            this.label_cj_Live_TimeTillOpener.Name = "label_cj_Live_TimeTillOpener";
+            this.label_cj_Live_TimeTillOpener.Size = new System.Drawing.Size(87, 25);
+            this.label_cj_Live_TimeTillOpener.TabIndex = 31;
+            this.label_cj_Live_TimeTillOpener.Text = "label_cj_Live_TimeTillOpener";
+            this.label_cj_Live_TimeTillOpener.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.Location = new System.Drawing.Point(4, 60);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(113, 17);
+            this.label51.TabIndex = 30;
+            this.label51.Text = "time until opener";
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Location = new System.Drawing.Point(34, 2);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(83, 17);
+            this.label53.TabIndex = 29;
+            this.label53.Text = "current time";
+            // 
+            // label_cj_Live_OpenTime
+            // 
+            this.label_cj_Live_OpenTime.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_cj_Live_OpenTime.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_cj_Live_OpenTime.Location = new System.Drawing.Point(123, 29);
+            this.label_cj_Live_OpenTime.Name = "label_cj_Live_OpenTime";
+            this.label_cj_Live_OpenTime.Size = new System.Drawing.Size(87, 25);
+            this.label_cj_Live_OpenTime.TabIndex = 27;
+            this.label_cj_Live_OpenTime.Text = "label_cj_Live_OpenTime";
+            this.label_cj_Live_OpenTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(47, 31);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(70, 17);
+            this.label55.TabIndex = 28;
+            this.label55.Text = "open time";
+            // 
+            // label_cj_Live_CurrentTime
+            // 
+            this.label_cj_Live_CurrentTime.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_cj_Live_CurrentTime.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_cj_Live_CurrentTime.Location = new System.Drawing.Point(123, 0);
+            this.label_cj_Live_CurrentTime.Name = "label_cj_Live_CurrentTime";
+            this.label_cj_Live_CurrentTime.Size = new System.Drawing.Size(87, 25);
+            this.label_cj_Live_CurrentTime.TabIndex = 25;
+            this.label_cj_Live_CurrentTime.Text = "label_cj_Live_CurrentTime";
+            this.label_cj_Live_CurrentTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // checkBox_cj_Live_Beep
             // 
             this.checkBox_cj_Live_Beep.AutoSize = true;
-            this.checkBox_cj_Live_Beep.Location = new System.Drawing.Point(1396, 55);
+            this.checkBox_cj_Live_Beep.Location = new System.Drawing.Point(1654, 4);
             this.checkBox_cj_Live_Beep.Name = "checkBox_cj_Live_Beep";
             this.checkBox_cj_Live_Beep.Size = new System.Drawing.Size(168, 21);
             this.checkBox_cj_Live_Beep.TabIndex = 36;
@@ -1308,16 +1499,54 @@
             // panel12
             // 
             this.panel12.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel12.Controls.Add(this.label_cj_Live_LiftsPassed);
+            this.panel12.Controls.Add(this.label50);
+            this.panel12.Controls.Add(this.textBox_cj_Live_LiftsOut);
             this.panel12.Controls.Add(this.button_cj_Live_StageAdvance);
             this.panel12.Controls.Add(this.progressBar_cj_Live_StageLift);
             this.panel12.Controls.Add(this.button_cj_Live_LiftsIncr);
             this.panel12.Controls.Add(this.button_cj_Live_LiftsDecr);
             this.panel12.Controls.Add(this.label_cj_Live_LiftsOut);
             this.panel12.Controls.Add(this.label48);
-            this.panel12.Location = new System.Drawing.Point(843, 31);
+            this.panel12.Location = new System.Drawing.Point(843, 4);
             this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(517, 87);
+            this.panel12.Size = new System.Drawing.Size(517, 114);
             this.panel12.TabIndex = 35;
+            // 
+            // label_cj_Live_LiftsPassed
+            // 
+            this.label_cj_Live_LiftsPassed.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_cj_Live_LiftsPassed.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.label_cj_Live_LiftsPassed.Location = new System.Drawing.Point(186, 82);
+            this.label_cj_Live_LiftsPassed.Name = "label_cj_Live_LiftsPassed";
+            this.label_cj_Live_LiftsPassed.Size = new System.Drawing.Size(41, 27);
+            this.label_cj_Live_LiftsPassed.TabIndex = 34;
+            this.label_cj_Live_LiftsPassed.Text = "label_cj_Live_LiftsPassed";
+            this.label_cj_Live_LiftsPassed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Location = new System.Drawing.Point(11, 83);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(75, 17);
+            this.label50.TabIndex = 33;
+            this.label50.Text = "lifts passed";
+            // 
+            // textBox_cj_Live_LiftsOut
+            // 
+            this.textBox_cj_Live_LiftsOut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.textBox_cj_Live_LiftsOut.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.textBox_cj_Live_LiftsOut.Location = new System.Drawing.Point(236, 29);
+            this.textBox_cj_Live_LiftsOut.MaxLength = 2;
+            this.textBox_cj_Live_LiftsOut.Name = "textBox_cj_Live_LiftsOut";
+            this.textBox_cj_Live_LiftsOut.Size = new System.Drawing.Size(41, 25);
+            this.textBox_cj_Live_LiftsOut.TabIndex = 32;
+            this.textBox_cj_Live_LiftsOut.Text = "textBox_cj_Live_LiftsOut";
+            this.textBox_cj_Live_LiftsOut.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_cj_Live_LiftsOut.Visible = false;
+            this.textBox_cj_Live_LiftsOut.TextChanged += new System.EventHandler(this.textBox_cj_Live_LiftsOut_TextChanged);
+            this.textBox_cj_Live_LiftsOut.Leave += new System.EventHandler(this.textBox_cj_Live_LiftsOut_Leave);
             // 
             // button_cj_Live_StageAdvance
             // 
@@ -1374,6 +1603,7 @@
             this.label_cj_Live_LiftsOut.TabIndex = 13;
             this.label_cj_Live_LiftsOut.Text = "label_cj_Live_LiftsOut";
             this.label_cj_Live_LiftsOut.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label_cj_Live_LiftsOut.Click += new System.EventHandler(this.label_cj_Live_LiftsOut_Click);
             // 
             // label48
             // 
@@ -1448,6 +1678,7 @@
             // panel8
             // 
             this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel8.Controls.Add(this.textBox_cj_Live_snLeft);
             this.panel8.Controls.Add(this.button_cj_Live_snStageAdvance);
             this.panel8.Controls.Add(this.progressBar_cj_Live_sn);
             this.panel8.Controls.Add(this.button_cj_Live_snIncr);
@@ -1458,6 +1689,21 @@
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(472, 88);
             this.panel8.TabIndex = 33;
+            // 
+            // textBox_cj_Live_snLeft
+            // 
+            this.textBox_cj_Live_snLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.textBox_cj_Live_snLeft.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.textBox_cj_Live_snLeft.Location = new System.Drawing.Point(214, 30);
+            this.textBox_cj_Live_snLeft.MaxLength = 2;
+            this.textBox_cj_Live_snLeft.Name = "textBox_cj_Live_snLeft";
+            this.textBox_cj_Live_snLeft.Size = new System.Drawing.Size(41, 25);
+            this.textBox_cj_Live_snLeft.TabIndex = 32;
+            this.textBox_cj_Live_snLeft.Text = "textBox_cj_Live_snatchesLeft";
+            this.textBox_cj_Live_snLeft.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_cj_Live_snLeft.Visible = false;
+            this.textBox_cj_Live_snLeft.TextChanged += new System.EventHandler(this.textBox_cj_Live_snLeft_TextChanged);
+            this.textBox_cj_Live_snLeft.Leave += new System.EventHandler(this.textBox_cj_Live_snLeft_Leave);
             // 
             // button_cj_Live_snStageAdvance
             // 
@@ -1512,8 +1758,9 @@
             this.label_cj_Live_snLeft.Name = "label_cj_Live_snLeft";
             this.label_cj_Live_snLeft.Size = new System.Drawing.Size(41, 27);
             this.label_cj_Live_snLeft.TabIndex = 25;
-            this.label_cj_Live_snLeft.Text = "label_cj_Live_snatchesLeft";
+            this.label_cj_Live_snLeft.Text = "label_cj_Live_snLeft";
             this.label_cj_Live_snLeft.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label_cj_Live_snLeft.Click += new System.EventHandler(this.label_cj_Live_snLeft_Click);
             // 
             // label27
             // 
@@ -1527,7 +1774,7 @@
             // checkBox_cj_Live_Auto
             // 
             this.checkBox_cj_Live_Auto.AutoSize = true;
-            this.checkBox_cj_Live_Auto.Location = new System.Drawing.Point(1396, 28);
+            this.checkBox_cj_Live_Auto.Location = new System.Drawing.Point(1385, 4);
             this.checkBox_cj_Live_Auto.Name = "checkBox_cj_Live_Auto";
             this.checkBox_cj_Live_Auto.Size = new System.Drawing.Size(248, 21);
             this.checkBox_cj_Live_Auto.TabIndex = 23;
@@ -1540,7 +1787,7 @@
             this.button_cj_Live_StartStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button_cj_Live_StartStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button_cj_Live_StartStop.Font = new System.Drawing.Font("Gadugi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_cj_Live_StartStop.Location = new System.Drawing.Point(1672, 78);
+            this.button_cj_Live_StartStop.Location = new System.Drawing.Point(1825, 78);
             this.button_cj_Live_StartStop.Name = "button_cj_Live_StartStop";
             this.button_cj_Live_StartStop.Size = new System.Drawing.Size(74, 36);
             this.button_cj_Live_StartStop.TabIndex = 20;
@@ -1559,26 +1806,6 @@
             this.panel_cj_Live_Steps.Name = "panel_cj_Live_Steps";
             this.panel_cj_Live_Steps.Size = new System.Drawing.Size(1891, 463);
             this.panel_cj_Live_Steps.TabIndex = 19;
-            // 
-            // label_cj_Live_TimeTillOpener
-            // 
-            this.label_cj_Live_TimeTillOpener.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label_cj_Live_TimeTillOpener.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_cj_Live_TimeTillOpener.Location = new System.Drawing.Point(1541, 83);
-            this.label_cj_Live_TimeTillOpener.Name = "label_cj_Live_TimeTillOpener";
-            this.label_cj_Live_TimeTillOpener.Size = new System.Drawing.Size(87, 25);
-            this.label_cj_Live_TimeTillOpener.TabIndex = 18;
-            this.label_cj_Live_TimeTillOpener.Text = "label_cj_Live_TimeTillOpener";
-            this.label_cj_Live_TimeTillOpener.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label46
-            // 
-            this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(1389, 86);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(113, 17);
-            this.label46.TabIndex = 16;
-            this.label46.Text = "time until opener";
             // 
             // label52
             // 
@@ -1618,24 +1845,42 @@
             this.label_Version.TabIndex = 2;
             this.label_Version.Text = "label_Version";
             // 
+            // buttonRestore
+            // 
+            this.buttonRestore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonRestore.BackColor = System.Drawing.Color.Gray;
+            this.buttonRestore.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.buttonRestore.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Yellow;
+            this.buttonRestore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonRestore.Font = new System.Drawing.Font("Gadugi", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonRestore.Location = new System.Drawing.Point(1856, 0);
+            this.buttonRestore.Name = "buttonRestore";
+            this.buttonRestore.Size = new System.Drawing.Size(30, 25);
+            this.buttonRestore.TabIndex = 3;
+            this.buttonRestore.Text = "-";
+            this.buttonRestore.UseVisualStyleBackColor = false;
+            this.buttonRestore.Click += new System.EventHandler(this.buttonRestore_Click);
+            // 
             // Form_WL_Comp_Warmup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
             this.ClientSize = new System.Drawing.Size(1920, 1080);
+            this.Controls.Add(this.buttonRestore);
             this.Controls.Add(this.label_Version);
             this.Controls.Add(this.buttonClose);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControl_Competition);
             this.Font = new System.Drawing.Font("Gadugi", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.MinimumSize = new System.Drawing.Size(1645, 684);
             this.Name = "Form_WL_Comp_Warmup";
             this.Text = "Weightlifting Comp Warmup";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_WL_Comp_Warmup_FormClosing);
             this.Load += new System.EventHandler(this.Form_WL_Comp_Warmup_Load);
-            this.tabControl1.ResumeLayout(false);
+            this.tabControl_Competition.ResumeLayout(false);
             this.tabPage_snatch.ResumeLayout(false);
             this.splitContainer_snatch.Panel1.ResumeLayout(false);
             this.splitContainer_snatch.Panel1.PerformLayout();
@@ -1657,6 +1902,8 @@
             this.panel2.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel_snatch_Live_Times.ResumeLayout(false);
+            this.panel_snatch_Live_Times.PerformLayout();
             this.tabPage_cj.ResumeLayout(false);
             this.splitContainer_cj.Panel1.ResumeLayout(false);
             this.splitContainer_cj.Panel1.PerformLayout();
@@ -1677,6 +1924,8 @@
             this.panel11.PerformLayout();
             this.panel13.ResumeLayout(false);
             this.panel13.PerformLayout();
+            this.panel_cj_Live_Times.ResumeLayout(false);
+            this.panel_cj_Live_Times.PerformLayout();
             this.panel12.ResumeLayout(false);
             this.panel12.PerformLayout();
             this.panel10.ResumeLayout(false);
@@ -1691,7 +1940,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabControl_Competition;
         private System.Windows.Forms.TabPage tabPage_snatch;
         private System.Windows.Forms.SplitContainer splitContainer_snatch;
         private System.Windows.Forms.TabPage tabPage_cj;
@@ -1732,8 +1981,6 @@
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.DateTimePicker dateTimePicker_snatch_Start;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label_snatch_Live_TimeTillOpener;
-        private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Button button_snatch_Live_LiftsIncr;
         private System.Windows.Forms.Button button_snatch_Live_LiftsDecr;
         private System.Windows.Forms.Label label_snatch_Live_LiftsOut;
@@ -1782,8 +2029,6 @@
         private System.Windows.Forms.ProgressBar progressBar_cj_Live_StageLift;
         private System.Windows.Forms.Button button_cj_Live_StartStop;
         private System.Windows.Forms.Panel panel_cj_Live_Steps;
-        private System.Windows.Forms.Label label_cj_Live_TimeTillOpener;
-        private System.Windows.Forms.Label label46;
         private System.Windows.Forms.Button button_cj_Live_LiftsIncr;
         private System.Windows.Forms.Button button_cj_Live_LiftsDecr;
         private System.Windows.Forms.Label label_cj_Live_LiftsOut;
@@ -1810,6 +2055,28 @@
         private System.Windows.Forms.Panel panel_cj_Param_Opener;
         private System.Windows.Forms.CheckBox checkBox_snatch_Param_OpenerWarmup;
         private System.Windows.Forms.CheckBox checkBox_cj_Param_OpenerWarmup;
+        private System.Windows.Forms.Button buttonRestore;
+        private System.Windows.Forms.Label label_snatch_Live_CurrentTime;
+        private System.Windows.Forms.Panel panel_snatch_Live_Times;
+        private System.Windows.Forms.Label label_snatch_Live_OpenTime;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label_snatch_Live_TimeTillOpener;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label_snatch_Live_LiftsPassed;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.TextBox textBox_snatch_Live_LiftsOut;
+        private System.Windows.Forms.TextBox textBox_cj_Live_snLeft;
+        private System.Windows.Forms.Panel panel_cj_Live_Times;
+        private System.Windows.Forms.Label label_cj_Live_TimeTillOpener;
+        private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.Label label_cj_Live_OpenTime;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.Label label_cj_Live_CurrentTime;
+        private System.Windows.Forms.TextBox textBox_cj_Live_LiftsOut;
+        private System.Windows.Forms.Label label_cj_Live_LiftsPassed;
+        private System.Windows.Forms.Label label50;
     }
 }
 
