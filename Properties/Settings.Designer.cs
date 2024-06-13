@@ -26,234 +26,265 @@ namespace Weightlifting_Comp_Warmup.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int int_Barbell {
+        public int int_ProfileId {
             get {
-                return ((int)(this["int_Barbell"]));
+                return ((int)(this["int_ProfileId"]));
             }
             set {
-                this["int_Barbell"] = value;
+                this["int_ProfileId"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int int_snatch_Sec_Stage {
+        public global::System.Collections.Generic.List<System.String> ii_int_ProfileIds {
             get {
-                return ((int)(this["int_snatch_Sec_Stage"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_ProfileIds"]));
             }
             set {
-                this["int_snatch_Sec_Stage"] = value;
+                this["ii_int_ProfileIds"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int int_snatch_Wgt_Opener {
+        public global::System.Collections.Generic.List<System.String> ii_string_ProfileName {
             get {
-                return ((int)(this["int_snatch_Wgt_Opener"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_string_ProfileName"]));
             }
             set {
-                this["int_snatch_Wgt_Opener"] = value;
+                this["ii_string_ProfileName"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public int int_snatch_Sec_End {
+        public global::System.Collections.Generic.List<System.String> ii_int_Barbell {
             get {
-                return ((int)(this["int_snatch_Sec_End"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_Barbell"]));
             }
             set {
-                this["int_snatch_Sec_End"] = value;
+                this["ii_int_Barbell"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int int_snatch_Lifts_Out {
+        public global::System.Collections.Generic.List<System.String> ii_int_snatch_Sec_Stage {
             get {
-                return ((int)(this["int_snatch_Lifts_Out"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_snatch_Sec_Stage"]));
             }
             set {
-                this["int_snatch_Lifts_Out"] = value;
+                this["ii_int_snatch_Sec_Stage"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int int_cj_Sec_Stage {
+        public global::System.Collections.Generic.List<System.String> ii_int_snatch_Wgt_Opener {
             get {
-                return ((int)(this["int_cj_Sec_Stage"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_snatch_Wgt_Opener"]));
             }
             set {
-                this["int_cj_Sec_Stage"] = value;
+                this["ii_int_snatch_Wgt_Opener"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int int_cj_Wgt_Opener {
+        public global::System.Collections.Generic.List<System.String> ii_int_snatch_Sec_End {
             get {
-                return ((int)(this["int_cj_Wgt_Opener"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_snatch_Sec_End"]));
             }
             set {
-                this["int_cj_Wgt_Opener"] = value;
+                this["ii_int_snatch_Sec_End"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public int int_cj_Sec_End {
+        public global::System.Collections.Generic.List<System.String> ii_int_snatch_Lifts_Out {
             get {
-                return ((int)(this["int_cj_Sec_End"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_snatch_Lifts_Out"]));
             }
             set {
-                this["int_cj_Sec_End"] = value;
+                this["ii_int_snatch_Lifts_Out"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int int_cj_Lifts_Out {
+        public global::System.Collections.Generic.List<System.String> ii_int_cj_Sec_Stage {
             get {
-                return ((int)(this["int_cj_Lifts_Out"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_cj_Sec_Stage"]));
             }
             set {
-                this["int_cj_Lifts_Out"] = value;
+                this["ii_int_cj_Sec_Stage"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<System.String> snatch_Extra {
+        public global::System.Collections.Generic.List<System.String> ii_int_cj_Wgt_Opener {
             get {
-                return ((global::System.Collections.Generic.List<System.String>)(this["snatch_Extra"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_cj_Wgt_Opener"]));
             }
             set {
-                this["snatch_Extra"] = value;
+                this["ii_int_cj_Wgt_Opener"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<System.String> snatch_Jump {
+        public global::System.Collections.Generic.List<System.String> ii_int_cj_Sec_End {
             get {
-                return ((global::System.Collections.Generic.List<System.String>)(this["snatch_Jump"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_cj_Sec_End"]));
             }
             set {
-                this["snatch_Jump"] = value;
+                this["ii_int_cj_Sec_End"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<System.String> snatch_Time {
+        public global::System.Collections.Generic.List<System.String> ii_int_cj_Lifts_Out {
             get {
-                return ((global::System.Collections.Generic.List<System.String>)(this["snatch_Time"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_cj_Lifts_Out"]));
             }
             set {
-                this["snatch_Time"] = value;
+                this["ii_int_cj_Lifts_Out"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<System.String> cj_Extra {
+        public global::System.Collections.Generic.List<System.String> ii_int_cj_Sec_Break {
             get {
-                return ((global::System.Collections.Generic.List<System.String>)(this["cj_Extra"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_cj_Sec_Break"]));
             }
             set {
-                this["cj_Extra"] = value;
+                this["ii_int_cj_Sec_Break"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<System.String> cj_Jump {
+        public global::System.Collections.Generic.List<System.String> ii_int_cj_snLifts_Out {
             get {
-                return ((global::System.Collections.Generic.List<System.String>)(this["cj_Jump"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_int_cj_snLifts_Out"]));
             }
             set {
-                this["cj_Jump"] = value;
+                this["ii_int_cj_snLifts_Out"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<System.String> cj_Time {
+        public global::System.Collections.Generic.List<System.String> ii_bool_snatch_OpenerWarmup {
             get {
-                return ((global::System.Collections.Generic.List<System.String>)(this["cj_Time"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_bool_snatch_OpenerWarmup"]));
             }
             set {
-                this["cj_Time"] = value;
+                this["ii_bool_snatch_OpenerWarmup"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public int int_cj_Sec_Break {
+        public global::System.Collections.Generic.List<System.String> ii_bool_cj_OpenerWarmup {
             get {
-                return ((int)(this["int_cj_Sec_Break"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_bool_cj_OpenerWarmup"]));
             }
             set {
-                this["int_cj_Sec_Break"] = value;
+                this["ii_bool_cj_OpenerWarmup"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int int_cj_snLifts_Out {
+        public global::System.Collections.Generic.List<System.String> ii_bool_Beep {
             get {
-                return ((int)(this["int_cj_snLifts_Out"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_bool_Beep"]));
             }
             set {
-                this["int_cj_snLifts_Out"] = value;
+                this["ii_bool_Beep"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool bool_Beep {
+        public global::System.Collections.Generic.List<System.String> ii_strings_snatch_Extras {
             get {
-                return ((bool)(this["bool_Beep"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_strings_snatch_Extras"]));
             }
             set {
-                this["bool_Beep"] = value;
+                this["ii_strings_snatch_Extras"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool bool_snatch_OpenerWarmup {
+        public global::System.Collections.Generic.List<System.String> ii_strings_snatch_Jumps {
             get {
-                return ((bool)(this["bool_snatch_OpenerWarmup"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_strings_snatch_Jumps"]));
             }
             set {
-                this["bool_snatch_OpenerWarmup"] = value;
+                this["ii_strings_snatch_Jumps"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool bool_cj_OpenerWarmup {
+        public global::System.Collections.Generic.List<System.String> ii_strings_snatch_Times {
             get {
-                return ((bool)(this["bool_cj_OpenerWarmup"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_strings_snatch_Times"]));
             }
             set {
-                this["bool_cj_OpenerWarmup"] = value;
+                this["ii_strings_snatch_Times"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<System.String> ii_strings_cj_Extras {
+            get {
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_strings_cj_Extras"]));
+            }
+            set {
+                this["ii_strings_cj_Extras"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<System.String> ii_strings_cj_Jumps {
+            get {
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_strings_cj_Jumps"]));
+            }
+            set {
+                this["ii_strings_cj_Jumps"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<System.String> ii_strings_cj_Times {
+            get {
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_strings_cj_Times"]));
+            }
+            set {
+                this["ii_strings_cj_Times"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<System.String> ii_HHmm_StartTimes {
+            get {
+                return ((global::System.Collections.Generic.List<System.String>)(this["ii_HHmm_StartTimes"]));
+            }
+            set {
+                this["ii_HHmm_StartTimes"] = value;
             }
         }
     }
