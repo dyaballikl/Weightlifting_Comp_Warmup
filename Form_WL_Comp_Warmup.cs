@@ -1827,13 +1827,13 @@ namespace Weightlifting_Comp_Warmup
                 };
                 toolStripMenuItem.Click += ToolStripMenu_AddNew_Profile;
                 menuStrip_Profile.Items.Add(toolStripMenuItem);
-                toolStripMenuItem = new()
-                {
-                    Text = "Open settings folder",
-                    Font = new("Gadugi", 9F, FontStyle.Italic, GraphicsUnit.Point, 0)
-                };
-                toolStripMenuItem.Click += ToolStripMenu_OpenSettingsFolder;
-                menuStrip_Profile.Items.Add(toolStripMenuItem);
+                //toolStripMenuItem = new()
+                //{
+                //    Text = "Open settings folder",
+                //    Font = new("Gadugi", 9F, FontStyle.Italic, GraphicsUnit.Point, 0)
+                //};
+                //toolStripMenuItem.Click += ToolStripMenu_OpenSettingsFolder;
+                //menuStrip_Profile.Items.Add(toolStripMenuItem);
             }
         }
         private void ToolStripMenu_Load_Profile(object sender, EventArgs e)
@@ -1886,18 +1886,18 @@ namespace Weightlifting_Comp_Warmup
                 }
             }
         }
-        private void ToolStripMenu_OpenSettingsFolder(object sender, EventArgs e)
-        {
-            try
-            {
-                string s = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Weightlifting_Comp_Warmup";
-                System.Diagnostics.Process.Start(s);
-            }
-            catch
-            {
-                Interaction.MsgBox("Unable to open folder. Try manually. It's in %localappdata% -- then the Weightlifting_Comp_Warmup folder");
-            }
-        }
+        //private void ToolStripMenu_OpenSettingsFolder(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        string s = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Weightlifting_Comp_Warmup";
+        //        System.Diagnostics.Process.Start(s);
+        //    }
+        //    catch
+        //    {
+        //        Interaction.MsgBox("Unable to open folder. Try manually. It's in %localappdata% -- then the Weightlifting_Comp_Warmup folder");
+        //    }
+        //}
         private void ToolStripMenu_AddNew_Profile(object sender, EventArgs e)
         {
             string _str_Name = Interaction.InputBox("Enter a new name:");
