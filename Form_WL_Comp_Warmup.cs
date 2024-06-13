@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Deployment.Internal;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Channels;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
+using System.Runtime.InteropServices;
 
 namespace Weightlifting_Comp_Warmup
 {
     public partial class Form_WL_Comp_Warmup : Form
     {
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+        [FlagsAttribute]
+        public enum EXECUTION_STATE : uint
+        {
+            ES_AWAYMODE_REQUIRED = 0x00000040,
+            ES_CONTINUOUS = 0x80000000,
+            ES_DISPLAY_REQUIRED = 0x00000002,
+            ES_SYSTEM_REQUIRED = 0x00000001
+        }
         #region Variables
         private const string
-            strVersion = "1.12.0";
+            strVersion = "1.13.0";
 
         private DataTable
             dt_snatch_extras = null,
@@ -1827,13 +1835,6 @@ namespace Weightlifting_Comp_Warmup
                 };
                 toolStripMenuItem.Click += ToolStripMenu_AddNew_Profile;
                 menuStrip_Profile.Items.Add(toolStripMenuItem);
-                //toolStripMenuItem = new()
-                //{
-                //    Text = "Open settings folder",
-                //    Font = new("Gadugi", 9F, FontStyle.Italic, GraphicsUnit.Point, 0)
-                //};
-                //toolStripMenuItem.Click += ToolStripMenu_OpenSettingsFolder;
-                //menuStrip_Profile.Items.Add(toolStripMenuItem);
             }
         }
         private void ToolStripMenu_Load_Profile(object sender, EventArgs e)
@@ -1886,18 +1887,6 @@ namespace Weightlifting_Comp_Warmup
                 }
             }
         }
-        //private void ToolStripMenu_OpenSettingsFolder(object sender, EventArgs e)
-        //{
-        //    try
-        //    {
-        //        string s = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Weightlifting_Comp_Warmup";
-        //        System.Diagnostics.Process.Start(s);
-        //    }
-        //    catch
-        //    {
-        //        Interaction.MsgBox("Unable to open folder. Try manually. It's in %localappdata% -- then the Weightlifting_Comp_Warmup folder");
-        //    }
-        //}
         private void ToolStripMenu_AddNew_Profile(object sender, EventArgs e)
         {
             string _str_Name = Interaction.InputBox("Enter a new name:");
@@ -2071,6 +2060,15 @@ namespace Weightlifting_Comp_Warmup
                 }
             }
             Populate_MenuStrip();
+        }
+        private void PreventMonitorPowerdown()
+        {
+            SetThreadExecutionState(EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
+        }
+
+        private void AllowMonitorPowerdown()
+        {
+            SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         }
 
         #endregion
@@ -3473,6 +3471,7 @@ namespace Weightlifting_Comp_Warmup
             bool_snatch_LiveLifting = false;
             button_snatch_Live_StartStop.Text = "start";
             panel_snatch_Live_Times.Visible = false;
+            if (!bool_cj_Live) { AllowMonitorPowerdown(); }
         }
         private void snatch_Start_Live()
         {
@@ -3503,6 +3502,7 @@ namespace Weightlifting_Comp_Warmup
             timer_snatch_Live.Start();
             button_snatch_Live_StartStop.Text = "stop";
             button_snatch_Live_StageAdvance.Select();
+            PreventMonitorPowerdown();
         }
         private void button_snatch_Live_StartStop_Click(object sender, EventArgs e)
         {
@@ -4021,7 +4021,7 @@ namespace Weightlifting_Comp_Warmup
             if (bool_Loading) { return; }
             string _str_Input = textBox_snatch_Live_LiftsOut.Text;
             if (int.TryParse(s: _str_Input, result: out int _int_snatch_Lifts_Out) &&
-                _int_snatch_Lifts_Out > 0 &&
+                _int_snatch_Lifts_Out >= 0 &&
                 _int_snatch_Lifts_Out < 100 &&
                 int_snatch_Lifts_Out != _int_snatch_Lifts_Out)
             {
@@ -4034,7 +4034,7 @@ namespace Weightlifting_Comp_Warmup
             if (bool_Loading) { return; }
             string _str_Input = textBox_snatch_Live_LiftsOut.Text;
             if (int.TryParse(s: _str_Input, result: out int _int_snatch_Lifts_Out) &&
-                _int_snatch_Lifts_Out > 0 &&
+                _int_snatch_Lifts_Out >= 0 &&
                 _int_snatch_Lifts_Out < 100 &&
                 int_snatch_Lifts_Out != _int_snatch_Lifts_Out)
             {
@@ -5473,6 +5473,7 @@ namespace Weightlifting_Comp_Warmup
             bool_cj_sn_Lifting = false;
             button_cj_Live_StartStop.Text = "start";
             panel_cj_Live_Times.Visible = false;
+            if (!bool_snatch_Live) { AllowMonitorPowerdown(); }
         }
         private void cj_Start_Live()
         {
@@ -5507,6 +5508,7 @@ namespace Weightlifting_Comp_Warmup
             timer_cj_Live.Start();
             button_cj_Live_StartStop.Text = "stop";
             button_cj_Live_StageAdvance.Select();
+            PreventMonitorPowerdown();
         }
         private void button_cj_Live_StartStop_Click(object sender, EventArgs e)
         {
@@ -6143,7 +6145,7 @@ namespace Weightlifting_Comp_Warmup
             if (bool_Loading) { return; }
             string _str_Input = textBox_cj_Live_LiftsOut.Text;
             if (int.TryParse(s: _str_Input, result: out int _int_cj_Lifts_Out) &&
-                _int_cj_Lifts_Out > 0 &&
+                _int_cj_Lifts_Out >= 0 &&
                 _int_cj_Lifts_Out < 100 &&
                 int_cj_Lifts_Out != _int_cj_Lifts_Out)
             {
@@ -6156,7 +6158,7 @@ namespace Weightlifting_Comp_Warmup
             if (bool_Loading) { return; }
             string _str_Input = textBox_cj_Live_LiftsOut.Text;
             if (int.TryParse(s: _str_Input, result: out int _int_cj_Lifts_Out) &&
-                _int_cj_Lifts_Out > 0 &&
+                _int_cj_Lifts_Out >= 0 &&
                 _int_cj_Lifts_Out < 100 &&
                 int_cj_Lifts_Out != _int_cj_Lifts_Out)
             {
@@ -6255,7 +6257,7 @@ namespace Weightlifting_Comp_Warmup
             if (bool_Loading) { return; }
             string _str_Input = textBox_cj_Live_snLeft.Text;
             if (int.TryParse(s: _str_Input, result: out int _int_cj_snLifts_Out) &&
-                _int_cj_snLifts_Out > 0 &&
+                _int_cj_snLifts_Out >= 0 &&
                 _int_cj_snLifts_Out < 100 &&
                 int_cj_snLifts_Out != _int_cj_snLifts_Out)
             {
@@ -6268,7 +6270,7 @@ namespace Weightlifting_Comp_Warmup
             if (bool_Loading) { return; }
             string _str_Input = textBox_cj_Live_snLeft.Text;
             if (int.TryParse(s: _str_Input, result: out int _int_cj_snLifts_Out) &&
-                _int_cj_snLifts_Out > 0 &&
+                _int_cj_snLifts_Out >= 0 &&
                 _int_cj_snLifts_Out < 100 &&
                 int_cj_snLifts_Out != _int_cj_snLifts_Out)
             {

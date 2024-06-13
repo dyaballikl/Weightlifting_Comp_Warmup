@@ -990,7 +990,7 @@
             this.tabPage_cj.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage_cj.Size = new System.Drawing.Size(1912, 1027);
             this.tabPage_cj.TabIndex = 1;
-            this.tabPage_cj.Text = "Clean & Jerk";
+            this.tabPage_cj.Text = "clean & jerk";
             // 
             // splitContainer_cj
             // 
