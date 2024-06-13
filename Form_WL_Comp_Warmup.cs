@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Deployment.Internal;
 using System.Drawing;
+using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Windows.Forms;
+using Microsoft.VisualBasic;
 
 namespace Weightlifting_Comp_Warmup
 {
@@ -11,65 +15,70 @@ namespace Weightlifting_Comp_Warmup
         #region Variables
         private const string
             strVersion = "1.11.0";
+
         private DataTable
-            dt_snatch_extras = null
-            , dt_snatch_jumps = null
-            , dt_snatch_times = null
-            , dt_snatch_LIVE = null
-            , dt_snatch_PLAN = null
-            , dt_cj_extras = null
-            , dt_cj_jumps = null
-            , dt_cj_times = null
-            , dt_cj_LIVE = null
-            , dt_cj_PLAN = null
-            , dt_default_snatch_extras = null
-            , dt_default_snatch_jumps = null
-            , dt_default_snatch_times = null
-            , dt_default_cj_extras = null
-            , dt_default_cj_jumps = null
-            , dt_default_cj_times = null
-            ;
+            dt_snatch_extras = null,
+            dt_snatch_jumps = null,
+            dt_snatch_times = null,
+            dt_snatch_LIVE = null,
+            dt_snatch_PLAN = null,
+            dt_cj_extras = null,
+            dt_cj_jumps = null,
+            dt_cj_times = null,
+            dt_cj_LIVE = null,
+            dt_cj_PLAN = null,
+            dt_default_snatch_extras = null,
+            dt_default_snatch_jumps = null,
+            dt_default_snatch_times = null,
+            dt_default_cj_extras = null,
+            dt_default_cj_jumps = null,
+            dt_default_cj_times = null;
+        
         private const string
-            str_col_Action = "action"
-            , str_col_Length = "length"
-            , str_col_TotalLength = "totallength"
-            , str_col_TotalLengthReverse = "totallengthrev"
-            , str_col_FromWeight = "fromweight"
-            , str_col_Weight = "weight"
-            , str_col_Order = "order"
-            , str_col_PreStep = "prestep"
-            , str_col_Override = "override"
-            , str_col_Id = "id"
-            , str_col_Jump = "jump"
-            , str_col_PanelLiveStep = "pls"
-            , str_col_LabelAction = "la"
-            , str_col_LabelTime = "lt"
-            , str_col_LabelWeight = "lw"
-            , str_col_ProgressBarStep = "pbs"
-            , str_col_GraphicPanel = "gp"
-            , str_col_LabelProgressTime = "lpt"
-            , str_buttontext_up = "^"
-            , str_buttontext_down = "v"
-            , str_buttontext_delete = "X"
-            , str_buttontext_commit = "commit"
-            ;
+            str_col_Action = "action",
+            str_col_Length = "length",
+            str_col_TotalLength = "totallength",
+            str_col_TotalLengthReverse = "totallengthrev",
+            str_col_FromWeight = "fromweight",
+            str_col_Weight = "weight",
+            str_col_Order = "order",
+            str_col_PreStep = "prestep",
+            str_col_Override = "override",
+            str_col_Id = "id",
+            str_col_Jump = "jump",
+            str_col_PanelLiveStep = "pls",
+            str_col_LabelAction = "la",
+            str_col_LabelTime = "lt",
+            str_col_LabelWeight = "lw",
+            str_col_ProgressBarStep = "pbs",
+            str_col_GraphicPanel = "gp",
+            str_col_LabelProgressTime = "lpt",
+            str_buttontext_up = "^",
+            str_buttontext_down = "v",
+            str_buttontext_delete = "X",
+            str_buttontext_commit = "commit";
+
         private int
-            int_Barbell
-            , int_snatch_Sec_Stage
-            , int_snatch_Wgt_Opener
-            , int_snatch_Sec_End
-            , int_snatch_Lifts_Out
-            , int_snatch_Lifts_Passed
-            , int_snatch_Warmup_Step
-            , int_cj_Sec_Stage
-            , int_cj_Wgt_Opener
-            , int_cj_Sec_End
-            , int_cj_Lifts_Out
-            , int_cj_Lifts_Passed
-            , int_cj_snLifts_Out
-            , int_cj_Warmup_Step
-            , int_cj_Sec_Break
-            ;
+            int_ProfileId,
+            int_Barbell,
+            int_snatch_Sec_Stage,
+            int_snatch_Wgt_Opener,
+            int_snatch_Sec_End,
+            int_snatch_Lifts_Out,
+            int_snatch_Lifts_Passed,
+            int_snatch_Warmup_Step,
+            int_cj_Sec_Stage,
+            int_cj_Wgt_Opener,
+            int_cj_Sec_End,
+            int_cj_Lifts_Out,
+            int_cj_Lifts_Passed,
+            int_cj_snLifts_Out,
+            int_cj_Warmup_Step,
+            int_cj_Sec_Break;
+
+        private TimeSpan
+            timeSpan_Start;
+
         private bool
             bool_snatch_Live, 
             bool_snatch_LiveLifting,
@@ -82,15 +91,33 @@ namespace Weightlifting_Comp_Warmup
             bool_Beep = false,
             bool_Loading = true,
             bool_snatch_OpenerWarmup,
-            bool_cj_OpenerWarmup
-            ;
+            bool_cj_OpenerWarmup;
+
+        private const int
+            int_default_Barbell = 20,
+            int_default_snatch_Sec_Stage = 55,
+            int_default_snatch_Wgt_Opener = 85,
+            int_default_snatch_Sec_End = 60,
+            int_default_snatch_Lifts_Out = 0,
+            int_default_cj_Sec_Stage = 62,
+            int_default_cj_Wgt_Opener = 110,
+            int_default_cj_Sec_End = 75,
+            int_default_cj_Lifts_Out = 0,
+            int_default_cj_snLifts_Out = 0,
+            int_default_cj_Sec_Break = 0;
+
+        private const bool
+            bool_default_Beep = false,
+            bool_default_snatch_OpenerWarmup = true,
+            bool_default_cj_OpenerWarmup = false;
+
         private DateTime
-            datetime_snatch_Start
-            ;
+            datetime_snatch_Start;
+
         private Timer
-            timer_snatch_Live
-            , timer_cj_Live
-            ;
+            timer_snatch_Live,
+            timer_cj_Live;
+
         private readonly Color
             color_Live_Default_FG = Color.FromArgb(240, 240, 240),
             color_Live_Highlight_BG = Color.Yellow,
@@ -101,129 +128,123 @@ namespace Weightlifting_Comp_Warmup
             color_Plate_Yellow = Color.FromArgb(255, 253, 56),
             color_Plate_Green = Color.FromArgb(15, 127, 18),
             color_Plate_White = Color.FromArgb(255, 255, 255),
-            color_BarGrey = Color.LightSteelBlue
-            ;
+            color_BarGrey = Color.LightSteelBlue;
+
         private Color
             color_snatch_Live_BG,
-            color_cj_Live_BG
-            ;
+            color_cj_Live_BG;
+
         #endregion
 
         #region Form Level
         public Form_WL_Comp_Warmup()
         {
-            int_Barbell = -1;
-            int_snatch_Sec_Stage = -1;
-            int_snatch_Wgt_Opener = -1;
-            int_snatch_Sec_End = -1;
-            int_snatch_Lifts_Out = -1;
-            int_cj_Sec_Stage = -1;
-            int_cj_Sec_Break = -1;
-            int_cj_Wgt_Opener = -1;
-            int_cj_Sec_End = -1;
-            int_cj_Lifts_Out = -1;
-            int_cj_snLifts_Out = -1;
-            bool_snatch_OpenerWarmup = true;
-            bool_cj_OpenerWarmup = false;
+            //Properties.Settings.Default.Reset();
+            //Settings_Changes_Save();
+            Clean_Settings();
+            Print_All_Settings();
+            //Properties.Settings.Default.Reset();
+            //Settings_Changes_Save();
 
-            Get_Settings_Defaults_Lists();
+            int _int_ProfileId = -1;
             try
             {
-                int_Barbell = Properties.Settings.Default.int_Barbell;
-            }
-            catch { };
-            try
-            {
-                int_snatch_Sec_Stage = Properties.Settings.Default.int_snatch_Sec_Stage;
-            }
-            catch { };
-            try
-            {
-                int_snatch_Wgt_Opener = Properties.Settings.Default.int_snatch_Wgt_Opener;
-            }
-            catch { };
-            try
-            {
-                bool_snatch_OpenerWarmup = Properties.Settings.Default.bool_snatch_OpenerWarmup;
-            }
-            catch { };
-            try
-            {
-                int_snatch_Sec_End = Properties.Settings.Default.int_snatch_Sec_End;
-            }
-            catch { };
-            try
-            {
-                int_snatch_Lifts_Out = Properties.Settings.Default.int_snatch_Lifts_Out;
+                _int_ProfileId = Properties.Settings.Default.int_ProfileId;
             }
             catch { };
 
-            try
+            if (_int_ProfileId < 1)
             {
-                int_cj_Sec_Stage = Properties.Settings.Default.int_cj_Sec_Stage;
+                if (Properties.Settings.Default.ii_int_ProfileIds != null &&
+                    Properties.Settings.Default.ii_int_ProfileIds.Count > 0)
+                {
+                    int.TryParse(s: Properties.Settings.Default.ii_int_ProfileIds[0], result: out _int_ProfileId);
+                }
             }
-            catch { };
-            try
+            if (_int_ProfileId < 1)
             {
-                int_cj_Sec_Break = Properties.Settings.Default.int_cj_Sec_Break;
+                _int_ProfileId = Add_Profile(_str_ProfileName: "default");
+                Print_All_Settings();
             }
-            catch { };
-            try
-            {
-                int_cj_Wgt_Opener = Properties.Settings.Default.int_cj_Wgt_Opener;
-            }
-            catch { };
-            try
-            {
-                bool_cj_OpenerWarmup = Properties.Settings.Default.bool_cj_OpenerWarmup;
-            }
-            catch { };
-            try
-            {
-                int_cj_Sec_End = Properties.Settings.Default.int_cj_Sec_End;
-            }
-            catch { };
-            try
-            {
-                int_cj_Lifts_Out = Properties.Settings.Default.int_cj_Lifts_Out;
-            }
-            catch { };
-            try
-            {
-                int_cj_snLifts_Out = Properties.Settings.Default.int_cj_snLifts_Out;
-            }
-            catch { };
-
-            try
-            {
-                bool_Beep = Properties.Settings.Default.bool_Beep;
-            }
-            catch { };
+            ProfileId_Select(_int_ProfileId: _int_ProfileId);
 
             InitializeComponent();
         }
-        private void buttonClose_Click(object sender, EventArgs e)
+        private void ProfileId_Select(int _int_ProfileId)
         {
-            this.Close();
+            Clean_Settings();
+            int_ProfileId = _int_ProfileId;
+            int _int_Barbell = int_default_Barbell;
+            TimeSpan _timeSpan_Start = new(12, 0, 0);
+            int _int_snatch_Sec_Stage = int_default_snatch_Sec_Stage;
+            int _int_snatch_Wgt_Opener = int_default_snatch_Wgt_Opener;
+            int _int_snatch_Sec_End = int_default_snatch_Sec_End;
+            int _int_snatch_Lifts_Out = int_default_snatch_Lifts_Out;
+            int _int_cj_Sec_Stage = int_default_cj_Sec_Stage;
+            int _int_cj_Sec_Break = int_default_cj_Sec_Break;
+            int _int_cj_Wgt_Opener = int_default_cj_Wgt_Opener;
+            int _int_cj_Sec_End = int_default_cj_Sec_End;
+            int _int_cj_Lifts_Out = int_default_cj_Lifts_Out;
+            int _int_cj_snLifts_Out = int_default_cj_snLifts_Out;
+            bool _bool_snatch_OpenerWarmup = bool_default_snatch_OpenerWarmup;
+            bool _bool_cj_OpenerWarmup = bool_default_cj_OpenerWarmup;
+            bool _bool_Beep = bool_default_Beep;
+
+            Get_Settings_Defaults_Lists();
+
+            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
+            if (_int_Sequence > -1)
+            {
+                int.TryParse(s: Properties.Settings.Default.ii_int_Barbell[_int_Sequence], out _int_Barbell);
+                string _str_Start = Properties.Settings.Default.ii_HHmm_StartTimes[_int_Sequence];
+                if (!string.IsNullOrEmpty(_str_Start) && _str_Start.Length == 4)
+                {
+                    try
+                    {
+                        _timeSpan_Start = new(int.Parse(s: _str_Start.Substring(0, 2)), int.Parse(s: _str_Start.Substring(2)), 0);
+                    }
+                    catch { }
+                }
+                int.TryParse(s: Properties.Settings.Default.ii_int_snatch_Sec_Stage[_int_Sequence], out _int_snatch_Sec_Stage);
+                int.TryParse(s: Properties.Settings.Default.ii_int_snatch_Wgt_Opener[_int_Sequence], out _int_snatch_Wgt_Opener);
+                bool.TryParse(value: Properties.Settings.Default.ii_bool_snatch_OpenerWarmup[_int_Sequence], out _bool_snatch_OpenerWarmup);
+                int.TryParse(s: Properties.Settings.Default.ii_int_snatch_Sec_End[_int_Sequence], out _int_snatch_Sec_End);
+                int.TryParse(s: Properties.Settings.Default.ii_int_snatch_Lifts_Out[_int_Sequence], out _int_snatch_Lifts_Out);
+
+                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Sec_Stage[_int_Sequence], out _int_cj_Sec_Stage);
+                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Sec_Break[_int_Sequence], out _int_cj_Sec_Break);
+                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Wgt_Opener[_int_Sequence], out _int_cj_Wgt_Opener);
+                bool.TryParse(value: Properties.Settings.Default.ii_bool_cj_OpenerWarmup[_int_Sequence], out _bool_cj_OpenerWarmup);
+                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Sec_End[_int_Sequence], out _int_cj_Sec_End);
+                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Lifts_Out[_int_Sequence], out _int_cj_Lifts_Out);
+                int.TryParse(s: Properties.Settings.Default.ii_int_cj_snLifts_Out[_int_Sequence], out _int_cj_snLifts_Out);
+
+                bool.TryParse(value: Properties.Settings.Default.ii_bool_Beep[_int_Sequence], out _bool_Beep);
+            }
+
+            int_Barbell = _int_Barbell;
+            timeSpan_Start = _timeSpan_Start;
+            int_snatch_Sec_Stage = _int_snatch_Sec_Stage;
+            int_snatch_Wgt_Opener = _int_snatch_Wgt_Opener;
+            int_snatch_Sec_End = _int_snatch_Sec_End;
+            int_snatch_Lifts_Out = _int_snatch_Lifts_Out;
+            int_cj_Sec_Stage = _int_cj_Sec_Stage;
+            int_cj_Sec_Break = _int_cj_Sec_Break;
+            int_cj_Wgt_Opener = _int_cj_Wgt_Opener;
+            int_cj_Sec_End = _int_cj_Sec_End;
+            int_cj_Lifts_Out = _int_cj_Lifts_Out;
+            int_cj_snLifts_Out = _int_cj_snLifts_Out;
+            bool_snatch_OpenerWarmup = _bool_snatch_OpenerWarmup;
+            bool_cj_OpenerWarmup = _bool_cj_OpenerWarmup;
+            bool_cj_OpenerWarmup = _bool_Beep;
         }
-        private void buttonRestore_Click(object sender, EventArgs e)
+        private void Load_Profile_Values_To_Controls()
         {
-            buttonRestore.Dispose();
-            buttonClose.Dispose();
-            FormBorderStyle = FormBorderStyle.Sizable;
-            WindowState = FormWindowState.Normal;
-        }
-        private void Form_WL_Comp_Warmup_Load(object sender, EventArgs e)
-        {
-            Bounds = Screen.PrimaryScreen.Bounds;
-            Initialise_Form();
-        }
-        private void Initialise_Form()
-        {
+            bool _bool_Loading = bool_Loading;
             bool_Loading = true;
+
             snatch_Stop_Live();
             cj_Stop_Live();
-            label_Version.Text = "v" + strVersion;
 
             color_snatch_Live_BG = splitContainer_snatch.Panel2.BackColor;
             color_cj_Live_BG = splitContainer_cj.Panel2.BackColor;
@@ -233,6 +254,13 @@ namespace Weightlifting_Comp_Warmup
                 int_Barbell = 20;
             }
             numericUpDown_snatch_weight_barbell.Value = int_Barbell;
+
+            DateTime dateTime = DateTime.Today.Add(timeSpan_Start);
+            if (dateTime < DateTime.Now)
+            {
+                dateTime = dateTime.AddDays(1);
+            }
+            dateTimePicker_snatch_Start.Value = dateTime;
 
             if (int_snatch_Sec_Stage < numericUpDown_snatch_time_stage.Minimum)
             {
@@ -418,192 +446,958 @@ namespace Weightlifting_Comp_Warmup
             Snatch_Opener_Set();
             CJ_Opener_Set();
 
+            bool_Loading = _bool_Loading;
+        }
+        private int int_Profile_Sequence(int _int_ProfileId)
+        {
+            if (_int_ProfileId > -1 && Properties.Settings.Default.ii_int_ProfileIds != null)
+            {
+                if (Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
+                {
+                    return Properties.Settings.Default.ii_int_ProfileIds.IndexOf(_int_ProfileId.ToString());
+                }
+            }
+            return -1;
+        }
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+        private void buttonRestore_Click(object sender, EventArgs e)
+        {
+            buttonRestore.Dispose();
+            buttonClose.Dispose();
+            FormBorderStyle = FormBorderStyle.Sizable;
+            WindowState = FormWindowState.Normal;
+        }
+        private void Form_WL_Comp_Warmup_Load(object sender, EventArgs e)
+        {
+            Bounds = Screen.PrimaryScreen.Bounds;
+            Initialise_Form();
+        }
+        private void Initialise_Form()
+        {
+            bool_Loading = true;
+            Populate_MenuStrip();
+
+            Load_Profile_Values_To_Controls();
+
             buttonClose.BringToFront();
-            label_Version.BringToFront();
             bool_Loading = false;
+        }
+        private void Clean_Settings()
+        {
+            Print_All_Settings();
+            // ensures the string lists have the same number of entries as the profile id list
+            int _int_Profile_Count = 0;
+            if (Properties.Settings.Default.ii_int_ProfileIds != null)
+            {
+                _int_Profile_Count = Properties.Settings.Default.ii_int_ProfileIds.Count;
+            }
+            if (_int_Profile_Count == 0)
+            {
+                Properties.Settings.Default.ii_int_ProfileIds = new();
+                Properties.Settings.Default.ii_string_ProfileName = new();
+                Properties.Settings.Default.ii_int_Barbell = new();
+                Properties.Settings.Default.ii_HHmm_StartTimes = new();
+                Properties.Settings.Default.ii_int_snatch_Sec_Stage = new();
+                Properties.Settings.Default.ii_int_snatch_Wgt_Opener = new();
+                Properties.Settings.Default.ii_bool_snatch_OpenerWarmup = new();
+                Properties.Settings.Default.ii_int_snatch_Sec_End = new();
+                Properties.Settings.Default.ii_int_snatch_Lifts_Out = new();
+                Properties.Settings.Default.ii_int_cj_Sec_Stage = new();
+                Properties.Settings.Default.ii_int_cj_Sec_Break = new();
+                Properties.Settings.Default.ii_int_cj_Wgt_Opener = new();
+                Properties.Settings.Default.ii_bool_cj_OpenerWarmup = new();
+                Properties.Settings.Default.ii_int_cj_Sec_End = new();
+                Properties.Settings.Default.ii_int_cj_Lifts_Out = new();
+                Properties.Settings.Default.ii_int_cj_snLifts_Out = new();
+                Properties.Settings.Default.ii_bool_Beep = new();
+                Properties.Settings.Default.ii_strings_snatch_Extras = new();
+                Properties.Settings.Default.ii_strings_snatch_Jumps = new();
+                Properties.Settings.Default.ii_strings_snatch_Times = new();
+                Properties.Settings.Default.ii_strings_cj_Extras = new();
+                Properties.Settings.Default.ii_strings_cj_Jumps = new();
+                Properties.Settings.Default.ii_strings_cj_Times = new();
+            }
+            else
+            {
+                List<string> _strings = new();
+                if (Properties.Settings.Default.ii_string_ProfileName != null)
+                {
+                    _strings = Properties.Settings.Default.ii_string_ProfileName;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add("DefaultName" + i.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_string_ProfileName = _strings;
+                }
+                
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_Barbell != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_Barbell;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_Barbell.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_Barbell = _strings;
+                }
+                
+                _strings = new();
+                if (Properties.Settings.Default.ii_HHmm_StartTimes != null)
+                {
+                    _strings = Properties.Settings.Default.ii_HHmm_StartTimes;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add("1200");
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_HHmm_StartTimes = _strings;
+                }
+                
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_snatch_Sec_Stage != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_snatch_Sec_Stage;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_snatch_Sec_Stage.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_snatch_Sec_Stage = _strings;
+                }
+                
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_snatch_Wgt_Opener != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_snatch_Wgt_Opener;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_snatch_Wgt_Opener.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_snatch_Wgt_Opener = _strings;
+                }
+                
+                _strings = new();
+                if (Properties.Settings.Default.ii_bool_snatch_OpenerWarmup != null)
+                {
+                    _strings = Properties.Settings.Default.ii_bool_snatch_OpenerWarmup;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(bool_default_snatch_OpenerWarmup.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_bool_snatch_OpenerWarmup = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_snatch_Sec_End != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_snatch_Sec_End;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_snatch_Sec_End.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_snatch_Sec_End = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_snatch_Lifts_Out != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_snatch_Lifts_Out;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_snatch_Lifts_Out.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_snatch_Lifts_Out = _strings;
+                }
+
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_cj_Sec_Stage != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_cj_Sec_Stage;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_cj_Sec_Stage.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_cj_Sec_Stage = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_cj_Sec_Break != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_cj_Sec_Break;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_cj_Sec_Break.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_cj_Sec_Break = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_cj_Wgt_Opener != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_cj_Wgt_Opener;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_cj_Wgt_Opener.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_cj_Wgt_Opener = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_bool_cj_OpenerWarmup != null)
+                {
+                    _strings = Properties.Settings.Default.ii_bool_cj_OpenerWarmup;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(bool_default_cj_OpenerWarmup.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_bool_cj_OpenerWarmup = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_cj_Sec_End != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_cj_Sec_End;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_cj_Sec_End.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_cj_Sec_End = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_cj_Lifts_Out != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_cj_Lifts_Out;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_cj_Lifts_Out.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_cj_Lifts_Out = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_int_cj_snLifts_Out != null)
+                {
+                    _strings = Properties.Settings.Default.ii_int_cj_snLifts_Out;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(int_default_cj_snLifts_Out.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_int_cj_snLifts_Out = _strings;
+                }
+
+                _strings = new();
+                if (Properties.Settings.Default.ii_bool_Beep != null)
+                {
+                    _strings = Properties.Settings.Default.ii_bool_Beep;
+                }
+                if (_strings.Count != _int_Profile_Count)
+                {
+                    int _int_Count = _strings.Count;
+                    if (_int_Count < _int_Profile_Count)
+                    {
+                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
+                        {
+                            _strings.Add(bool_default_Beep.ToString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
+                        {
+                            _strings.RemoveAt(i);
+                        }
+                    }
+                    Properties.Settings.Default.ii_bool_Beep = _strings;
+                }
+            }
+            Print_All_Settings();
         }
         private void Form_WL_Comp_Warmup_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.int_Barbell = int_Barbell;
-            Properties.Settings.Default.int_snatch_Sec_Stage = int_snatch_Sec_Stage;
-            Properties.Settings.Default.int_snatch_Wgt_Opener = int_snatch_Wgt_Opener;
-            Properties.Settings.Default.bool_snatch_OpenerWarmup = bool_snatch_OpenerWarmup;
-            Properties.Settings.Default.int_snatch_Sec_End = int_snatch_Sec_End;
-            Properties.Settings.Default.int_snatch_Lifts_Out = int_snatch_Lifts_Out;
-            Properties.Settings.Default.int_cj_Sec_Stage = int_cj_Sec_Stage;
-            Properties.Settings.Default.int_cj_Sec_Break = int_cj_Sec_Break;
-            Properties.Settings.Default.int_cj_Wgt_Opener = int_cj_Wgt_Opener;
-            Properties.Settings.Default.bool_cj_OpenerWarmup = bool_cj_OpenerWarmup;
-            Properties.Settings.Default.int_cj_Sec_End = int_cj_Sec_End;
-            Properties.Settings.Default.int_cj_Lifts_Out = int_cj_Lifts_Out;
-            Properties.Settings.Default.int_cj_snLifts_Out = int_cj_snLifts_Out;
-            Properties.Settings.Default.bool_Beep = bool_Beep;
+            Update_Settings();
+            Settings_Changes_Save();
+        }
+        private int Add_Profile(string _str_ProfileName)
+        {
+            Clean_Settings();
+            int _int_ProfileId = 1;
+            foreach (string s in Properties.Settings.Default.ii_int_ProfileIds)
+            {
+                if (int.TryParse(s: s, result: out int _i) &&
+                    _i >= _int_ProfileId)
+                {
+                    _int_ProfileId = _i + 1;
+                }
+            }
+            Properties.Settings.Default.ii_int_ProfileIds.Add(_int_ProfileId.ToString());
+            Properties.Settings.Default.ii_string_ProfileName.Add(_str_ProfileName);
+            Print_All_Settings();
+            Clean_Settings();
+            Print_All_Settings();
+            Settings_Changes_Save();
+            Print_All_Settings();
 
-            List<string> list1;
+            return _int_ProfileId;
+        }
+        private void Delete_Profile(int _int_ProfileId)
+        {
+            Clean_Settings();
+            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
+            if (_int_Sequence >= 0)
+            {
+                Properties.Settings.Default.ii_int_ProfileIds.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_string_ProfileName.RemoveAt(_int_Sequence);
 
-            list1 = new List<string>();
+                Properties.Settings.Default.ii_int_Barbell.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_HHmm_StartTimes.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_snatch_Sec_Stage.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_snatch_Wgt_Opener.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_bool_snatch_OpenerWarmup.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_snatch_Sec_End.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_snatch_Lifts_Out.RemoveAt(_int_Sequence);
+
+                Properties.Settings.Default.ii_int_cj_Sec_Stage.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_cj_Wgt_Opener.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_cj_Sec_Break.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_bool_cj_OpenerWarmup.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_cj_Sec_End.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_cj_Lifts_Out.RemoveAt(_int_Sequence);
+                Properties.Settings.Default.ii_int_cj_snLifts_Out.RemoveAt(_int_Sequence);
+
+                for (int i = Properties.Settings.Default.ii_strings_snatch_Extras.Count - 1; i >= 0; i--)
+                {
+                    Parse_string_extras(
+                        _string: Properties.Settings.Default.ii_strings_snatch_Extras[i],
+                        _int_ProfileId: out int __int_ProfileId,
+                        _int_Id: out _,
+                        _int_Order: out _,
+                        _int_Length: out _,
+                        _str_Action: out _);
+                    if (_int_ProfileId == __int_ProfileId)
+                    {
+                        Properties.Settings.Default.ii_strings_snatch_Extras.RemoveAt(i);
+                    }
+                }
+                for (int i = Properties.Settings.Default.ii_strings_snatch_Jumps.Count - 1; i >= 0; i--)
+                {
+                    Parse_string_jumps(
+                        _string: Properties.Settings.Default.ii_strings_snatch_Jumps[i],
+                        _int_ProfileId: out int __int_ProfileId,
+                        _int_Id: out _,
+                        _int_FromWeight: out _,
+                        _int_Jump: out _);
+                    if (_int_ProfileId == __int_ProfileId)
+                    {
+                        Properties.Settings.Default.ii_strings_snatch_Jumps.RemoveAt(i);
+                    }
+                }
+                for (int i = Properties.Settings.Default.ii_strings_snatch_Times.Count - 1; i >= 0; i--)
+                {
+                    Parse_string_times(
+                        _string: Properties.Settings.Default.ii_strings_snatch_Times[i],
+                        _int_ProfileId: out int __int_ProfileId,
+                        _int_Id: out _,
+                        _int_FromWeight: out _,
+                        _int_Time: out _);
+                    if (_int_ProfileId == __int_ProfileId)
+                    {
+                        Properties.Settings.Default.ii_strings_snatch_Times.RemoveAt(i);
+                    }
+                }
+
+                for (int i = Properties.Settings.Default.ii_strings_cj_Extras.Count - 1; i >= 0; i--)
+                {
+                    Parse_string_extras(
+                        _string: Properties.Settings.Default.ii_strings_cj_Extras[i],
+                        _int_ProfileId: out int __int_ProfileId,
+                        _int_Id: out _,
+                        _int_Order: out _,
+                        _int_Length: out _,
+                        _str_Action: out _);
+                    if (_int_ProfileId == __int_ProfileId)
+                    {
+                        Properties.Settings.Default.ii_strings_cj_Extras.RemoveAt(i);
+                    }
+                }
+                for (int i = Properties.Settings.Default.ii_strings_cj_Jumps.Count - 1; i >= 0; i--)
+                {
+                    Parse_string_jumps(
+                        _string: Properties.Settings.Default.ii_strings_cj_Jumps[i],
+                        _int_ProfileId: out int __int_ProfileId,
+                        _int_Id: out _,
+                        _int_FromWeight: out _,
+                        _int_Jump: out _);
+                    if (_int_ProfileId == __int_ProfileId)
+                    {
+                        Properties.Settings.Default.ii_strings_cj_Jumps.RemoveAt(i);
+                    }
+                }
+                for (int i = Properties.Settings.Default.ii_strings_cj_Times.Count - 1; i >= 0; i--)
+                {
+                    Parse_string_times(
+                        _string: Properties.Settings.Default.ii_strings_cj_Times[i],
+                        _int_ProfileId: out int __int_ProfileId,
+                        _int_Id: out _,
+                        _int_FromWeight: out _,
+                        _int_Time: out _);
+                    if (_int_ProfileId == __int_ProfileId)
+                    {
+                        Properties.Settings.Default.ii_strings_cj_Times.RemoveAt(i);
+                    }
+                }
+            }
+            if (Properties.Settings.Default.int_ProfileId == _int_ProfileId)
+            {
+                Properties.Settings.Default.int_ProfileId = -1;
+            }
+        }
+        private string string_Profile_Name_From_Id(int _int_ProfileId)
+        {
+            if (Properties.Settings.Default.ii_string_ProfileName != null &&
+                Properties.Settings.Default.ii_string_ProfileName.Count > 0)
+            {
+                int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
+                return Properties.Settings.Default.ii_string_ProfileName[_int_Sequence];
+            }
+            return "default";
+        }
+        private void Settings_Changes_Save()
+        {
+            Properties.Settings.Default.Save();
+            Print_All_Settings();
+        }
+        private void Update_Settings()
+        {
+            Print_All_Settings();
+            Properties.Settings.Default.int_ProfileId = int_ProfileId;
+            Clean_Settings();
+            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: int_ProfileId);
+            if (_int_Sequence < 0)
+            {
+                if (Properties.Settings.Default.ii_int_ProfileIds == null)
+                {
+                    Properties.Settings.Default.ii_int_ProfileIds = new()
+                    {
+                        int_ProfileId.ToString()
+                    };
+                }
+                else
+                {
+                    Properties.Settings.Default.ii_int_ProfileIds.Add(int_ProfileId.ToString());
+                }
+                Clean_Settings();
+            }
+            Properties.Settings.Default.ii_int_Barbell[_int_Sequence] = int_Barbell.ToString();
+            Properties.Settings.Default.ii_HHmm_StartTimes[_int_Sequence] = dateTimePicker_snatch_Start.Value.ToString("HHmm");
+            Properties.Settings.Default.ii_int_snatch_Sec_Stage[_int_Sequence] = int_snatch_Sec_Stage.ToString();
+            Properties.Settings.Default.ii_int_snatch_Wgt_Opener[_int_Sequence] = int_snatch_Wgt_Opener.ToString();
+            Properties.Settings.Default.ii_bool_snatch_OpenerWarmup[_int_Sequence] = bool_snatch_OpenerWarmup.ToString();
+            Properties.Settings.Default.ii_int_snatch_Sec_End[_int_Sequence] = int_snatch_Sec_End.ToString();
+            Properties.Settings.Default.ii_int_snatch_Lifts_Out[_int_Sequence] = int_snatch_Lifts_Out.ToString();
+
+            Properties.Settings.Default.ii_int_cj_Sec_Stage[_int_Sequence] = int_cj_Sec_Stage.ToString();
+            Properties.Settings.Default.ii_int_cj_Wgt_Opener[_int_Sequence] = int_cj_Wgt_Opener.ToString();
+            Properties.Settings.Default.ii_int_cj_Sec_Break[_int_Sequence] = int_cj_Sec_Break.ToString();
+            Properties.Settings.Default.ii_bool_cj_OpenerWarmup[_int_Sequence] = bool_cj_OpenerWarmup.ToString();
+            Properties.Settings.Default.ii_int_cj_Sec_End[_int_Sequence] = int_cj_Sec_End.ToString();
+            Properties.Settings.Default.ii_int_cj_Lifts_Out[_int_Sequence] = int_cj_Lifts_Out.ToString();
+            Properties.Settings.Default.ii_int_cj_snLifts_Out[_int_Sequence] = int_cj_snLifts_Out.ToString();
+
+            Properties.Settings.Default.ii_bool_Beep[_int_Sequence] = bool_Beep.ToString();
+
+            for (int i = Properties.Settings.Default.ii_strings_snatch_Extras.Count - 1; i >= 0; i--)
+            {
+                Parse_string_extras(
+                    _string: Properties.Settings.Default.ii_strings_snatch_Extras[i],
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_Order: out _,
+                    _int_Length: out _,
+                    _str_Action: out _);
+                if (_int_ProfileId == int_ProfileId ||
+                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
+                {
+                    Properties.Settings.Default.ii_strings_snatch_Extras.RemoveAt(i);
+                }
+            }
+            for (int i = Properties.Settings.Default.ii_strings_snatch_Jumps.Count - 1; i >= 0; i--)
+            {
+                Parse_string_jumps(
+                    _string: Properties.Settings.Default.ii_strings_snatch_Jumps[i],
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_FromWeight: out _,
+                    _int_Jump: out _);
+                if (_int_ProfileId == int_ProfileId ||
+                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
+                {
+                    Properties.Settings.Default.ii_strings_snatch_Jumps.RemoveAt(i);
+                }
+            }
+            for (int i = Properties.Settings.Default.ii_strings_snatch_Times.Count - 1; i >= 0; i--)
+            {
+                Parse_string_times(
+                    _string: Properties.Settings.Default.ii_strings_snatch_Times[i],
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_FromWeight: out _,
+                    _int_Time: out _);
+                if (_int_ProfileId == int_ProfileId ||
+                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
+                {
+                    Properties.Settings.Default.ii_strings_snatch_Times.RemoveAt(i);
+                }
+            }
+
+            for (int i = Properties.Settings.Default.ii_strings_cj_Extras.Count - 1; i >= 0; i--)
+            {
+                Parse_string_extras(
+                    _string: Properties.Settings.Default.ii_strings_cj_Extras[i],
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_Order: out _,
+                    _int_Length: out _,
+                    _str_Action: out _);
+                if (_int_ProfileId == int_ProfileId ||
+                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
+                {
+                    Properties.Settings.Default.ii_strings_cj_Extras.RemoveAt(i);
+                }
+            }
+            for (int i = Properties.Settings.Default.ii_strings_cj_Jumps.Count - 1; i >= 0; i--)
+            {
+                Parse_string_jumps(
+                    _string: Properties.Settings.Default.ii_strings_cj_Jumps[i],
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_FromWeight: out _,
+                    _int_Jump: out _);
+                if (_int_ProfileId == int_ProfileId ||
+                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
+                {
+                    Properties.Settings.Default.ii_strings_cj_Jumps.RemoveAt(i);
+                }
+            }
+            for (int i = Properties.Settings.Default.ii_strings_cj_Times.Count - 1; i >= 0; i--)
+            {
+                Parse_string_times(
+                    _string: Properties.Settings.Default.ii_strings_cj_Times[i],
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_FromWeight: out _,
+                    _int_Time: out _);
+                if (_int_ProfileId == int_ProfileId ||
+                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
+                {
+                    Properties.Settings.Default.ii_strings_cj_Times.RemoveAt(i);
+                }
+            }
+
             dt_snatch_extras.DefaultView.Sort = str_col_Id + " ASC";
             foreach (DataRow dR in dt_snatch_extras.DefaultView.ToTable().Rows)
             {
-                list1.Add(dR.Field<int>(str_col_Id).ToString("000") +
+                Properties.Settings.Default.ii_strings_snatch_Extras.Add(
+                    int_ProfileId.ToString("000") +
+                    dR.Field<int>(str_col_Id).ToString("000000") +
                     dR.Field<int>(str_col_Order).ToString("000") +
                     dR.Field<int>(str_col_Length).ToString("00000") +
                     dR.Field<string>(str_col_Action));
             }
-            Properties.Settings.Default.snatch_Extra = list1;
 
-            list1 = new List<string>();
             dt_snatch_jumps.DefaultView.Sort = str_col_Id + " ASC";
             foreach (DataRow dR in dt_snatch_jumps.DefaultView.ToTable().Rows)
             {
-                list1.Add(dR.Field<int>(str_col_Id).ToString("000") +
+                Properties.Settings.Default.ii_strings_snatch_Jumps.Add(
+                    int_ProfileId.ToString("000") +
+                    dR.Field<int>(str_col_Id).ToString("000000") +
                     dR.Field<int>(str_col_FromWeight).ToString("000") +
                     dR.Field<int>(str_col_Jump).ToString("000"));
             }
-            Properties.Settings.Default.snatch_Jump = list1;
 
-            list1 = new List<string>();
             dt_snatch_times.DefaultView.Sort = str_col_Id + " ASC";
             foreach (DataRow dR in dt_snatch_times.DefaultView.ToTable().Rows)
             {
-                list1.Add(dR.Field<int>(str_col_Id).ToString("000") +
+                Properties.Settings.Default.ii_strings_snatch_Times.Add(
+                    int_ProfileId.ToString("000") +
+                    dR.Field<int>(str_col_Id).ToString("000000") +
                     dR.Field<int>(str_col_FromWeight).ToString("000") +
                     dR.Field<int>(str_col_Length).ToString("000"));
             }
-            Properties.Settings.Default.snatch_Time = list1;
 
-            list1 = new List<string>();
             dt_cj_extras.DefaultView.Sort = str_col_Id + " ASC";
             foreach (DataRow dR in dt_cj_extras.DefaultView.ToTable().Rows)
             {
-                list1.Add(dR.Field<int>(str_col_Id).ToString("000") +
+                Properties.Settings.Default.ii_strings_cj_Extras.Add(
+                    int_ProfileId.ToString("000") +
+                    dR.Field<int>(str_col_Id).ToString("000000") +
                     dR.Field<int>(str_col_Order).ToString("000") +
                     dR.Field<int>(str_col_Length).ToString("00000") +
                     dR.Field<string>(str_col_Action));
             }
-            Properties.Settings.Default.cj_Extra = list1;
 
-            list1 = new List<string>();
             dt_cj_jumps.DefaultView.Sort = str_col_Id + " ASC";
             foreach (DataRow dR in dt_cj_jumps.DefaultView.ToTable().Rows)
             {
-                list1.Add(dR.Field<int>(str_col_Id).ToString("000") +
+                Properties.Settings.Default.ii_strings_cj_Jumps.Add(
+                    int_ProfileId.ToString("000") +
+                    dR.Field<int>(str_col_Id).ToString("000000") +
                     dR.Field<int>(str_col_FromWeight).ToString("000") +
                     dR.Field<int>(str_col_Jump).ToString("000"));
             }
-            Properties.Settings.Default.cj_Jump = list1;
 
-            list1 = new List<string>();
             dt_cj_times.DefaultView.Sort = str_col_Id + " ASC";
             foreach (DataRow dR in dt_cj_times.DefaultView.ToTable().Rows)
             {
-                list1.Add(dR.Field<int>(str_col_Id).ToString("000") +
+                Properties.Settings.Default.ii_strings_cj_Times.Add(
+                    int_ProfileId.ToString("000") +
+                    dR.Field<int>(str_col_Id).ToString("000000") +
                     dR.Field<int>(str_col_FromWeight).ToString("000") +
                     dR.Field<int>(str_col_Length).ToString("000"));
             }
-            Properties.Settings.Default.cj_Time = list1;
-
-            Properties.Settings.Default.Save();
+            Print_All_Settings();
+        }
+        private void Parse_string_extras(
+            string _string,
+            out int _int_ProfileId,
+            out int _int_Id,
+            out int _int_Order,
+            out int _int_Length,
+            out string _str_Action)
+        {
+            //  at character:
+            //  0   3 digit profile id
+            //  3   6 digit id
+            //  9   3 digit order
+            //  12  5 digit length
+            //  17  variable length string (action name)
+            _int_ProfileId = default;
+            _int_Id = default;
+            _int_Order = default;
+            _int_Length = default;
+            _str_Action = string.Empty;
+            try
+            {
+                _int_ProfileId = int.Parse(_string.Substring(0, 3));
+                _int_Id = int.Parse(_string.Substring(3, 6));
+                _int_Order = int.Parse(_string.Substring(9, 3));
+                _int_Length = int.Parse(_string.Substring(12, 5));
+                _str_Action = _string.Substring(17);
+            }
+            catch { }
+        }
+        private void Parse_string_jumps(
+            string _string,
+            out int _int_ProfileId,
+            out int _int_Id,
+            out int _int_FromWeight,
+            out int _int_Jump)
+        {
+            //  at character:
+            //  0   3 digit profile id
+            //  3   6 digit id
+            //  9   3 digit from weight
+            //  12  3 digit jump
+            _int_ProfileId = default;
+            _int_Id = default;
+            _int_FromWeight = default;
+            _int_Jump = default;
+            try
+            {
+                _int_ProfileId = int.Parse(_string.Substring(0, 3));
+                _int_Id = int.Parse(_string.Substring(3, 6));
+                _int_FromWeight = int.Parse(_string.Substring(9, 3));
+                _int_Jump = int.Parse(_string.Substring(12, 3));
+            }
+            catch { }
+        }
+        private void Parse_string_times(
+            string _string,
+            out int _int_ProfileId,
+            out int _int_Id,
+            out int _int_FromWeight,
+            out int _int_Time)
+        {
+            //  at character:
+            //  0   3 digit profile id
+            //  3   6 digit id
+            //  9   3 digit from weight
+            //  12  3 digit time
+            _int_ProfileId = default;
+            _int_Id = default;
+            _int_FromWeight = default;
+            _int_Time = default;
+            try
+            {
+                _int_ProfileId = int.Parse(_string.Substring(0, 3));
+                _int_Id = int.Parse(_string.Substring(3, 6));
+                _int_FromWeight = int.Parse(_string.Substring(9, 3));
+                _int_Time = int.Parse(_string.Substring(12, 3));
+            }
+            catch { }
         }
         private void Initialise_datatables()
         {
             dt_snatch_extras = new DataTable();
-            DataColumn column_Id = new()
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_snatch_extras.Columns.Add(column_Id);
             dt_snatch_extras.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_Action, Type.GetType("System.String"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Order, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_Action, DataType = typeof(string) },
+                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Order, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
 
             dt_snatch_jumps = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_snatch_jumps.Columns.Add(column_Id);
             dt_snatch_jumps.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_FromWeight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Jump, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Jump, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
 
             dt_snatch_times = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_snatch_times.Columns.Add(column_Id);
             dt_snatch_times.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_FromWeight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
 
-
             dt_cj_extras = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_cj_extras.Columns.Add(column_Id);
             dt_cj_extras.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_Action, Type.GetType("System.String"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Order, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_Action, DataType = typeof(string) },
+                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Order, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
 
             dt_cj_jumps = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_cj_jumps.Columns.Add(column_Id);
             dt_cj_jumps.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_FromWeight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Jump, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Jump, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
 
             dt_cj_times = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_cj_times.Columns.Add(column_Id);
             dt_cj_times.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_FromWeight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
         }
         private void Check_DataTables()
@@ -694,136 +1488,69 @@ namespace Weightlifting_Comp_Warmup
         }
         private void Get_Settings_Defaults_Lists()
         {
-            dt_default_snatch_extras = new DataTable();
-            DataColumn column_Id = new()
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_default_snatch_extras.Columns.Add(column_Id);
+            dt_default_snatch_extras = new();
             dt_default_snatch_extras.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_Action, Type.GetType("System.String"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Order, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_Action, DataType = typeof(string) },
+                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Order, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
-
-            dt_default_snatch_jumps = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_default_snatch_jumps.Columns.Add(column_Id);
+            dt_default_snatch_jumps = new();
             dt_default_snatch_jumps.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_FromWeight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Jump, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Jump, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
-
-            dt_default_snatch_times = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_default_snatch_times.Columns.Add(column_Id);
+            dt_default_snatch_times = new();
             dt_default_snatch_times.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_FromWeight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
 
-
-            dt_default_cj_extras = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_default_cj_extras.Columns.Add(column_Id);
+            dt_default_cj_extras = new();
             dt_default_cj_extras.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_Action, Type.GetType("System.String"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Order, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_Action, DataType = typeof(string) },
+                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Order, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
-
-            dt_default_cj_jumps = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_default_cj_jumps.Columns.Add(column_Id);
+            dt_default_cj_jumps = new();
             dt_default_cj_jumps.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_FromWeight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Jump, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Jump, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
-
-            dt_default_cj_times = new DataTable();
-            column_Id = new DataColumn
-            {
-                DataType = Type.GetType("System.Int32"),
-                ColumnName = str_col_Id,
-                AutoIncrement = true,
-                AutoIncrementSeed = 1,
-                AutoIncrementStep = 1
-            };
-            dt_default_cj_times.Columns.Add(column_Id);
+            dt_default_cj_times = new();
             dt_default_cj_times.Columns.AddRange(
                 new DataColumn[] {
-                    new DataColumn(str_col_FromWeight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
+                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
+                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
                 });
-
-            if (Properties.Settings.Default.snatch_Extra != null)
-            { 
-                if (Properties.Settings.Default.snatch_Extra.Count > 0)
+            Clean_Settings();
+            foreach (string s in Properties.Settings.Default.ii_strings_snatch_Extras)
+            {
+                Parse_string_extras(
+                    _string: s,
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_Order: out int _int_Order,
+                    _int_Length: out int _int_Length,
+                    _str_Action: out string _str_Action);
+                if (_int_ProfileId == int_ProfileId)
                 {
-                    List<string> list1 = Properties.Settings.Default.snatch_Extra;
-
-                    foreach (string s in list1)
+                    dt_default_snatch_extras.Rows.Add(new object[]
                     {
-                        if (s.Length >= 11)
-                        {
-                            try
-                            {
-                                int intOrder = int.Parse(s.Substring(3, 3));
-                                int intLength = int.Parse(s.Substring(6, 5));
-                                string strAction;
-                                if (s.Length == 11)
-                                {
-                                    strAction = String.Empty;
-                                }
-                                else
-                                {
-                                    strAction = s.Substring(11, s.Length - 11);
-                                }
-                                DataRow dataRow = dt_default_snatch_extras.NewRow();
-                                dataRow[str_col_Action] = strAction;
-                                dataRow[str_col_Length] = intLength;
-                                dataRow[str_col_Order] = intOrder;
-                                dt_default_snatch_extras.Rows.Add(dataRow);
-                            } catch { }
-                        }
-                    }
+                        _str_Action,
+                        _int_Length,
+                        _int_Order
+                    });
                 }
             }
             dt_default_snatch_extras.AcceptChanges();
@@ -832,27 +1559,21 @@ namespace Weightlifting_Comp_Warmup
                 Insert_Auto_snatch_Extras(dt_default_snatch_extras);
             }
 
-            if (Properties.Settings.Default.snatch_Jump != null)
-            { 
-                if (Properties.Settings.Default.snatch_Jump.Count > 0)
+            foreach (string s in Properties.Settings.Default.ii_strings_snatch_Jumps)
+            {
+                Parse_string_jumps(
+                    _string: s,
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_FromWeight: out int _int_FromWeight,
+                    _int_Jump: out int _int_Jump);
+                if (_int_ProfileId == int_ProfileId)
                 {
-                    List<string> list1 = Properties.Settings.Default.snatch_Jump;
-
-                    foreach (string s in list1)
+                    dt_default_snatch_jumps.Rows.Add(new object[]
                     {
-                        if (s.Length == 9)
-                        {
-                            try
-                            {
-                                int intFromWeight = int.Parse(s.Substring(3, 3));
-                                int intJump = int.Parse(s.Substring(6, 3));
-                                DataRow dataRow = dt_default_snatch_jumps.NewRow();
-                                dataRow[str_col_FromWeight] = intFromWeight;
-                                dataRow[str_col_Jump] = intJump;
-                                dt_default_snatch_jumps.Rows.Add(dataRow);
-                            } catch { }
-                        }
-                    }
+                        _int_FromWeight,
+                        _int_Jump,
+                    });
                 }
             }
             dt_default_snatch_jumps.AcceptChanges();
@@ -861,27 +1582,21 @@ namespace Weightlifting_Comp_Warmup
                 Insert_Default_snatch_Jumps(dt_default_snatch_jumps);
             }
 
-            if (Properties.Settings.Default.snatch_Time != null)
-            { 
-                if (Properties.Settings.Default.snatch_Time.Count > 0)
+            foreach (string s in Properties.Settings.Default.ii_strings_snatch_Times)
+            {
+                Parse_string_times(
+                    _string: s,
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_FromWeight: out int _int_FromWeight,
+                    _int_Time: out int _int_Time);
+                if (_int_ProfileId == int_ProfileId)
                 {
-                    List<string> list1 = Properties.Settings.Default.snatch_Time;
-
-                    foreach (string s in list1)
+                    dt_default_snatch_times.Rows.Add(new object[]
                     {
-                        if (s.Length == 9)
-                        {
-                            try
-                            {
-                                int intFromWeight = int.Parse(s.Substring(3, 3));
-                                int intTime = int.Parse(s.Substring(6, 3));
-                                DataRow dataRow = dt_default_snatch_times.NewRow();
-                                dataRow[str_col_FromWeight] = intFromWeight;
-                                dataRow[str_col_Length] = intTime;
-                                dt_default_snatch_times.Rows.Add(dataRow);
-                            } catch { }
-                        }
-                    }
+                        _int_FromWeight,
+                        _int_Time,
+                    });
                 }
             }
             dt_default_snatch_times.AcceptChanges();
@@ -890,37 +1605,24 @@ namespace Weightlifting_Comp_Warmup
                 Insert_Default_snatch_Times(dt_default_snatch_times);
             }
 
-            if (Properties.Settings.Default.cj_Extra != null)
-            { 
-                if (Properties.Settings.Default.cj_Extra.Count > 0)
-                {
-                    List<string> list1 = Properties.Settings.Default.cj_Extra;
 
-                    foreach (string s in list1)
+            foreach (string s in Properties.Settings.Default.ii_strings_cj_Extras)
+            {
+                Parse_string_extras(
+                    _string: s,
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_Order: out int _int_Order,
+                    _int_Length: out int _int_Length,
+                    _str_Action: out string _str_Action);
+                if (_int_ProfileId == int_ProfileId)
+                {
+                    dt_default_cj_extras.Rows.Add(new object[]
                     {
-                        if (s.Length >= 11)
-                        {
-                            try
-                            {
-                                int intOrder = int.Parse(s.Substring(3, 3));
-                                int intLength = int.Parse(s.Substring(6, 5));
-                                string strAction;
-                                if (s.Length == 11)
-                                {
-                                    strAction = String.Empty;
-                                }
-                                else
-                                {
-                                    strAction = s.Substring(11, s.Length - 11);
-                                }
-                                DataRow dataRow = dt_default_cj_extras.NewRow();
-                                dataRow[str_col_Action] = strAction;
-                                dataRow[str_col_Length] = intLength;
-                                dataRow[str_col_Order] = intOrder;
-                                dt_default_cj_extras.Rows.Add(dataRow);
-                            } catch { }
-                        }
-                    }
+                        _str_Action,
+                        _int_Length,
+                        _int_Order
+                    });
                 }
             }
             dt_default_cj_extras.AcceptChanges();
@@ -929,28 +1631,21 @@ namespace Weightlifting_Comp_Warmup
                 Insert_Auto_cj_Extras(dt_default_cj_extras);
             }
 
-            if (Properties.Settings.Default.cj_Jump != null)
+            foreach (string s in Properties.Settings.Default.ii_strings_cj_Jumps)
             {
-                if (Properties.Settings.Default.cj_Jump.Count > 0)
+                Parse_string_jumps(
+                    _string: s,
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_FromWeight: out int _int_FromWeight,
+                    _int_Jump: out int _int_Jump);
+                if (_int_ProfileId == int_ProfileId)
                 {
-                    List<string> list1 = Properties.Settings.Default.cj_Jump;
-
-                    foreach (string s in list1)
+                    dt_default_cj_jumps.Rows.Add(new object[]
                     {
-                        if (s.Length == 9)
-                        {
-                            try
-                            {
-                                int intFromWeight = int.Parse(s.Substring(3, 3));
-                                int intJump = int.Parse(s.Substring(6, 3));
-                                DataRow dataRow = dt_default_cj_jumps.NewRow();
-                                dataRow[str_col_FromWeight] = intFromWeight;
-                                dataRow[str_col_Jump] = intJump;
-                                dt_default_cj_jumps.Rows.Add(dataRow);
-                            }
-                            catch { }
-                        }
-                    }
+                        _int_FromWeight,
+                        _int_Jump,
+                    });
                 }
             }
             dt_default_cj_jumps.AcceptChanges();
@@ -959,28 +1654,21 @@ namespace Weightlifting_Comp_Warmup
                 Insert_Default_cj_Jumps(dt_default_cj_jumps);
             }
 
-            if (Properties.Settings.Default.cj_Time != null)
+            foreach (string s in Properties.Settings.Default.ii_strings_cj_Times)
             {
-                if (Properties.Settings.Default.cj_Time.Count > 0)
+                Parse_string_times(
+                    _string: s,
+                    _int_ProfileId: out int _int_ProfileId,
+                    _int_Id: out _,
+                    _int_FromWeight: out int _int_FromWeight,
+                    _int_Time: out int _int_Time);
+                if (_int_ProfileId == int_ProfileId)
                 {
-                    List<string> list1 = Properties.Settings.Default.cj_Time;
-
-                    foreach (string s in list1)
+                    dt_default_cj_times.Rows.Add(new object[]
                     {
-                        if (s.Length == 9)
-                        {
-                            try
-                            {
-                                int intFromWeight = int.Parse(s.Substring(3, 3));
-                                int intTime = int.Parse(s.Substring(6, 3));
-                                DataRow dataRow = dt_default_cj_times.NewRow();
-                                dataRow[str_col_FromWeight] = intFromWeight;
-                                dataRow[str_col_Length] = intTime;
-                                dt_default_cj_times.Rows.Add(dataRow);
-                            }
-                            catch { }
-                        }
-                    }
+                        _int_FromWeight,
+                        _int_Time,
+                    });
                 }
             }
             dt_default_cj_times.AcceptChanges();
@@ -991,6 +1679,7 @@ namespace Weightlifting_Comp_Warmup
         }
         private void numericUpDown_snatch_weight_barbell_ValueChanged(object sender, EventArgs e)
         {
+            if (bool_Loading) { return; }
             int _int_Barbell;
             try
             {
@@ -1025,15 +1714,363 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_snatch_ClearSettings_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show(@"This will erase your settings and restore all defaults." +
+            if (MessageBox.Show(@"This will erase all profiles and restore all defaults." +
                 Environment.NewLine + Environment.NewLine + "Continue?",
                 "Reset settings?",
                 buttons:MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
                 Properties.Settings.Default.Reset();
-                Properties.Settings.Default.Save();
+                Settings_Changes_Save();
+                int_ProfileId = Add_Profile(_str_ProfileName: "default");
                 Initialise_Form();
             }
+        }
+        private void Print_All_Settings()
+        {
+            Console.WriteLine("+++++++++++++++++++++++++++++++++++++++");
+            Console.WriteLine("int_ProfileId = " + Properties.Settings.Default.int_ProfileId.ToString());
+            Console.WriteLine("ii_int_ProfileIds = " + (Properties.Settings.Default.ii_int_ProfileIds == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_ProfileIds)));
+            Console.WriteLine("ii_string_ProfileName = " + (Properties.Settings.Default.ii_string_ProfileName == null ? "null" : string.Join("|", Properties.Settings.Default.ii_string_ProfileName)));
+            Console.WriteLine("ii_int_Barbell = " + (Properties.Settings.Default.ii_int_Barbell == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_Barbell)));
+            Console.WriteLine("ii_HHmm_StartTimes = " + (Properties.Settings.Default.ii_HHmm_StartTimes == null ? "null" : string.Join("|", Properties.Settings.Default.ii_HHmm_StartTimes)));
+
+            Console.WriteLine("ii_int_snatch_Sec_Stage = " + (Properties.Settings.Default.ii_int_snatch_Sec_Stage == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_snatch_Sec_Stage)));
+            Console.WriteLine("ii_int_snatch_Wgt_Opener = " + (Properties.Settings.Default.ii_int_snatch_Wgt_Opener == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_snatch_Wgt_Opener)));
+            Console.WriteLine("ii_int_snatch_Sec_End = " + (Properties.Settings.Default.ii_int_snatch_Sec_End == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_snatch_Sec_End)));
+            Console.WriteLine("ii_int_snatch_Lifts_Out = " + (Properties.Settings.Default.ii_int_snatch_Lifts_Out == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_snatch_Lifts_Out)));
+            Console.WriteLine("ii_bool_snatch_OpenerWarmup = " + (Properties.Settings.Default.ii_bool_snatch_OpenerWarmup == null ? "null" : string.Join("|", Properties.Settings.Default.ii_bool_snatch_OpenerWarmup)));
+            Console.WriteLine("ii_strings_snatch_Extras = " + (Properties.Settings.Default.ii_strings_snatch_Extras == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_snatch_Extras)));
+            Console.WriteLine("ii_strings_snatch_Jumps = " + (Properties.Settings.Default.ii_strings_snatch_Jumps == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_snatch_Jumps)));
+            Console.WriteLine("ii_strings_snatch_Times = " + (Properties.Settings.Default.ii_strings_snatch_Times == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_snatch_Times)));
+
+            Console.WriteLine("ii_int_cj_Sec_Stage = " + (Properties.Settings.Default.ii_int_cj_Sec_Stage == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Sec_Stage)));
+            Console.WriteLine("ii_int_cj_Wgt_Opener = " + (Properties.Settings.Default.ii_int_cj_Wgt_Opener == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Wgt_Opener)));
+            Console.WriteLine("ii_int_cj_Sec_End = " + (Properties.Settings.Default.ii_int_cj_Sec_End == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Sec_End)));
+            Console.WriteLine("ii_int_cj_Lifts_Out = " + (Properties.Settings.Default.ii_int_cj_Lifts_Out == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Lifts_Out)));
+            Console.WriteLine("ii_int_cj_Sec_Break = " + (Properties.Settings.Default.ii_int_cj_Sec_Break == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Sec_Break)));
+            Console.WriteLine("ii_int_cj_snLifts_Out = " + (Properties.Settings.Default.ii_int_cj_snLifts_Out == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_snLifts_Out)));
+            Console.WriteLine("ii_bool_cj_OpenerWarmup = " + (Properties.Settings.Default.ii_bool_cj_OpenerWarmup == null ? "null" : string.Join("|", Properties.Settings.Default.ii_bool_cj_OpenerWarmup)));
+            Console.WriteLine("ii_strings_cj_Extras = " + (Properties.Settings.Default.ii_strings_cj_Extras == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_cj_Extras)));
+            Console.WriteLine("ii_strings_cj_Jumps = " + (Properties.Settings.Default.ii_strings_cj_Jumps == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_cj_Jumps)));
+            Console.WriteLine("ii_strings_cj_Times = " + (Properties.Settings.Default.ii_strings_cj_Times == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_cj_Times)));
+
+            Console.WriteLine("ii_bool_Beep = " + (Properties.Settings.Default.ii_bool_Beep == null ? "null" : string.Join("|", Properties.Settings.Default.ii_bool_Beep)));
+            Console.WriteLine("---------------------------------------");
+        }
+        private void Populate_MenuStrip()
+        {
+            menuStrip_Profile.Items.Clear();
+            ToolStripLabel toolStripLabel = new()
+            {
+                Text = "v" + strVersion + "     ",
+                Margin = new(0, 0, 10, 0),
+                Font = new("Gadugi", 10F, FontStyle.Italic, GraphicsUnit.Point, 0)
+            };
+            menuStrip_Profile.Items.Add(toolStripLabel);
+            for (int i = 0; i < Properties.Settings.Default.ii_int_ProfileIds.Count; i++)
+            {
+                if (int.TryParse(s: Properties.Settings.Default.ii_int_ProfileIds[i], result: out int _int_ProfileId) &&
+                    _int_ProfileId > 0)
+                {
+                    string _str_ProfileName = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
+                    ToolStripMenuItem toolStripMenuItem = new()
+                    {
+                        Text = _str_ProfileName,
+                        Tag = _int_ProfileId.ToString()
+                    };
+                    ToolStripButton toolStripButton;
+                    if (_int_ProfileId == int_ProfileId)
+                    {
+                        toolStripMenuItem.BackColor = Color.Red;
+                    }
+                    else
+                    {
+                        toolStripButton = new()
+                        {
+                            Text = "load",
+                            Tag = _int_ProfileId.ToString(),
+                        };
+                        toolStripButton.Click += ToolStripMenu_Load_Profile;
+                        toolStripMenuItem.DropDownItems.Add(toolStripButton);
+                    }
+                    toolStripButton = new()
+                    {
+                        Text = "delete",
+                        Tag = _int_ProfileId.ToString(),
+                    };
+                    toolStripButton.Click += ToolStripMenu_Delete_Profile;
+                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
+                    menuStrip_Profile.Items.Add(toolStripMenuItem);
+                    toolStripButton = new()
+                    {
+                        Text = "duplicate",
+                        Tag = _int_ProfileId.ToString(),
+                    };
+                    toolStripButton.Click += ToolStripMenu_Duplicate_Profile;
+                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
+                    menuStrip_Profile.Items.Add(toolStripMenuItem);
+                    toolStripButton = new()
+                    {
+                        Text = "rename",
+                        Tag = _int_ProfileId.ToString(),
+                    };
+                    toolStripButton.Click += ToolStripMenu_Rename_Profile;
+                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
+                    menuStrip_Profile.Items.Add(toolStripMenuItem);
+                }
+            }
+            {
+                ToolStripMenuItem toolStripMenuItem = new()
+                {
+                    Text = "Add new profile",
+                    Font = new("Gadugi", 9F, FontStyle.Italic, GraphicsUnit.Point, 0)
+                };
+                toolStripMenuItem.Click += ToolStripMenu_AddNew_Profile;
+                menuStrip_Profile.Items.Add(toolStripMenuItem);
+                toolStripMenuItem = new()
+                {
+                    Text = "Open settings folder",
+                    Font = new("Gadugi", 9F, FontStyle.Italic, GraphicsUnit.Point, 0)
+                };
+                toolStripMenuItem.Click += ToolStripMenu_OpenSettingsFolder;
+                menuStrip_Profile.Items.Add(toolStripMenuItem);
+            }
+        }
+        private void ToolStripMenu_Load_Profile(object sender, EventArgs e)
+        {
+            Update_Settings();
+            Settings_Changes_Save();
+            Print_All_Settings();
+            ToolStripButton toolStripButton = (ToolStripButton)sender;
+            string _string_Tag = toolStripButton.Tag.ToString();
+            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
+            {
+                ProfileId_Select(_int_ProfileId: _int_ProfileId);
+                Populate_MenuStrip();
+                Load_Profile_Values_To_Controls();
+            }
+        }
+        private void ToolStripMenu_Delete_Profile(object sender, EventArgs e)
+        {
+            ToolStripButton toolStripButton = (ToolStripButton)sender;
+            string _string_Tag = toolStripButton.Tag.ToString();
+            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
+            {
+                if (MessageBox.Show(
+                    text: "Are you sure you want to delete this profile? This action is permanent.",
+                    caption: "Delete",
+                    buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    Delete_Profile(_int_ProfileId: _int_ProfileId);
+                    if (_int_ProfileId == int_ProfileId)
+                    {
+                        int _int_NewProfileId = -1;
+                        foreach (string s in Properties.Settings.Default.ii_int_ProfileIds)
+                        {
+                            _int_NewProfileId = int.Parse(s: s);
+                            break;
+                        }
+                        if (_int_NewProfileId < 1)
+                        {
+                            // could not find a current profile
+                            _int_ProfileId = Add_Profile(_str_ProfileName: "default");
+                        }
+                        ProfileId_Select(_int_ProfileId: _int_ProfileId);
+                        Populate_MenuStrip();
+                        Load_Profile_Values_To_Controls();
+                    }
+                    else
+                    {
+                        Populate_MenuStrip();
+                    }
+                }
+            }
+        }
+        private void ToolStripMenu_OpenSettingsFolder(object sender, EventArgs e)
+        {
+            try
+            {
+                string s = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Weightlifting_Comp_Warmup";
+                System.Diagnostics.Process.Start(s);
+            }
+            catch
+            {
+                Interaction.MsgBox("Unable to open folder. Try manually. It's in %localappdata% -- then the Weightlifting_Comp_Warmup folder");
+            }
+        }
+        private void ToolStripMenu_AddNew_Profile(object sender, EventArgs e)
+        {
+            string _str_Name = Interaction.InputBox("Enter a new name:");
+            if (!string.IsNullOrEmpty(_str_Name))
+            {
+                Add_Profile(_str_ProfileName: _str_Name);
+                Populate_MenuStrip();
+            }
+        }
+        private void ToolStripMenu_Rename_Profile(object sender, EventArgs e)
+        {
+            ToolStripButton toolStripButton = (ToolStripButton)sender;
+            string _string_Tag = toolStripButton.Tag.ToString();
+            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
+            {
+                string _str_Name = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
+                _str_Name = Interaction.InputBox(Prompt: "Enter a new name:", DefaultResponse: _str_Name);
+                if (!string.IsNullOrEmpty(_str_Name))
+                {
+                    Clean_Settings();
+                    int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
+                    if (_int_Sequence >= 0)
+                    {
+                        Properties.Settings.Default.ii_string_ProfileName[_int_Sequence] = _str_Name;
+                        Settings_Changes_Save();
+                        Populate_MenuStrip();
+                    }
+                }
+            }
+        }
+        private void ToolStripMenu_Duplicate_Profile(object sender, EventArgs e)
+        {
+            ToolStripButton toolStripButton = (ToolStripButton)sender;
+            string _string_Tag = toolStripButton.Tag.ToString();
+            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
+            {
+                Update_Settings();
+                Settings_Changes_Save();
+                Clean_Settings();
+                string _str_Name = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
+                _str_Name = Interaction.InputBox(Prompt: "Enter a new name:", DefaultResponse: _str_Name);
+                if (!string.IsNullOrEmpty(_str_Name))
+                {
+                    int _int_New_ProfileId = Add_Profile(_str_ProfileName: _str_Name);
+                    if (_int_New_ProfileId > 0)
+                    {
+                        int _int_New_Sequence = int_Profile_Sequence(_int_ProfileId: _int_New_ProfileId);
+                        int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
+                        if (_int_Sequence >= 0 && _int_New_Sequence >= 0)
+                        {
+                            Properties.Settings.Default.ii_int_Barbell[_int_New_Sequence] = Properties.Settings.Default.ii_int_Barbell[_int_Sequence];
+                            Properties.Settings.Default.ii_HHmm_StartTimes[_int_New_Sequence] = Properties.Settings.Default.ii_HHmm_StartTimes[_int_Sequence];
+
+                            Properties.Settings.Default.ii_int_snatch_Sec_Stage[_int_New_Sequence] = Properties.Settings.Default.ii_int_snatch_Sec_Stage[_int_Sequence];
+                            Properties.Settings.Default.ii_int_snatch_Wgt_Opener[_int_New_Sequence] = Properties.Settings.Default.ii_int_snatch_Wgt_Opener[_int_Sequence];
+                            Properties.Settings.Default.ii_int_snatch_Sec_End[_int_New_Sequence] = Properties.Settings.Default.ii_int_snatch_Sec_End[_int_Sequence];
+                            Properties.Settings.Default.ii_int_snatch_Lifts_Out[_int_New_Sequence] = Properties.Settings.Default.ii_int_snatch_Lifts_Out[_int_Sequence];
+                            Properties.Settings.Default.ii_bool_snatch_OpenerWarmup[_int_New_Sequence] = Properties.Settings.Default.ii_bool_snatch_OpenerWarmup[_int_Sequence];
+                            for (int i = 0; i < Properties.Settings.Default.ii_strings_snatch_Extras.Count; i++)
+                            {
+                                string s = Properties.Settings.Default.ii_strings_snatch_Extras[i];
+                                Parse_string_extras(
+                                    _string: s,
+                                    _int_ProfileId: out int __int_ProfileId,
+                                    _int_Id: out _,
+                                    _int_Order: out _,
+                                    _int_Length: out _,
+                                    _str_Action: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    Properties.Settings.Default.ii_strings_snatch_Extras.Add(
+                                        _int_New_ProfileId.ToString("000") +
+                                        s.Substring(3));
+                                }
+                            }
+                            for (int i = 0; i < Properties.Settings.Default.ii_strings_snatch_Jumps.Count; i++)
+                            {
+                                string s = Properties.Settings.Default.ii_strings_snatch_Jumps[i];
+                                Parse_string_jumps(
+                                    _string: s,
+                                    _int_ProfileId: out int __int_ProfileId,
+                                    _int_Id: out _,
+                                    _int_FromWeight: out _,
+                                    _int_Jump: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    Properties.Settings.Default.ii_strings_snatch_Jumps.Add(
+                                        _int_New_ProfileId.ToString("000") +
+                                        s.Substring(3));
+                                }
+                            }
+                            for (int i = 0; i < Properties.Settings.Default.ii_strings_snatch_Times.Count; i++)
+                            {
+                                string s = Properties.Settings.Default.ii_strings_snatch_Times[i];
+                                Parse_string_times(
+                                    _string: s,
+                                    _int_ProfileId: out int __int_ProfileId,
+                                    _int_Id: out _,
+                                    _int_FromWeight: out _,
+                                    _int_Time: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    Properties.Settings.Default.ii_strings_snatch_Times.Add(
+                                        _int_New_ProfileId.ToString("000") +
+                                        s.Substring(3));
+                                }
+                            }
+                            
+                            Properties.Settings.Default.ii_int_cj_Sec_Stage[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Sec_Stage[_int_Sequence];
+                            Properties.Settings.Default.ii_int_cj_Wgt_Opener[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Wgt_Opener[_int_Sequence];
+                            Properties.Settings.Default.ii_int_cj_Sec_End[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Sec_End[_int_Sequence];
+                            Properties.Settings.Default.ii_int_cj_Lifts_Out[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Lifts_Out[_int_Sequence];
+                            Properties.Settings.Default.ii_int_cj_Sec_Break[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Sec_Break[_int_Sequence];
+                            Properties.Settings.Default.ii_int_cj_snLifts_Out[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_snLifts_Out[_int_Sequence];
+                            Properties.Settings.Default.ii_bool_cj_OpenerWarmup[_int_New_Sequence] = Properties.Settings.Default.ii_bool_cj_OpenerWarmup[_int_Sequence];
+                            for (int i = 0; i < Properties.Settings.Default.ii_strings_cj_Extras.Count; i++)
+                            {
+                                string s = Properties.Settings.Default.ii_strings_cj_Extras[i];
+                                Parse_string_extras(
+                                    _string: s,
+                                    _int_ProfileId: out int __int_ProfileId,
+                                    _int_Id: out _,
+                                    _int_Order: out _,
+                                    _int_Length: out _,
+                                    _str_Action: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    Properties.Settings.Default.ii_strings_cj_Extras.Add(
+                                        _int_New_ProfileId.ToString("000") +
+                                        s.Substring(3));
+                                }
+                            }
+                            for (int i = 0; i < Properties.Settings.Default.ii_strings_cj_Jumps.Count; i++)
+                            {
+                                string s = Properties.Settings.Default.ii_strings_cj_Jumps[i];
+                                Parse_string_jumps(
+                                    _string: s,
+                                    _int_ProfileId: out int __int_ProfileId,
+                                    _int_Id: out _,
+                                    _int_FromWeight: out _,
+                                    _int_Jump: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    Properties.Settings.Default.ii_strings_cj_Jumps.Add(
+                                        _int_New_ProfileId.ToString("000") +
+                                        s.Substring(3));
+                                }
+                            }
+                            for (int i = 0; i < Properties.Settings.Default.ii_strings_cj_Times.Count; i++)
+                            {
+                                string s = Properties.Settings.Default.ii_strings_cj_Times[i];
+                                Parse_string_times(
+                                    _string: s,
+                                    _int_ProfileId: out int __int_ProfileId,
+                                    _int_Id: out _,
+                                    _int_FromWeight: out _,
+                                    _int_Time: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    Properties.Settings.Default.ii_strings_cj_Times.Add(
+                                        _int_New_ProfileId.ToString("000") +
+                                        s.Substring(3));
+                                }
+                            }
+
+                            Properties.Settings.Default.ii_bool_Beep[_int_New_Sequence] = Properties.Settings.Default.ii_bool_Beep[_int_Sequence];
+             
+                            Settings_Changes_Save();
+                        }
+                    }
+                }
+            }
+            Populate_MenuStrip();
         }
 
         #endregion
@@ -1129,44 +2166,47 @@ namespace Weightlifting_Comp_Warmup
         #region snatch extras
         private void Insert_Auto_snatch_Extras(DataTable dataTable)
         {
-            DataRow dataRow;
             int intOrder = 0;
 
             dataTable.Rows.Clear();
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_Action] = "Ibuprofen, Coffee, Pre";
-            dataRow[str_col_Length] = 30 * 60;
-            dataRow[str_col_Order] = intOrder;
+            dt_default_snatch_extras.Rows.Add(new object[]
+            {
+                "Ibuprofen, Coffee, Pre",
+                20 * 60,
+                intOrder
+            });
             intOrder++;
-            dataTable.Rows.Add(dataRow);
 
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_Action] = "Foam Roll";
-            dataRow[str_col_Length] = 5 * 60;
-            dataRow[str_col_Order] = intOrder;
+            dt_default_snatch_extras.Rows.Add(new object[]
+            {
+                "Foam Roll",
+                5 * 60,
+                intOrder
+            });
             intOrder++;
-            dataTable.Rows.Add(dataRow);
 
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_Action] = "Shoes, tape, etc.";
-            dataRow[str_col_Length] = 180;
-            dataRow[str_col_Order] = intOrder;
+            dt_default_snatch_extras.Rows.Add(new object[]
+            {
+                "Shoes, tape, etc.",
+                5 * 60,
+                intOrder
+            });
             intOrder++;
-            dataTable.Rows.Add(dataRow);
 
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_Action] = "Stretch";
-            dataRow[str_col_Length] = 180;
-            dataRow[str_col_Order] = intOrder;
+            dt_default_snatch_extras.Rows.Add(new object[]
+            {
+                "Stretch",
+                10 * 60,
+                intOrder
+            });
             intOrder++;
-            dataTable.Rows.Add(dataRow);
 
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_Action] = "Empty bar stretch";
-            dataRow[str_col_Length] = 240;
-            dataRow[str_col_Order] = intOrder;
-            dataTable.Rows.Add(dataRow);
+            dt_default_snatch_extras.Rows.Add(new object[]
+            {
+                "Empty bar stretch",
+                5 * 60,
+                intOrder
+            });
 
             dataTable.AcceptChanges();
         }
@@ -1539,34 +2579,33 @@ namespace Weightlifting_Comp_Warmup
         #region snatch jumps
         private void Insert_Default_snatch_Jumps(DataTable dataTable)
         {
-            DataRow dataRow;
-
             dataTable.Rows.Clear();
 
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 1;
-            dataRow[str_col_Jump] = 20;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 40;
-            dataRow[str_col_Jump] = 10;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 50;
-            dataRow[str_col_Jump] = 5;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 80;
-            dataRow[str_col_Jump] = 4;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 89;
-            dataRow[str_col_Jump] = 3;
-            dataTable.Rows.Add(dataRow);
+            dataTable.Rows.Add(new object[]
+            {
+                1,
+                20,
+            });
+            dataTable.Rows.Add(new object[]
+            {
+                40,
+                10,
+            });
+            dataTable.Rows.Add(new object[]
+            {
+                50,
+                5,
+            });
+            dataTable.Rows.Add(new object[]
+            {
+                80,
+                4,
+            });
+            dataTable.Rows.Add(new object[]
+            {
+                89,
+                3,
+            });
 
             dataTable.AcceptChanges();
         }
@@ -1856,19 +2895,17 @@ namespace Weightlifting_Comp_Warmup
         #region snatch times
         private void Insert_Default_snatch_Times(DataTable dataTable)
         {
-            DataRow dataRow;
-
             dataTable.Rows.Clear();
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 1;
-            dataRow[str_col_Length] = 210;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 41;
-            dataRow[str_col_Length] = 150;
-            dataTable.Rows.Add(dataRow);
+            dataTable.Rows.Add(new object[]
+            {
+                1,
+                210,
+            });
+            dataTable.Rows.Add(new object[]
+            {
+                41,
+                150,
+            });
 
             dataTable.AcceptChanges();
         }
@@ -2920,6 +3957,12 @@ namespace Weightlifting_Comp_Warmup
 
             label_snatch_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
         }
+
+        private void menuStrip_Profile_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
         private void progressBar_snatch_Live_StageLift_MouseClick(object sender, MouseEventArgs e)
         {
             if (bool_snatch_Live & bool_snatch_LiveLifting)
@@ -3112,6 +4155,7 @@ namespace Weightlifting_Comp_Warmup
         }
         private void numericUpDown_cj_time_PostWarmup_ValueChanged(object sender, EventArgs e)
         {
+            if (bool_Loading) { return; }
             int _int_cj_Sec_End;
             try
             {
@@ -5156,6 +6200,7 @@ namespace Weightlifting_Comp_Warmup
         }
         private void numericUpDown_cj_Live_Break_ValueChanged(object sender, EventArgs e)
         {
+            if (bool_Loading) { return; }
             int _int_cj_Sec_Break = (int)(numericUpDown_cj_Live_Break.Value);
             if (_int_cj_Sec_Break < 1)
             {
@@ -5382,21 +6427,21 @@ namespace Weightlifting_Comp_Warmup
             dt.Columns.AddRange(
                 new DataColumn[]
                 {
-                    new DataColumn(str_col_Action, Type.GetType("System.String"))
-                    , new DataColumn(str_col_Weight, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Length, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_TotalLength, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_TotalLengthReverse, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_Order, Type.GetType("System.Int32"))
-                    , new DataColumn(str_col_PreStep, Type.GetType("System.Boolean"))
-                    , new DataColumn(str_col_Override, Type.GetType("System.Boolean"))
+                    new DataColumn(str_col_Action, typeof(string)),
+                    new DataColumn(str_col_Weight, typeof(int)),
+                    new DataColumn(str_col_Length, typeof(int)),
+                    new DataColumn(str_col_TotalLength, typeof(int)),
+                    new DataColumn(str_col_TotalLengthReverse, typeof(int)),
+                    new DataColumn(str_col_Order, typeof(int)),
+                    new DataColumn(str_col_PreStep, typeof(bool)),
+                    new DataColumn(str_col_Override, typeof(bool)),
                 }
             );
 
             dataTableWeight_Input.Columns.AddRange(new DataColumn[]
             {
-                new DataColumn(str_col_Weight, Type.GetType("System.Int32")),
-                new DataColumn(str_col_Override, Type.GetType("System.Boolean"))
+                new DataColumn(str_col_Weight, typeof(int)),
+                new DataColumn(str_col_Override, typeof(bool))
             });
             if (boolPreserveLifts & datatableIn != null)
             {
@@ -5515,8 +6560,8 @@ namespace Weightlifting_Comp_Warmup
             DataTable dt = new();
             dt.Columns.AddRange(new DataColumn[]
             {
-                new DataColumn(str_col_Weight, Type.GetType("System.Int32")),
-                new DataColumn(str_col_Override, Type.GetType("System.Boolean"))
+                new DataColumn(str_col_Weight, typeof(int)),
+                new DataColumn(str_col_Override, typeof(bool))
             });
 
             int intWeight = 0;
@@ -6193,7 +7238,6 @@ namespace Weightlifting_Comp_Warmup
         #endregion
 
     }
-    
     public class WeightBox : PictureBox
     {
         public bool boolOpener; //is opener vs is warmup
@@ -6203,5 +7247,4 @@ namespace Weightlifting_Comp_Warmup
         public int intPlateGap;
 
     }
-
 }

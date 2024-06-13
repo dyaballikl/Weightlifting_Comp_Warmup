@@ -163,8 +163,8 @@
             this.panel_cj_Live_Steps = new System.Windows.Forms.Panel();
             this.label52 = new System.Windows.Forms.Label();
             this.buttonClose = new System.Windows.Forms.Button();
-            this.label_Version = new System.Windows.Forms.Label();
             this.buttonRestore = new System.Windows.Forms.Button();
+            this.menuStrip_Profile = new System.Windows.Forms.MenuStrip();
             this.tabControl_Competition.SuspendLayout();
             this.tabPage_snatch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_snatch)).BeginInit();
@@ -206,11 +206,11 @@
             this.tabControl_Competition.Controls.Add(this.tabPage_snatch);
             this.tabControl_Competition.Controls.Add(this.tabPage_cj);
             this.tabControl_Competition.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl_Competition.Location = new System.Drawing.Point(0, 0);
+            this.tabControl_Competition.Location = new System.Drawing.Point(0, 24);
             this.tabControl_Competition.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControl_Competition.Name = "tabControl_Competition";
             this.tabControl_Competition.SelectedIndex = 0;
-            this.tabControl_Competition.Size = new System.Drawing.Size(1920, 1080);
+            this.tabControl_Competition.Size = new System.Drawing.Size(1920, 1056);
             this.tabControl_Competition.TabIndex = 0;
             this.tabControl_Competition.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -223,7 +223,7 @@
             this.tabPage_snatch.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage_snatch.Name = "tabPage_snatch";
             this.tabPage_snatch.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage_snatch.Size = new System.Drawing.Size(1912, 1051);
+            this.tabPage_snatch.Size = new System.Drawing.Size(1912, 1027);
             this.tabPage_snatch.TabIndex = 0;
             this.tabPage_snatch.Text = "snatch";
             // 
@@ -275,8 +275,8 @@
             this.splitContainer_snatch.Panel2.Controls.Add(this.label21);
             this.splitContainer_snatch.Panel2.Controls.Add(this.dateTimePicker_snatch_Start);
             this.splitContainer_snatch.Panel2.Controls.Add(this.label20);
-            this.splitContainer_snatch.Size = new System.Drawing.Size(1904, 1045);
-            this.splitContainer_snatch.SplitterDistance = 442;
+            this.splitContainer_snatch.Size = new System.Drawing.Size(1904, 1021);
+            this.splitContainer_snatch.SplitterDistance = 431;
             this.splitContainer_snatch.TabIndex = 0;
             this.splitContainer_snatch.DoubleClick += new System.EventHandler(this.splitContainer_snatch_DoubleClick);
             // 
@@ -490,7 +490,7 @@
             this.panel4.Controls.Add(this.label17);
             this.panel4.Location = new System.Drawing.Point(1241, 40);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(425, 393);
+            this.panel4.Size = new System.Drawing.Size(425, 382);
             this.panel4.TabIndex = 14;
             // 
             // label19
@@ -519,7 +519,7 @@
             this.panel_snatch_steps.AutoScroll = true;
             this.panel_snatch_steps.Location = new System.Drawing.Point(0, 35);
             this.panel_snatch_steps.Name = "panel_snatch_steps";
-            this.panel_snatch_steps.Size = new System.Drawing.Size(424, 356);
+            this.panel_snatch_steps.Size = new System.Drawing.Size(424, 345);
             this.panel_snatch_steps.TabIndex = 10;
             // 
             // label16
@@ -559,7 +559,7 @@
             this.panel3.Controls.Add(this.label13);
             this.panel3.Location = new System.Drawing.Point(905, 174);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(327, 259);
+            this.panel3.Size = new System.Drawing.Size(327, 248);
             this.panel3.TabIndex = 10;
             // 
             // panel_snatch_time
@@ -570,7 +570,7 @@
             this.panel_snatch_time.AutoScroll = true;
             this.panel_snatch_time.Location = new System.Drawing.Point(0, 35);
             this.panel_snatch_time.Name = "panel_snatch_time";
-            this.panel_snatch_time.Size = new System.Drawing.Size(326, 222);
+            this.panel_snatch_time.Size = new System.Drawing.Size(326, 211);
             this.panel_snatch_time.TabIndex = 10;
             // 
             // label12
@@ -610,7 +610,7 @@
             this.panel2.Controls.Add(this.label10);
             this.panel2.Location = new System.Drawing.Point(569, 174);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(327, 259);
+            this.panel2.Size = new System.Drawing.Size(327, 248);
             this.panel2.TabIndex = 8;
             // 
             // panel_snatch_jump
@@ -621,7 +621,7 @@
             this.panel_snatch_jump.AutoScroll = true;
             this.panel_snatch_jump.Location = new System.Drawing.Point(0, 35);
             this.panel_snatch_jump.Name = "panel_snatch_jump";
-            this.panel_snatch_jump.Size = new System.Drawing.Size(326, 222);
+            this.panel_snatch_jump.Size = new System.Drawing.Size(326, 211);
             this.panel_snatch_jump.TabIndex = 10;
             // 
             // label9
@@ -661,7 +661,7 @@
             this.panel1.Controls.Add(this.label6);
             this.panel1.Location = new System.Drawing.Point(40, 174);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(520, 259);
+            this.panel1.Size = new System.Drawing.Size(520, 248);
             this.panel1.TabIndex = 6;
             // 
             // panel_snatch_extra
@@ -672,7 +672,7 @@
             this.panel_snatch_extra.AutoScroll = true;
             this.panel_snatch_extra.Location = new System.Drawing.Point(0, 35);
             this.panel_snatch_extra.Name = "panel_snatch_extra";
-            this.panel_snatch_extra.Size = new System.Drawing.Size(519, 222);
+            this.panel_snatch_extra.Size = new System.Drawing.Size(519, 211);
             this.panel_snatch_extra.TabIndex = 10;
             // 
             // label7
@@ -881,7 +881,7 @@
             this.panel_snatch_Live_Steps.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel_snatch_Live_Steps.Location = new System.Drawing.Point(9, 131);
             this.panel_snatch_Live_Steps.Name = "panel_snatch_Live_Steps";
-            this.panel_snatch_Live_Steps.Size = new System.Drawing.Size(1891, 463);
+            this.panel_snatch_Live_Steps.Size = new System.Drawing.Size(1891, 450);
             this.panel_snatch_Live_Steps.TabIndex = 19;
             // 
             // button_snatch_Live_LiftsIncr
@@ -988,7 +988,7 @@
             this.tabPage_cj.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage_cj.Name = "tabPage_cj";
             this.tabPage_cj.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage_cj.Size = new System.Drawing.Size(1912, 1051);
+            this.tabPage_cj.Size = new System.Drawing.Size(1912, 1027);
             this.tabPage_cj.TabIndex = 1;
             this.tabPage_cj.Text = "Clean & Jerk";
             // 
@@ -1030,8 +1030,8 @@
             this.splitContainer_cj.Panel2.Controls.Add(this.button_cj_Live_StartStop);
             this.splitContainer_cj.Panel2.Controls.Add(this.panel_cj_Live_Steps);
             this.splitContainer_cj.Panel2.Controls.Add(this.label52);
-            this.splitContainer_cj.Size = new System.Drawing.Size(1904, 1045);
-            this.splitContainer_cj.SplitterDistance = 442;
+            this.splitContainer_cj.Size = new System.Drawing.Size(1904, 1021);
+            this.splitContainer_cj.SplitterDistance = 431;
             this.splitContainer_cj.TabIndex = 1;
             this.splitContainer_cj.DoubleClick += new System.EventHandler(this.splitContainer_cj_DoubleClick);
             // 
@@ -1195,7 +1195,7 @@
             this.panel7.Controls.Add(this.label34);
             this.panel7.Location = new System.Drawing.Point(1241, 40);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(425, 393);
+            this.panel7.Size = new System.Drawing.Size(425, 382);
             this.panel7.TabIndex = 14;
             // 
             // label31
@@ -1224,7 +1224,7 @@
             this.panel_cj_steps.AutoScroll = true;
             this.panel_cj_steps.Location = new System.Drawing.Point(0, 35);
             this.panel_cj_steps.Name = "panel_cj_steps";
-            this.panel_cj_steps.Size = new System.Drawing.Size(424, 356);
+            this.panel_cj_steps.Size = new System.Drawing.Size(424, 345);
             this.panel_cj_steps.TabIndex = 10;
             // 
             // label33
@@ -1264,7 +1264,7 @@
             this.panel9.Controls.Add(this.label37);
             this.panel9.Location = new System.Drawing.Point(905, 174);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(327, 259);
+            this.panel9.Size = new System.Drawing.Size(327, 248);
             this.panel9.TabIndex = 10;
             // 
             // panel_cj_time
@@ -1275,7 +1275,7 @@
             this.panel_cj_time.AutoScroll = true;
             this.panel_cj_time.Location = new System.Drawing.Point(0, 35);
             this.panel_cj_time.Name = "panel_cj_time";
-            this.panel_cj_time.Size = new System.Drawing.Size(326, 222);
+            this.panel_cj_time.Size = new System.Drawing.Size(326, 211);
             this.panel_cj_time.TabIndex = 10;
             // 
             // label36
@@ -1315,7 +1315,7 @@
             this.panel11.Controls.Add(this.label40);
             this.panel11.Location = new System.Drawing.Point(569, 174);
             this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(327, 259);
+            this.panel11.Size = new System.Drawing.Size(327, 248);
             this.panel11.TabIndex = 8;
             // 
             // panel_cj_jump
@@ -1326,7 +1326,7 @@
             this.panel_cj_jump.AutoScroll = true;
             this.panel_cj_jump.Location = new System.Drawing.Point(0, 35);
             this.panel_cj_jump.Name = "panel_cj_jump";
-            this.panel_cj_jump.Size = new System.Drawing.Size(326, 222);
+            this.panel_cj_jump.Size = new System.Drawing.Size(326, 211);
             this.panel_cj_jump.TabIndex = 10;
             // 
             // label39
@@ -1366,7 +1366,7 @@
             this.panel13.Controls.Add(this.label43);
             this.panel13.Location = new System.Drawing.Point(40, 174);
             this.panel13.Name = "panel13";
-            this.panel13.Size = new System.Drawing.Size(520, 259);
+            this.panel13.Size = new System.Drawing.Size(520, 248);
             this.panel13.TabIndex = 6;
             // 
             // panel_cj_extra
@@ -1377,7 +1377,7 @@
             this.panel_cj_extra.AutoScroll = true;
             this.panel_cj_extra.Location = new System.Drawing.Point(0, 35);
             this.panel_cj_extra.Name = "panel_cj_extra";
-            this.panel_cj_extra.Size = new System.Drawing.Size(519, 222);
+            this.panel_cj_extra.Size = new System.Drawing.Size(519, 211);
             this.panel_cj_extra.TabIndex = 10;
             // 
             // label42
@@ -1804,7 +1804,7 @@
             this.panel_cj_Live_Steps.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel_cj_Live_Steps.Location = new System.Drawing.Point(9, 131);
             this.panel_cj_Live_Steps.Name = "panel_cj_Live_Steps";
-            this.panel_cj_Live_Steps.Size = new System.Drawing.Size(1891, 463);
+            this.panel_cj_Live_Steps.Size = new System.Drawing.Size(1891, 450);
             this.panel_cj_Live_Steps.TabIndex = 19;
             // 
             // label52
@@ -1834,17 +1834,6 @@
             this.buttonClose.UseVisualStyleBackColor = false;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
-            // label_Version
-            // 
-            this.label_Version.AutoSize = true;
-            this.label_Version.Font = new System.Drawing.Font("Gadugi", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Version.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(150)))), ((int)(((byte)(150)))));
-            this.label_Version.Location = new System.Drawing.Point(20, 59);
-            this.label_Version.Name = "label_Version";
-            this.label_Version.Size = new System.Drawing.Size(76, 14);
-            this.label_Version.TabIndex = 2;
-            this.label_Version.Text = "label_Version";
-            // 
             // buttonRestore
             // 
             this.buttonRestore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -1861,6 +1850,17 @@
             this.buttonRestore.UseVisualStyleBackColor = false;
             this.buttonRestore.Click += new System.EventHandler(this.buttonRestore_Click);
             // 
+            // menuStrip_Profile
+            // 
+            this.menuStrip_Profile.AllowItemReorder = true;
+            this.menuStrip_Profile.Font = new System.Drawing.Font("Gadugi", 9F);
+            this.menuStrip_Profile.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip_Profile.Name = "menuStrip_Profile";
+            this.menuStrip_Profile.Size = new System.Drawing.Size(1920, 24);
+            this.menuStrip_Profile.TabIndex = 4;
+            this.menuStrip_Profile.Text = "menuStrip_Profile";
+            this.menuStrip_Profile.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip_Profile_ItemClicked);
+            // 
             // Form_WL_Comp_Warmup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -1868,11 +1868,12 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
             this.ClientSize = new System.Drawing.Size(1920, 1080);
             this.Controls.Add(this.buttonRestore);
-            this.Controls.Add(this.label_Version);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.tabControl_Competition);
+            this.Controls.Add(this.menuStrip_Profile);
             this.Font = new System.Drawing.Font("Gadugi", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MainMenuStrip = this.menuStrip_Profile;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MinimumSize = new System.Drawing.Size(1645, 684);
             this.Name = "Form_WL_Comp_Warmup";
@@ -2034,7 +2035,6 @@
         private System.Windows.Forms.Label label_cj_Live_LiftsOut;
         private System.Windows.Forms.Label label48;
         private System.Windows.Forms.Label label52;
-        private System.Windows.Forms.Label label_Version;
         private System.Windows.Forms.Button button_snatch_ClearSettings;
         private System.Windows.Forms.Panel panel12;
         private System.Windows.Forms.Panel panel10;
@@ -2077,6 +2077,7 @@
         private System.Windows.Forms.TextBox textBox_cj_Live_LiftsOut;
         private System.Windows.Forms.Label label_cj_Live_LiftsPassed;
         private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.MenuStrip menuStrip_Profile;
     }
 }
 
