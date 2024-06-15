@@ -22,7 +22,7 @@ namespace Weightlifting_Comp_Warmup
         }
         #region Variables
         private const string
-            strVersion = "1.13.0";
+            strVersion = "1.14.0";
 
         private DataTable
             dt_snatch_extras = null,
@@ -244,7 +244,7 @@ namespace Weightlifting_Comp_Warmup
             int_cj_snLifts_Out = _int_cj_snLifts_Out;
             bool_snatch_OpenerWarmup = _bool_snatch_OpenerWarmup;
             bool_cj_OpenerWarmup = _bool_cj_OpenerWarmup;
-            bool_cj_OpenerWarmup = _bool_Beep;
+            bool_Beep = _bool_Beep;
         }
         private void Load_Profile_Values_To_Controls()
         {
@@ -6726,7 +6726,7 @@ namespace Weightlifting_Comp_Warmup
         {
             WeightBox weightBoxGraphic = (WeightBox)sender;
             int _intWeightBar = weightBoxGraphic.intWeightBar;
-            int _intWeightOpener = weightBoxGraphic.intWeight;
+            int _intWeight = weightBoxGraphic.intWeight;
             int _int_Shadow_Width = weightBoxGraphic.intShadowWidth;
             int _intPlateGap = weightBoxGraphic.intPlateGap;
             bool _boolOpener = weightBoxGraphic.boolOpener;
@@ -6736,8 +6736,8 @@ namespace Weightlifting_Comp_Warmup
             bool _bool5KGCollars;
             if (_boolOpener)
             {
-                _boolCollars = _intWeightOpener - 5 >= _intWeightBar;
-                _bool5KGCollars = ((_intWeightOpener - 15) >= _intWeightBar);
+                _boolCollars = _intWeight - 5 >= _intWeightBar;
+                _bool5KGCollars = ((_intWeight - 15) >= _intWeightBar);
                 intLBuffer = 0;
                 intTBuffer = 0;
                 intBBuffer = 0;
@@ -6754,7 +6754,7 @@ namespace Weightlifting_Comp_Warmup
             Plates_Count_For_Weight(
                 _intWeightBar: _intWeightBar,
                 _bool5KGCollar: _bool5KGCollars,
-                _intWeightLift: _intWeightOpener,
+                _intWeightLift: _intWeight,
                 _int25_0: out int int25_0,
                 _bool20_0: out bool bool20_0,
                 _bool15_0: out bool bool15_0,
@@ -6780,6 +6780,25 @@ namespace Weightlifting_Comp_Warmup
             int int_Plate_Width00_5 = 6;
             int int_Collar_Height = _bool5KGCollars ? 18 : 12;
             int int_Collar_Width = _bool5KGCollars ? 8 : 6;
+            int int_MainBar_Width = (
+                    _boolOpener ?
+                    Math.Min(400, weightBoxGraphic.Width - intLBuffer - (2 * _int_Shadow_Width)) :
+                    10);
+            int int_Sleeve_Width = 
+                (
+                    _boolOpener ?
+                    (
+                        _intWeight > 229 ?
+                        125 :
+                        (
+                            _intWeight > 149 ?
+                            100 :
+                            75
+                        )
+                    ) :
+                    75
+                );
+            int int_SleeveKnuckle_Width = 9;
             bool _boolShadow = (_int_Shadow_Width > 0);
 
             SolidBrush brush_BarShadow = new(color: Color.Black);
@@ -6795,63 +6814,123 @@ namespace Weightlifting_Comp_Warmup
             //add bar
             //add bar shadow
             Rectangle 
-                rectB1, rectShadowB1,
-                rectB2, rectShadowB2,
-                rectB3, rectShadowB3
-                ;
+                rect_MainBar, rectShadow_MainBar,
+                rect_SleeveKnuckle_Right, rectShadow_SleeveKnuckle_Right,
+                rect_Sleeve_Right, rectShadow_Sleeve_Right,
+                rect_SleeveKnuckle_Left, rectShadow_SleeveKnuckle_Left,
+                rect_Sleeve_Left, rectShadow_Sleeve_Left;
 
-            rectB1 = new Rectangle(
+            rect_MainBar = new(
                 x: intLBuffer + _int_Shadow_Width,
                 y: 0,
-                width: 10,
+                width: int_MainBar_Width,
                 height: 6);
-            rectB1.Y = (int_Full_Height / 2) - (rectB1.Height / 2) + intTBuffer;
-            rectB2 = new Rectangle(
-                x: rectB1.X + rectB1.Width - 1,
-                y: 0,
-                width: 9,
-                height: 16);
-            rectB2.Y = (int_Full_Height / 2) - (rectB2.Height / 2) + intTBuffer;
-            rectB3 = new Rectangle(
-                x: rectB2.X + rectB2.Width - 1,
-                y: 0,
-                width: 75,
-                height: 10);
-            rectB3.Y = (int_Full_Height / 2) - (rectB3.Height / 2) + intTBuffer;
+            rect_MainBar.Y = (int_Full_Height / 2) - (rect_MainBar.Height / 2) + intTBuffer;
+            if (_boolOpener)
+            {
+                rect_Sleeve_Right = new(
+                    x: rect_MainBar.X + rect_MainBar.Width - int_Sleeve_Width,
+                    y: 0,
+                    width: int_Sleeve_Width,
+                    height: 10);
+                rect_SleeveKnuckle_Right = new(
+                    x: rect_Sleeve_Right.X - int_SleeveKnuckle_Width,
+                    y: 0,
+                    width: int_SleeveKnuckle_Width,
+                    height: 16);
+                rect_Sleeve_Left = new(
+                    x: intLBuffer + _int_Shadow_Width,
+                    y: 0,
+                    width: int_Sleeve_Width,
+                    height: 10);
+                rect_SleeveKnuckle_Left = new(
+                    x: rect_Sleeve_Left.X + rect_Sleeve_Left.Width - 1,
+                    y: 0,
+                    width: int_SleeveKnuckle_Width,
+                    height: 16);
+            }
+            else
+            {
+                rect_SleeveKnuckle_Right = new(
+                    x: rect_MainBar.X + rect_MainBar.Width - 1,
+                    y: 0,
+                    width: int_SleeveKnuckle_Width,
+                    height: 16);
+                rect_Sleeve_Right = new(
+                    x: rect_SleeveKnuckle_Right.X + rect_SleeveKnuckle_Right.Width - 1,
+                    y: 0,
+                    width: int_Sleeve_Width,
+                    height: 10);
+                rect_Sleeve_Left = new();
+                rect_SleeveKnuckle_Left = new();
+            }
+            rect_SleeveKnuckle_Right.Y = (int_Full_Height / 2) - (rect_SleeveKnuckle_Right.Height / 2) + intTBuffer;
+            rect_Sleeve_Right.Y = (int_Full_Height / 2) - (rect_Sleeve_Right.Height / 2) + intTBuffer;
+            rect_SleeveKnuckle_Left.Y = rect_SleeveKnuckle_Right.Y;
+            rect_Sleeve_Left.Y = rect_Sleeve_Right.Y;
             if (_boolShadow)
             {
-                rectShadowB1 = rectB1;
-                rectShadowB1.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
-                rectShadowB2 = rectB2;
-                rectShadowB2.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
-                rectShadowB3 = rectB3;
-                rectShadowB3.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                rectShadow_MainBar = rect_MainBar;
+                rectShadow_MainBar.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                rectShadow_SleeveKnuckle_Right = rect_SleeveKnuckle_Right;
+                rectShadow_SleeveKnuckle_Right.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                rectShadow_Sleeve_Right = rect_Sleeve_Right;
+                rectShadow_Sleeve_Right.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
                 e.Graphics.FillRectangle(
                     brush: brush_BarShadow,
-                    rect: rectShadowB1);
+                    rect: rectShadow_MainBar);
                 e.Graphics.FillRectangle(
                     brush: brush_BarShadow,
-                    rect: rectShadowB2);
+                    rect: rectShadow_SleeveKnuckle_Right);
                 e.Graphics.FillRectangle(
                     brush: brush_BarShadow,
-                    rect: rectShadowB3);
+                    rect: rectShadow_Sleeve_Right);
+                if (_boolOpener)
+                {
+                    rectShadow_SleeveKnuckle_Left = rect_SleeveKnuckle_Left;
+                    rectShadow_SleeveKnuckle_Left.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                    rectShadow_Sleeve_Left = rect_Sleeve_Left;
+                    rectShadow_Sleeve_Left.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                    e.Graphics.FillRectangle(
+                        brush: brush_BarShadow,
+                        rect: rectShadow_MainBar);
+                    e.Graphics.FillRectangle(
+                        brush: brush_BarShadow,
+                        rect: rectShadow_SleeveKnuckle_Left);
+                    e.Graphics.FillRectangle(
+                        brush: brush_BarShadow,
+                        rect: rectShadow_Sleeve_Left);
+                }
             }
             e.Graphics.FillRectangle(
                 brush: brush_BarGrey,
-                rect: rectB1);
+                rect: rect_MainBar);
             e.Graphics.FillRectangle(
                 brush: brush_BarGrey,
-                rect: rectB2);
+                rect: rect_SleeveKnuckle_Right);
             e.Graphics.FillRectangle(
                 brush: brush_BarGrey,
-                rect: rectB3);
-
+                rect: rect_Sleeve_Right);
+            if (_boolOpener)
+            {
+                e.Graphics.FillRectangle(
+                    brush: brush_BarGrey,
+                    rect: rect_MainBar);
+                e.Graphics.FillRectangle(
+                    brush: brush_BarGrey,
+                    rect: rect_SleeveKnuckle_Left);
+                e.Graphics.FillRectangle(
+                    brush: brush_BarGrey,
+                    rect: rect_Sleeve_Left);
+            }
+            
             // add plates
             Rectangle rect, rectShadow;
-            int intLeft = rectB3.X + 2 + _int_Shadow_Width;
+            int intLeft = rect_SleeveKnuckle_Right.X + int_SleeveKnuckle_Width + _int_Shadow_Width + 1;
+            int intRight = rect_SleeveKnuckle_Left.X - _int_Shadow_Width - 1;
             for (int intI = 1; intI <= int25_0; intI++)
             {
-                rect = new Rectangle(
+                rect = new(
                     x: intLeft,
                     y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
                     width: int_Plate_Width25_0,
@@ -6870,11 +6949,28 @@ namespace Weightlifting_Comp_Warmup
                     brush: brush_Red,
                     rect: rect);
                 intLeft += rectShadow.Width + _intPlateGap;
+                if (_boolOpener)
+                {
+                    intRight -= rectShadow.Width;
+                    rect.X = intRight;
+                    if (_boolShadow)
+                    {
+                        rectShadow.X = rect.X;
+                        rect.X += _int_Shadow_Width;
+                        e.Graphics.FillRectangle(
+                            brush: brush_PlateShadow,
+                            rect: rectShadow);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: brush_Red,
+                        rect: rect);
+                    intRight -= _intPlateGap;
+                }
             }
             
             if (bool20_0)
             {
-                rect = new Rectangle(
+                rect = new(
                     x: intLeft,
                     y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
                     width: int_Plate_Width20_0,
@@ -6893,11 +6989,28 @@ namespace Weightlifting_Comp_Warmup
                     brush: brush_Blue,
                     rect: rect);
                 intLeft += rectShadow.Width + _intPlateGap;
+                if (_boolOpener)
+                {
+                    intRight -= rectShadow.Width;
+                    rect.X = intRight;
+                    if (_boolShadow)
+                    {
+                        rectShadow.X = rect.X;
+                        rect.X += _int_Shadow_Width;
+                        e.Graphics.FillRectangle(
+                            brush: brush_PlateShadow,
+                            rect: rectShadow);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: brush_Blue,
+                        rect: rect);
+                    intRight -= _intPlateGap;
+                }
             }
             
             if (bool15_0)
             {
-                rect = new Rectangle(
+                rect = new(
                     x: intLeft,
                     y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
                     width: int_Plate_Width15_0,
@@ -6916,11 +7029,28 @@ namespace Weightlifting_Comp_Warmup
                     brush: brush_Yellow,
                     rect: rect);
                 intLeft += rectShadow.Width + _intPlateGap;
+                if (_boolOpener)
+                {
+                    intRight -= rectShadow.Width;
+                    rect.X = intRight;
+                    if (_boolShadow)
+                    {
+                        rectShadow.X = rect.X;
+                        rect.X += _int_Shadow_Width;
+                        e.Graphics.FillRectangle(
+                            brush: brush_PlateShadow,
+                            rect: rectShadow);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: brush_Yellow,
+                        rect: rect);
+                    intRight -= _intPlateGap;
+                }
             }
             
             if (bool10_0)
             {
-                rect = new Rectangle(
+                rect = new(
                     x: intLeft,
                     y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
                     width: int_Plate_Width10_0,
@@ -6939,9 +7069,26 @@ namespace Weightlifting_Comp_Warmup
                     brush: brush_Green,
                     rect: rect);
                 intLeft += rectShadow.Width + _intPlateGap;
+                if (_boolOpener)
+                {
+                    intRight -= rectShadow.Width;
+                    rect.X = intRight;
+                    if (_boolShadow)
+                    {
+                        rectShadow.X = rect.X;
+                        rect.X += _int_Shadow_Width;
+                        e.Graphics.FillRectangle(
+                            brush: brush_PlateShadow,
+                            rect: rectShadow);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: brush_Green,
+                        rect: rect);
+                    intRight -= _intPlateGap;
+                }
             }
 
-            int_Plate_Height = Convert.ToInt32(int_Plate_Height * .85);
+            int_Plate_Height = Convert.ToInt32(int_Plate_Height * .75);
             if (bool05_0)
             {
                 int int_050_Height;
@@ -6955,7 +7102,7 @@ namespace Weightlifting_Comp_Warmup
                     int_050_Height = int_Plate_Height;
                 }
 
-                rect = new Rectangle(
+                rect = new(
                     x: intLeft,
                     y: (int_Full_Height / 2) - (int_050_Height / 2) + intTBuffer,
                     width: int_Plate_Width05_0,
@@ -6974,9 +7121,26 @@ namespace Weightlifting_Comp_Warmup
                     brush: brush_White,
                     rect: rect);
                 intLeft += rectShadow.Width + _intPlateGap;
+                if (_boolOpener)
+                {
+                    intRight -= rectShadow.Width;
+                    rect.X = intRight;
+                    if (_boolShadow)
+                    {
+                        rectShadow.X = rect.X;
+                        rect.X += _int_Shadow_Width;
+                        e.Graphics.FillRectangle(
+                            brush: brush_PlateShadow,
+                            rect: rectShadow);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: brush_White,
+                        rect: rect);
+                    intRight -= _intPlateGap;
+                }
             }
 
-            int_Plate_Height -= 5;
+            int_Plate_Height = Convert.ToInt32(int_Plate_Height * .85);
             if (bool02_5)
             {
                 int int_025_Height;
@@ -6990,7 +7154,7 @@ namespace Weightlifting_Comp_Warmup
                     int_025_Height = int_Plate_Height;
                 }
 
-                rect = new Rectangle(
+                rect = new(
                     x: intLeft,
                     y: (int_Full_Height / 2) - (int_025_Height / 2) + intTBuffer,
                     width: int_Plate_Width02_5,
@@ -7009,11 +7173,28 @@ namespace Weightlifting_Comp_Warmup
                     brush: brush_Red,
                     rect: rect);
                 intLeft += rectShadow.Width + _intPlateGap;
+                if (_boolOpener)
+                {
+                    intRight -= rectShadow.Width;
+                    rect.X = intRight;
+                    if (_boolShadow)
+                    {
+                        rectShadow.X = rect.X;
+                        rect.X += _int_Shadow_Width;
+                        e.Graphics.FillRectangle(
+                            brush: brush_PlateShadow,
+                            rect: rectShadow);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: brush_Red,
+                        rect: rect);
+                    intRight -= _intPlateGap;
+                }
             }
 
             if (_boolCollars)
             {
-                rect = new Rectangle(
+                rect = new(
                     x: intLeft,
                     y: (int_Full_Height / 2) - (int_Collar_Height / 2) + intTBuffer,
                     width: int_Collar_Width,
@@ -7033,12 +7214,29 @@ namespace Weightlifting_Comp_Warmup
                     brush: b,
                     rect: rect);
                 intLeft += rectShadow.Width + _intPlateGap;
+                if (_boolOpener)
+                {
+                    intRight -= rectShadow.Width;
+                    rect.X = intRight;
+                    if (_boolShadow)
+                    {
+                        rectShadow.X = rect.X;
+                        rect.X += _int_Shadow_Width;
+                        e.Graphics.FillRectangle(
+                            brush: brush_PlateShadow,
+                            rect: rectShadow);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: b,
+                        rect: rect);
+                    intRight -= _intPlateGap;
+                }
             }
 
-            int_Plate_Height -= 2;
+            int_Plate_Height = Convert.ToInt32(int_Plate_Height * .90);
             if (bool02_0)
             {
-                rect = new Rectangle(
+                rect = new(
                     x: intLeft,
                     y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
                     width: int_Plate_Width02_0,
@@ -7056,13 +7254,29 @@ namespace Weightlifting_Comp_Warmup
                 e.Graphics.FillRectangle(
                     brush: brush_Blue,
                     rect: rect);
+                if (_boolOpener)
+                {
+                    intRight -= rectShadow.Width;
+                    rect.X = intRight;
+                    if (_boolShadow)
+                    {
+                        rectShadow.X = rect.X;
+                        rect.X += _int_Shadow_Width;
+                        e.Graphics.FillRectangle(
+                            brush: brush_PlateShadow,
+                            rect: rectShadow);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: brush_Blue,
+                        rect: rect);
+                }
             }
             else
             {
-                int_Plate_Height -= 2;
+                int_Plate_Height = Convert.ToInt32(int_Plate_Height * .90);
                 if (bool01_5)
                 {
-                    rect = new Rectangle(
+                    rect = new(
                         x: intLeft,
                         y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
                         width: int_Plate_Width01_5,
@@ -7080,13 +7294,29 @@ namespace Weightlifting_Comp_Warmup
                     e.Graphics.FillRectangle(
                         brush: brush_Yellow,
                         rect: rect);
+                    if (_boolOpener)
+                    {
+                        intRight -= rectShadow.Width;
+                        rect.X = intRight;
+                        if (_boolShadow)
+                        {
+                            rectShadow.X = rect.X;
+                            rect.X += _int_Shadow_Width;
+                            e.Graphics.FillRectangle(
+                                brush: brush_PlateShadow,
+                                rect: rectShadow);
+                        }
+                        e.Graphics.FillRectangle(
+                            brush: brush_Yellow,
+                            rect: rect);
+                    }
                 }
                 else
                 {
-                    int_Plate_Height -= 2;
+                    int_Plate_Height = Convert.ToInt32(int_Plate_Height * .90);
                     if (bool01_0)
                     {
-                        rect = new Rectangle(
+                        rect = new(
                             x: intLeft,
                             y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
                             width: int_Plate_Width01_0,
@@ -7104,13 +7334,29 @@ namespace Weightlifting_Comp_Warmup
                         e.Graphics.FillRectangle(
                             brush: brush_Green,
                             rect: rect);
+                        if (_boolOpener)
+                        {
+                            intRight -= rectShadow.Width;
+                            rect.X = intRight;
+                            if (_boolShadow)
+                            {
+                                rectShadow.X = rect.X;
+                                rect.X += _int_Shadow_Width;
+                                e.Graphics.FillRectangle(
+                                    brush: brush_PlateShadow,
+                                    rect: rectShadow);
+                            }
+                            e.Graphics.FillRectangle(
+                                brush: brush_Green,
+                                rect: rect);
+                        }
                     }
                     else
                     {
-                        int_Plate_Height -= 2;
+                        int_Plate_Height = Convert.ToInt32(int_Plate_Height * .90);
                         if (bool00_5)
                         {
-                            rect = new Rectangle(
+                            rect = new(
                                 x: intLeft,
                                 y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
                                 width: int_Plate_Width00_5,
@@ -7128,6 +7374,22 @@ namespace Weightlifting_Comp_Warmup
                             e.Graphics.FillRectangle(
                                 brush: brush_White,
                                 rect: rect);
+                            if (_boolOpener)
+                            {
+                                intRight -= rectShadow.Width;
+                                rect.X = intRight;
+                                if (_boolShadow)
+                                {
+                                    rectShadow.X = rect.X;
+                                    rect.X += _int_Shadow_Width;
+                                    e.Graphics.FillRectangle(
+                                        brush: brush_PlateShadow,
+                                        rect: rectShadow);
+                                }
+                                e.Graphics.FillRectangle(
+                                    brush: brush_White,
+                                    rect: rect);
+                            }
                         }
                     }
                 }

@@ -322,7 +322,7 @@
             // 
             this.panel_snatch_Param_Opener.Location = new System.Drawing.Point(588, 40);
             this.panel_snatch_Param_Opener.Name = "panel_snatch_Param_Opener";
-            this.panel_snatch_Param_Opener.Size = new System.Drawing.Size(367, 44);
+            this.panel_snatch_Param_Opener.Size = new System.Drawing.Size(600, 63);
             this.panel_snatch_Param_Opener.TabIndex = 22;
             // 
             // button_snatch_ClearSettings
@@ -1074,7 +1074,7 @@
             // 
             this.panel_cj_Param_Opener.Location = new System.Drawing.Point(252, 38);
             this.panel_cj_Param_Opener.Name = "panel_cj_Param_Opener";
-            this.panel_cj_Param_Opener.Size = new System.Drawing.Size(788, 44);
+            this.panel_cj_Param_Opener.Size = new System.Drawing.Size(600, 63);
             this.panel_cj_Param_Opener.TabIndex = 23;
             // 
             // numericUpDown_cj_time_PostWarmup
