@@ -25,7 +25,7 @@ namespace Weightlifting_Comp_Warmup
         }
         #region Variables
         private const string
-            strVersion = "1.14.0";
+            strVersion = "1.15.0";
 
         private DataTable
             dt_snatch_extras = null,
