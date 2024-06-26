@@ -165,6 +165,10 @@
             this.buttonClose = new System.Windows.Forms.Button();
             this.buttonRestore = new System.Windows.Forms.Button();
             this.menuStrip_Profile = new System.Windows.Forms.MenuStrip();
+            this.panel_Battery = new System.Windows.Forms.Panel();
+            this.label_Battery_Percentage = new System.Windows.Forms.Label();
+            this.progressBar_Battery = new System.Windows.Forms.ProgressBar();
+            this.label_Battery = new System.Windows.Forms.Label();
             this.tabControl_Competition.SuspendLayout();
             this.tabPage_snatch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_snatch)).BeginInit();
@@ -199,6 +203,7 @@
             this.panel10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_cj_Live_Break)).BeginInit();
             this.panel8.SuspendLayout();
+            this.panel_Battery.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl_Competition
@@ -1861,12 +1866,54 @@
             this.menuStrip_Profile.Text = "menuStrip_Profile";
             this.menuStrip_Profile.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip_Profile_ItemClicked);
             // 
+            // panel_Battery
+            // 
+            this.panel_Battery.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel_Battery.Controls.Add(this.label_Battery_Percentage);
+            this.panel_Battery.Controls.Add(this.progressBar_Battery);
+            this.panel_Battery.Controls.Add(this.label_Battery);
+            this.panel_Battery.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.panel_Battery.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.panel_Battery.Location = new System.Drawing.Point(1813, 25);
+            this.panel_Battery.Name = "panel_Battery";
+            this.panel_Battery.Size = new System.Drawing.Size(99, 28);
+            this.panel_Battery.TabIndex = 5;
+            this.panel_Battery.Visible = false;
+            // 
+            // label_Battery_Percentage
+            // 
+            this.label_Battery_Percentage.AutoSize = true;
+            this.label_Battery_Percentage.Location = new System.Drawing.Point(73, 0);
+            this.label_Battery_Percentage.Name = "label_Battery_Percentage";
+            this.label_Battery_Percentage.Size = new System.Drawing.Size(28, 13);
+            this.label_Battery_Percentage.TabIndex = 2;
+            this.label_Battery_Percentage.Text = "99%";
+            // 
+            // progressBar_Battery
+            // 
+            this.progressBar_Battery.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.progressBar_Battery.Location = new System.Drawing.Point(0, 15);
+            this.progressBar_Battery.Name = "progressBar_Battery";
+            this.progressBar_Battery.Size = new System.Drawing.Size(99, 13);
+            this.progressBar_Battery.TabIndex = 1;
+            // 
+            // label_Battery
+            // 
+            this.label_Battery.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label_Battery.Location = new System.Drawing.Point(0, 0);
+            this.label_Battery.Name = "label_Battery";
+            this.label_Battery.Size = new System.Drawing.Size(99, 15);
+            this.label_Battery.TabIndex = 0;
+            this.label_Battery.Text = "battery";
+            this.label_Battery.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // Form_WL_Comp_Warmup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
             this.ClientSize = new System.Drawing.Size(1920, 1080);
+            this.Controls.Add(this.panel_Battery);
             this.Controls.Add(this.buttonRestore);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.tabControl_Competition);
@@ -1934,6 +1981,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_cj_Live_Break)).EndInit();
             this.panel8.ResumeLayout(false);
             this.panel8.PerformLayout();
+            this.panel_Battery.ResumeLayout(false);
+            this.panel_Battery.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2078,6 +2127,10 @@
         private System.Windows.Forms.Label label_cj_Live_LiftsPassed;
         private System.Windows.Forms.Label label50;
         private System.Windows.Forms.MenuStrip menuStrip_Profile;
+        private System.Windows.Forms.Panel panel_Battery;
+        private System.Windows.Forms.ProgressBar progressBar_Battery;
+        private System.Windows.Forms.Label label_Battery;
+        private System.Windows.Forms.Label label_Battery_Percentage;
     }
 }
 

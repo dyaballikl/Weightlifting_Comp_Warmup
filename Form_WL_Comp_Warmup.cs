@@ -5,6 +5,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
 using System.Runtime.InteropServices;
+using System.Management;
+using Microsoft.Win32;
+using System.Linq;
 
 namespace Weightlifting_Comp_Warmup
 {
@@ -141,6 +144,8 @@ namespace Weightlifting_Comp_Warmup
         private Color
             color_snatch_Live_BG,
             color_cj_Live_BG;
+
+        PropertyData propertyData_Battery = null;
 
         #endregion
 
@@ -3471,6 +3476,7 @@ namespace Weightlifting_Comp_Warmup
             bool_snatch_LiveLifting = false;
             button_snatch_Live_StartStop.Text = "start";
             panel_snatch_Live_Times.Visible = false;
+            panel_Battery.Visible = false;
             if (!bool_cj_Live) { AllowMonitorPowerdown(); }
         }
         private void snatch_Start_Live()
@@ -3720,6 +3726,46 @@ namespace Weightlifting_Comp_Warmup
             int intSecondsToStart = (int)datetime_snatch_Start.Subtract(_dateTime_Now).TotalSeconds;
             int intSecondsToOpen = 0;
 
+            if (propertyData_Battery is null)
+            {
+                System.Management.ObjectQuery query = new("Select * FROM Win32_Battery");
+                ManagementObjectSearcher searcher = new(query);
+                ManagementObjectCollection collection = searcher.Get();
+                foreach (ManagementObject mo in collection.Cast<ManagementObject>())
+                {
+                    foreach (PropertyData property in mo.Properties)
+                    {
+                        if (property.Name == "EstimatedChargeRemaining")
+                        {
+                            propertyData_Battery = property;
+                        }
+                    }
+                }
+            }
+            if (propertyData_Battery is not null)
+            {
+                System.UInt16 _uInt_Battery = 100;
+                try
+                {
+                    _uInt_Battery = (System.UInt16)propertyData_Battery.Value;
+                }
+                catch { }
+                if (_uInt_Battery > 0 && _uInt_Battery < 100)
+                {
+                    panel_Battery.Visible = true;
+                    progressBar_Battery.Value = _uInt_Battery;
+                    label_Battery_Percentage.Text = _uInt_Battery.ToString() + "%";
+                }
+                else
+                {
+                    panel_Battery.Visible = false;
+                }
+            }
+            else
+            {
+                panel_Battery.Visible = false;
+            }
+
             if (intSecondsToStart > 0)
             {
                 if ((int)button_snatch_Live_StageAdvance.Tag == 1)
@@ -3957,12 +4003,10 @@ namespace Weightlifting_Comp_Warmup
 
             label_snatch_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
         }
-
         private void menuStrip_Profile_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
         }
-
         private void progressBar_snatch_Live_StageLift_MouseClick(object sender, MouseEventArgs e)
         {
             if (bool_snatch_Live & bool_snatch_LiveLifting)
@@ -5473,6 +5517,7 @@ namespace Weightlifting_Comp_Warmup
             bool_cj_sn_Lifting = false;
             button_cj_Live_StartStop.Text = "start";
             panel_cj_Live_Times.Visible = false;
+            panel_Battery.Visible = false;
             if (!bool_snatch_Live) { AllowMonitorPowerdown(); }
         }
         private void cj_Start_Live()
@@ -5724,6 +5769,46 @@ namespace Weightlifting_Comp_Warmup
         {
             DateTime _dateTime_Now = DateTime.Now;
             int intSecondsToOpen = 0;
+
+            if (propertyData_Battery is null)
+            {
+                System.Management.ObjectQuery query = new("Select * FROM Win32_Battery");
+                ManagementObjectSearcher searcher = new(query);
+                ManagementObjectCollection collection = searcher.Get();
+                foreach (ManagementObject mo in collection.Cast<ManagementObject>())
+                {
+                    foreach (PropertyData property in mo.Properties)
+                    {
+                        if (property.Name == "EstimatedChargeRemaining")
+                        {
+                            propertyData_Battery = property;
+                        }
+                    }
+                }
+            }
+            if (propertyData_Battery is not null)
+            {
+                System.UInt16 _uInt_Battery = 100;
+                try
+                {
+                    _uInt_Battery = (System.UInt16)propertyData_Battery.Value;
+                }
+                catch { }
+                if (_uInt_Battery > 0 && _uInt_Battery < 100)
+                {
+                    panel_Battery.Visible = true;
+                    progressBar_Battery.Value = _uInt_Battery;
+                    label_Battery_Percentage.Text = _uInt_Battery.ToString() + "%";
+                }
+                else
+                {
+                    panel_Battery.Visible = false;
+                }
+            }
+            else
+            {
+                panel_Battery.Visible = false;
+            }
 
             if (bool_cj_sn_Lifting) // snatches still running
             {
