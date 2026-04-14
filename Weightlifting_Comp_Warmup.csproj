@@ -40,7 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>IDE1006</NoWarn>
+    <NoWarn>CS1591,IDE1006,CS8632</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -80,17 +80,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form_WL_Comp_Warmup.cs">
+    <Compile Include="Main\DataTypes.cs" />
+    <Compile Include="Main\Defaults.cs" />
+    <Compile Include="Main\form_Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form_WL_Comp_Warmup.Designer.cs">
-      <DependentUpon>Form_WL_Comp_Warmup.cs</DependentUpon>
+    <Compile Include="Main\form_Main.Designer.cs">
+      <DependentUpon>form_Main.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
-    <EmbeddedResource Include="Form_WL_Comp_Warmup.resx">
-      <DependentUpon>Form_WL_Comp_Warmup.cs</DependentUpon>
+    <Compile Include="Main\Variables.cs">
+      <DependentUpon>form_Main.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <EmbeddedResource Include="Main\form_Main.resx">
+      <DependentUpon>form_Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

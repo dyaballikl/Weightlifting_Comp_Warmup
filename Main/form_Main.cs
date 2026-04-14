@@ -1,177 +1,40 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.Windows.Forms;
-using Microsoft.VisualBasic;
-using System.Runtime.InteropServices;
-using System.Management;
-using Microsoft.Win32;
 using System.Linq;
+using System.Management;
+using System.Windows.Forms;
 
-namespace Weightlifting_Comp_Warmup
+namespace Weightlifting_Comp_Warmup.Main
 {
-    public partial class Form_WL_Comp_Warmup : Form
+    public partial class form_Main : Form
     {
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
-        [FlagsAttribute]
-        public enum EXECUTION_STATE : uint
-        {
-            ES_AWAYMODE_REQUIRED = 0x00000040,
-            ES_CONTINUOUS = 0x80000000,
-            ES_DISPLAY_REQUIRED = 0x00000002,
-            ES_SYSTEM_REQUIRED = 0x00000001
-        }
-        #region Variables
-        private const string
-            strVersion = "1.15.0";
-
-        private DataTable
-            dt_snatch_extras = null,
-            dt_snatch_jumps = null,
-            dt_snatch_times = null,
-            dt_snatch_LIVE = null,
-            dt_snatch_PLAN = null,
-            dt_cj_extras = null,
-            dt_cj_jumps = null,
-            dt_cj_times = null,
-            dt_cj_LIVE = null,
-            dt_cj_PLAN = null,
-            dt_default_snatch_extras = null,
-            dt_default_snatch_jumps = null,
-            dt_default_snatch_times = null,
-            dt_default_cj_extras = null,
-            dt_default_cj_jumps = null,
-            dt_default_cj_times = null;
-        
-        private const string
-            str_col_Action = "action",
-            str_col_Length = "length",
-            str_col_TotalLength = "totallength",
-            str_col_TotalLengthReverse = "totallengthrev",
-            str_col_FromWeight = "fromweight",
-            str_col_Weight = "weight",
-            str_col_Order = "order",
-            str_col_PreStep = "prestep",
-            str_col_Override = "override",
-            str_col_Id = "id",
-            str_col_Jump = "jump",
-            str_col_PanelLiveStep = "pls",
-            str_col_LabelAction = "la",
-            str_col_LabelTime = "lt",
-            str_col_LabelWeight = "lw",
-            str_col_ProgressBarStep = "pbs",
-            str_col_GraphicPanel = "gp",
-            str_col_LabelProgressTime = "lpt",
-            str_buttontext_up = "^",
-            str_buttontext_down = "v",
-            str_buttontext_delete = "X",
-            str_buttontext_commit = "commit";
-
-        private int
-            int_ProfileId,
-            int_Barbell,
-            int_snatch_Sec_Stage,
-            int_snatch_Wgt_Opener,
-            int_snatch_Sec_End,
-            int_snatch_Lifts_Out,
-            int_snatch_Lifts_Passed,
-            int_snatch_Warmup_Step,
-            int_cj_Sec_Stage,
-            int_cj_Wgt_Opener,
-            int_cj_Sec_End,
-            int_cj_Lifts_Out,
-            int_cj_Lifts_Passed,
-            int_cj_snLifts_Out,
-            int_cj_Warmup_Step,
-            int_cj_Sec_Break;
-
-        private TimeSpan
-            timeSpan_Start;
-
-        private bool
-            bool_snatch_Live, 
-            bool_snatch_LiveLifting,
-            bool_snatch_AutoAdvance = false,
-            bool_cj_Live,
-            bool_cj_LiveLifting,
-            bool_cj_BreakRunning,
-            bool_cj_sn_Lifting,
-            bool_cj_AutoAdvance = false,
-            bool_Beep = false,
-            bool_Loading = true,
-            bool_snatch_OpenerWarmup,
-            bool_cj_OpenerWarmup;
-
-        private const int
-            int_default_Barbell = 20,
-            int_default_snatch_Sec_Stage = 55,
-            int_default_snatch_Wgt_Opener = 85,
-            int_default_snatch_Sec_End = 60,
-            int_default_snatch_Lifts_Out = 0,
-            int_default_cj_Sec_Stage = 62,
-            int_default_cj_Wgt_Opener = 110,
-            int_default_cj_Sec_End = 75,
-            int_default_cj_Lifts_Out = 0,
-            int_default_cj_snLifts_Out = 0,
-            int_default_cj_Sec_Break = 0;
-
-        private const bool
-            bool_default_Beep = false,
-            bool_default_snatch_OpenerWarmup = true,
-            bool_default_cj_OpenerWarmup = false;
-
-        private DateTime
-            datetime_snatch_Start;
-
-        private Timer
-            timer_snatch_Live,
-            timer_cj_Live;
-
-        private readonly Color
-            color_Live_Default_FG = Color.FromArgb(240, 240, 240),
-            color_Live_Highlight_BG = Color.Yellow,
-            color_Live_Highlight_FG = Color.Black,
-            color_AdvanceButton_Active = Color.FromArgb(32, 150, 32),
-            color_Plate_Red = Color.FromArgb(251, 13, 27),
-            color_Plate_Blue = Color.FromArgb(10, 100, 255),
-            color_Plate_Yellow = Color.FromArgb(255, 253, 56),
-            color_Plate_Green = Color.FromArgb(15, 127, 18),
-            color_Plate_White = Color.FromArgb(255, 255, 255),
-            color_BarGrey = Color.LightSteelBlue;
-
-        private Color
-            color_snatch_Live_BG,
-            color_cj_Live_BG;
-
-        PropertyData propertyData_Battery = null;
-
-        #endregion
-
         #region Form Level
-        public Form_WL_Comp_Warmup()
+        public form_Main()
         {
-            //Properties.Settings.Default.Reset();
+            //defaults.Reset();
             //Settings_Changes_Save();
             Clean_Settings();
             Print_All_Settings();
-            //Properties.Settings.Default.Reset();
+            //defaults.Reset();
             //Settings_Changes_Save();
 
             int _int_ProfileId = -1;
             try
             {
-                _int_ProfileId = Properties.Settings.Default.int_ProfileId;
+                _int_ProfileId = savedSettings.int_ProfileId;
             }
-            catch { };
+            catch { }
+            ;
 
             if (_int_ProfileId < 1)
             {
-                if (Properties.Settings.Default.ii_int_ProfileIds != null &&
-                    Properties.Settings.Default.ii_int_ProfileIds.Count > 0)
+                if (savedSettings.ii_int_ProfileIds != null &&
+                    savedSettings.ii_int_ProfileIds.Count > 0)
                 {
-                    int.TryParse(s: Properties.Settings.Default.ii_int_ProfileIds[0], result: out _int_ProfileId);
+                    int.TryParse(s: savedSettings.ii_int_ProfileIds[0], result: out _int_ProfileId);
                 }
             }
             if (_int_ProfileId < 1)
@@ -208,8 +71,8 @@ namespace Weightlifting_Comp_Warmup
             int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
             if (_int_Sequence > -1)
             {
-                int.TryParse(s: Properties.Settings.Default.ii_int_Barbell[_int_Sequence], out _int_Barbell);
-                string _str_Start = Properties.Settings.Default.ii_HHmm_StartTimes[_int_Sequence];
+                int.TryParse(s: savedSettings.ii_int_Barbell[_int_Sequence], out _int_Barbell);
+                string _str_Start = savedSettings.ii_HHmm_StartTimes[_int_Sequence];
                 if (!string.IsNullOrEmpty(_str_Start) && _str_Start.Length == 4)
                 {
                     try
@@ -218,21 +81,21 @@ namespace Weightlifting_Comp_Warmup
                     }
                     catch { }
                 }
-                int.TryParse(s: Properties.Settings.Default.ii_int_snatch_Sec_Stage[_int_Sequence], out _int_snatch_Sec_Stage);
-                int.TryParse(s: Properties.Settings.Default.ii_int_snatch_Wgt_Opener[_int_Sequence], out _int_snatch_Wgt_Opener);
-                bool.TryParse(value: Properties.Settings.Default.ii_bool_snatch_OpenerWarmup[_int_Sequence], out _bool_snatch_OpenerWarmup);
-                int.TryParse(s: Properties.Settings.Default.ii_int_snatch_Sec_End[_int_Sequence], out _int_snatch_Sec_End);
-                int.TryParse(s: Properties.Settings.Default.ii_int_snatch_Lifts_Out[_int_Sequence], out _int_snatch_Lifts_Out);
+                int.TryParse(s: savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence], out _int_snatch_Sec_Stage);
+                int.TryParse(s: savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence], out _int_snatch_Wgt_Opener);
+                bool.TryParse(value: savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence], out _bool_snatch_OpenerWarmup);
+                int.TryParse(s: savedSettings.ii_int_snatch_Sec_End[_int_Sequence], out _int_snatch_Sec_End);
+                int.TryParse(s: savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence], out _int_snatch_Lifts_Out);
 
-                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Sec_Stage[_int_Sequence], out _int_cj_Sec_Stage);
-                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Sec_Break[_int_Sequence], out _int_cj_Sec_Break);
-                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Wgt_Opener[_int_Sequence], out _int_cj_Wgt_Opener);
-                bool.TryParse(value: Properties.Settings.Default.ii_bool_cj_OpenerWarmup[_int_Sequence], out _bool_cj_OpenerWarmup);
-                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Sec_End[_int_Sequence], out _int_cj_Sec_End);
-                int.TryParse(s: Properties.Settings.Default.ii_int_cj_Lifts_Out[_int_Sequence], out _int_cj_Lifts_Out);
-                int.TryParse(s: Properties.Settings.Default.ii_int_cj_snLifts_Out[_int_Sequence], out _int_cj_snLifts_Out);
+                int.TryParse(s: savedSettings.ii_int_cj_Sec_Stage[_int_Sequence], out _int_cj_Sec_Stage);
+                int.TryParse(s: savedSettings.ii_int_cj_Sec_Break[_int_Sequence], out _int_cj_Sec_Break);
+                int.TryParse(s: savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence], out _int_cj_Wgt_Opener);
+                bool.TryParse(value: savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence], out _bool_cj_OpenerWarmup);
+                int.TryParse(s: savedSettings.ii_int_cj_Sec_End[_int_Sequence], out _int_cj_Sec_End);
+                int.TryParse(s: savedSettings.ii_int_cj_Lifts_Out[_int_Sequence], out _int_cj_Lifts_Out);
+                int.TryParse(s: savedSettings.ii_int_cj_snLifts_Out[_int_Sequence], out _int_cj_snLifts_Out);
 
-                bool.TryParse(value: Properties.Settings.Default.ii_bool_Beep[_int_Sequence], out _bool_Beep);
+                bool.TryParse(value: savedSettings.ii_bool_Beep[_int_Sequence], out _bool_Beep);
             }
 
             int_Barbell = _int_Barbell;
@@ -357,105 +220,93 @@ namespace Weightlifting_Comp_Warmup
             checkBox_cj_Live_Beep.Checked = bool_Beep;
 
 
-            Initialise_datatables();
+            InitialiseCollections();
 
             bool bool_AutoVals;
 
             bool_AutoVals = true;
-            if (dt_default_snatch_extras != null)
+            if (default_snatchExtras != null && default_snatchExtras.Count > 0)
             {
-                if (dt_default_snatch_extras.Rows.Count > 0)
-                {
-                    dt_snatch_extras = dt_default_snatch_extras.Copy();
-                    bool_AutoVals = false;
-                }
+                snatchExtras = default_snatchExtras.ToList();
+                bool_AutoVals = false;
             }
             if (bool_AutoVals)
             {
-                Insert_Auto_snatch_Extras(dt_snatch_extras);
+                snatchExtras = Defaults.default_snatchExtras();
             }
             snatch_Populate_Extras();
 
             bool_AutoVals = true;
-            if (dt_default_snatch_jumps != null)
+            if (default_snatchJumps != null && default_snatchJumps.Count > 0)
             {
-                if (dt_default_snatch_jumps.Rows.Count > 0)
-                {
-                    dt_snatch_jumps = dt_default_snatch_jumps.Copy();
-                    bool_AutoVals = false;
-                }
+                snatchJumps = new(default_snatchJumps);
+                bool_AutoVals = false;
             }
             if (bool_AutoVals)
             {
-                Insert_Default_snatch_Jumps(dt_snatch_jumps);
+                snatchJumps = Defaults.default_snatchJumps();
             }
             snatch_Populate_Jumps();
 
             bool_AutoVals = true;
-            if (dt_default_snatch_times != null)
+            if (default_snatchTimes != null && default_snatchTimes.Count > 0)
             {
-                if (dt_default_snatch_times.Rows.Count > 0)
-                {
-                    dt_snatch_times = dt_default_snatch_times.Copy();
-                    bool_AutoVals = false;
-                }
+                snatchTimes = new(default_snatchTimes);
+                bool_AutoVals = false;
             }
             if (bool_AutoVals)
             {
-                Insert_Default_snatch_Times(dt_snatch_times);
+                snatchTimes = Defaults.default_snatchTimes();
             }
             snatch_Populate_Times();
 
             snatch_Populate_Steps(boolPreserveLifts: false);
 
             bool_AutoVals = true;
-            if (dt_default_cj_extras != null)
+            if (default_cjExtras != null && default_cjExtras.Count > 0)
             {
-                if (dt_default_cj_extras.Rows.Count > 0)
-                {
-                    dt_cj_extras = dt_default_cj_extras.Copy();
-                    bool_AutoVals = false;
-                }
+                cjExtras = default_cjExtras.ToList();
+                bool_AutoVals = false;
             }
             if (bool_AutoVals)
             {
-                Insert_Auto_cj_Extras(dt_cj_extras);
+                cjExtras = Defaults.default_cjExtras();
             }
             cj_Populate_Extras();
 
             bool_AutoVals = true;
-            if (dt_default_cj_jumps != null)
+            if (default_cjJumps != null)
             {
-                if (dt_default_cj_jumps.Rows.Count > 0)
+                if (default_cjJumps.Count > 0)
                 {
-                    dt_cj_jumps = dt_default_cj_jumps.Copy();
+                    cjJumps = new(default_cjJumps);
                     bool_AutoVals = false;
                 }
             }
             if (bool_AutoVals)
             {
-                Insert_Default_cj_Jumps(dt_cj_jumps);
+                cjJumps = Defaults.default_cjJumps();
             }
             cj_Populate_Jumps();
 
             bool_AutoVals = true;
-            if (dt_default_cj_times != null)
+            if (default_cjTimes != null)
             {
-                if (dt_default_cj_times.Rows.Count > 0)
+                if (default_cjTimes.Count > 0)
                 {
-                    dt_cj_times = dt_default_cj_times.Copy();
+                    cjTimes = new(default_cjTimes);
                     bool_AutoVals = false;
                 }
             }
             if (bool_AutoVals)
             {
-                Insert_Default_cj_Times(dt_cj_times);
+                cjTimes = Defaults.default_cjTimes();
             }
             cj_Populate_Times();
 
             cj_Populate_Steps(boolPreserveLifts: false);
 
-            Check_DataTables();
+            CheckCollections();
             Snatch_Opener_Set();
             CJ_Opener_Set();
 
@@ -463,11 +314,11 @@ namespace Weightlifting_Comp_Warmup
         }
         private int int_Profile_Sequence(int _int_ProfileId)
         {
-            if (_int_ProfileId > -1 && Properties.Settings.Default.ii_int_ProfileIds != null)
+            if (_int_ProfileId > -1 && savedSettings.ii_int_ProfileIds != null)
             {
-                if (Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
+                if (savedSettings.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
                 {
-                    return Properties.Settings.Default.ii_int_ProfileIds.IndexOf(_int_ProfileId.ToString());
+                    return savedSettings.ii_int_ProfileIds.IndexOf(_int_ProfileId.ToString());
                 }
             }
             return -1;
@@ -503,42 +354,42 @@ namespace Weightlifting_Comp_Warmup
             Print_All_Settings();
             // ensures the string lists have the same number of entries as the profile id list
             int _int_Profile_Count = 0;
-            if (Properties.Settings.Default.ii_int_ProfileIds != null)
+            if (savedSettings.ii_int_ProfileIds != null)
             {
-                _int_Profile_Count = Properties.Settings.Default.ii_int_ProfileIds.Count;
+                _int_Profile_Count = savedSettings.ii_int_ProfileIds.Count;
             }
             if (_int_Profile_Count == 0)
             {
-                Properties.Settings.Default.ii_int_ProfileIds = new();
-                Properties.Settings.Default.ii_string_ProfileName = new();
-                Properties.Settings.Default.ii_int_Barbell = new();
-                Properties.Settings.Default.ii_HHmm_StartTimes = new();
-                Properties.Settings.Default.ii_int_snatch_Sec_Stage = new();
-                Properties.Settings.Default.ii_int_snatch_Wgt_Opener = new();
-                Properties.Settings.Default.ii_bool_snatch_OpenerWarmup = new();
-                Properties.Settings.Default.ii_int_snatch_Sec_End = new();
-                Properties.Settings.Default.ii_int_snatch_Lifts_Out = new();
-                Properties.Settings.Default.ii_int_cj_Sec_Stage = new();
-                Properties.Settings.Default.ii_int_cj_Sec_Break = new();
-                Properties.Settings.Default.ii_int_cj_Wgt_Opener = new();
-                Properties.Settings.Default.ii_bool_cj_OpenerWarmup = new();
-                Properties.Settings.Default.ii_int_cj_Sec_End = new();
-                Properties.Settings.Default.ii_int_cj_Lifts_Out = new();
-                Properties.Settings.Default.ii_int_cj_snLifts_Out = new();
-                Properties.Settings.Default.ii_bool_Beep = new();
-                Properties.Settings.Default.ii_strings_snatch_Extras = new();
-                Properties.Settings.Default.ii_strings_snatch_Jumps = new();
-                Properties.Settings.Default.ii_strings_snatch_Times = new();
-                Properties.Settings.Default.ii_strings_cj_Extras = new();
-                Properties.Settings.Default.ii_strings_cj_Jumps = new();
-                Properties.Settings.Default.ii_strings_cj_Times = new();
+                savedSettings.ii_int_ProfileIds = [];
+                savedSettings.ii_string_ProfileName = [];
+                savedSettings.ii_int_Barbell = [];
+                savedSettings.ii_HHmm_StartTimes = [];
+                savedSettings.ii_int_snatch_Sec_Stage = [];
+                savedSettings.ii_int_snatch_Wgt_Opener = [];
+                savedSettings.ii_bool_snatch_OpenerWarmup = [];
+                savedSettings.ii_int_snatch_Sec_End = [];
+                savedSettings.ii_int_snatch_Lifts_Out = [];
+                savedSettings.ii_int_cj_Sec_Stage = [];
+                savedSettings.ii_int_cj_Sec_Break = [];
+                savedSettings.ii_int_cj_Wgt_Opener = [];
+                savedSettings.ii_bool_cj_OpenerWarmup = [];
+                savedSettings.ii_int_cj_Sec_End = [];
+                savedSettings.ii_int_cj_Lifts_Out = [];
+                savedSettings.ii_int_cj_snLifts_Out = [];
+                savedSettings.ii_bool_Beep = [];
+                savedSettings.ii_strings_snatch_Extras = [];
+                savedSettings.ii_strings_snatch_Jumps = [];
+                savedSettings.ii_strings_snatch_Times = [];
+                savedSettings.ii_strings_cj_Extras = [];
+                savedSettings.ii_strings_cj_Jumps = [];
+                savedSettings.ii_strings_cj_Times = [];
             }
             else
             {
-                List<string> _strings = new();
-                if (Properties.Settings.Default.ii_string_ProfileName != null)
+                List<string> _strings = [];
+                if (savedSettings.ii_string_ProfileName != null)
                 {
-                    _strings = Properties.Settings.Default.ii_string_ProfileName;
+                    _strings = savedSettings.ii_string_ProfileName;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -557,13 +408,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_string_ProfileName = _strings;
+                    savedSettings.ii_string_ProfileName = _strings;
                 }
-                
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_Barbell != null)
+
+                _strings = [];
+                if (savedSettings.ii_int_Barbell != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_Barbell;
+                    _strings = savedSettings.ii_int_Barbell;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -582,13 +433,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_Barbell = _strings;
+                    savedSettings.ii_int_Barbell = _strings;
                 }
-                
-                _strings = new();
-                if (Properties.Settings.Default.ii_HHmm_StartTimes != null)
+
+                _strings = [];
+                if (savedSettings.ii_HHmm_StartTimes != null)
                 {
-                    _strings = Properties.Settings.Default.ii_HHmm_StartTimes;
+                    _strings = savedSettings.ii_HHmm_StartTimes;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -607,13 +458,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_HHmm_StartTimes = _strings;
+                    savedSettings.ii_HHmm_StartTimes = _strings;
                 }
-                
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_snatch_Sec_Stage != null)
+
+                _strings = [];
+                if (savedSettings.ii_int_snatch_Sec_Stage != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_snatch_Sec_Stage;
+                    _strings = savedSettings.ii_int_snatch_Sec_Stage;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -632,13 +483,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_snatch_Sec_Stage = _strings;
+                    savedSettings.ii_int_snatch_Sec_Stage = _strings;
                 }
-                
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_snatch_Wgt_Opener != null)
+
+                _strings = [];
+                if (savedSettings.ii_int_snatch_Wgt_Opener != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_snatch_Wgt_Opener;
+                    _strings = savedSettings.ii_int_snatch_Wgt_Opener;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -657,13 +508,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_snatch_Wgt_Opener = _strings;
+                    savedSettings.ii_int_snatch_Wgt_Opener = _strings;
                 }
-                
-                _strings = new();
-                if (Properties.Settings.Default.ii_bool_snatch_OpenerWarmup != null)
+
+                _strings = [];
+                if (savedSettings.ii_bool_snatch_OpenerWarmup != null)
                 {
-                    _strings = Properties.Settings.Default.ii_bool_snatch_OpenerWarmup;
+                    _strings = savedSettings.ii_bool_snatch_OpenerWarmup;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -682,13 +533,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_bool_snatch_OpenerWarmup = _strings;
+                    savedSettings.ii_bool_snatch_OpenerWarmup = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_snatch_Sec_End != null)
+                _strings = [];
+                if (savedSettings.ii_int_snatch_Sec_End != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_snatch_Sec_End;
+                    _strings = savedSettings.ii_int_snatch_Sec_End;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -707,13 +558,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_snatch_Sec_End = _strings;
+                    savedSettings.ii_int_snatch_Sec_End = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_snatch_Lifts_Out != null)
+                _strings = [];
+                if (savedSettings.ii_int_snatch_Lifts_Out != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_snatch_Lifts_Out;
+                    _strings = savedSettings.ii_int_snatch_Lifts_Out;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -732,14 +583,14 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_snatch_Lifts_Out = _strings;
+                    savedSettings.ii_int_snatch_Lifts_Out = _strings;
                 }
 
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_cj_Sec_Stage != null)
+                _strings = [];
+                if (savedSettings.ii_int_cj_Sec_Stage != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_cj_Sec_Stage;
+                    _strings = savedSettings.ii_int_cj_Sec_Stage;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -758,13 +609,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_cj_Sec_Stage = _strings;
+                    savedSettings.ii_int_cj_Sec_Stage = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_cj_Sec_Break != null)
+                _strings = [];
+                if (savedSettings.ii_int_cj_Sec_Break != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_cj_Sec_Break;
+                    _strings = savedSettings.ii_int_cj_Sec_Break;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -783,13 +634,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_cj_Sec_Break = _strings;
+                    savedSettings.ii_int_cj_Sec_Break = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_cj_Wgt_Opener != null)
+                _strings = [];
+                if (savedSettings.ii_int_cj_Wgt_Opener != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_cj_Wgt_Opener;
+                    _strings = savedSettings.ii_int_cj_Wgt_Opener;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -808,13 +659,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_cj_Wgt_Opener = _strings;
+                    savedSettings.ii_int_cj_Wgt_Opener = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_bool_cj_OpenerWarmup != null)
+                _strings = [];
+                if (savedSettings.ii_bool_cj_OpenerWarmup != null)
                 {
-                    _strings = Properties.Settings.Default.ii_bool_cj_OpenerWarmup;
+                    _strings = savedSettings.ii_bool_cj_OpenerWarmup;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -833,13 +684,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_bool_cj_OpenerWarmup = _strings;
+                    savedSettings.ii_bool_cj_OpenerWarmup = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_cj_Sec_End != null)
+                _strings = [];
+                if (savedSettings.ii_int_cj_Sec_End != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_cj_Sec_End;
+                    _strings = savedSettings.ii_int_cj_Sec_End;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -858,13 +709,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_cj_Sec_End = _strings;
+                    savedSettings.ii_int_cj_Sec_End = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_cj_Lifts_Out != null)
+                _strings = [];
+                if (savedSettings.ii_int_cj_Lifts_Out != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_cj_Lifts_Out;
+                    _strings = savedSettings.ii_int_cj_Lifts_Out;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -883,13 +734,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_cj_Lifts_Out = _strings;
+                    savedSettings.ii_int_cj_Lifts_Out = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_int_cj_snLifts_Out != null)
+                _strings = [];
+                if (savedSettings.ii_int_cj_snLifts_Out != null)
                 {
-                    _strings = Properties.Settings.Default.ii_int_cj_snLifts_Out;
+                    _strings = savedSettings.ii_int_cj_snLifts_Out;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -908,13 +759,13 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_int_cj_snLifts_Out = _strings;
+                    savedSettings.ii_int_cj_snLifts_Out = _strings;
                 }
 
-                _strings = new();
-                if (Properties.Settings.Default.ii_bool_Beep != null)
+                _strings = [];
+                if (savedSettings.ii_bool_Beep != null)
                 {
-                    _strings = Properties.Settings.Default.ii_bool_Beep;
+                    _strings = savedSettings.ii_bool_Beep;
                 }
                 if (_strings.Count != _int_Profile_Count)
                 {
@@ -933,7 +784,7 @@ namespace Weightlifting_Comp_Warmup
                             _strings.RemoveAt(i);
                         }
                     }
-                    Properties.Settings.Default.ii_bool_Beep = _strings;
+                    savedSettings.ii_bool_Beep = _strings;
                 }
             }
             Print_All_Settings();
@@ -947,7 +798,7 @@ namespace Weightlifting_Comp_Warmup
         {
             Clean_Settings();
             int _int_ProfileId = 1;
-            foreach (string s in Properties.Settings.Default.ii_int_ProfileIds)
+            foreach (string s in savedSettings.ii_int_ProfileIds)
             {
                 if (int.TryParse(s: s, result: out int _i) &&
                     _i >= _int_ProfileId)
@@ -955,8 +806,8 @@ namespace Weightlifting_Comp_Warmup
                     _int_ProfileId = _i + 1;
                 }
             }
-            Properties.Settings.Default.ii_int_ProfileIds.Add(_int_ProfileId.ToString());
-            Properties.Settings.Default.ii_string_ProfileName.Add(_str_ProfileName);
+            savedSettings.ii_int_ProfileIds.Add(_int_ProfileId.ToString());
+            savedSettings.ii_string_ProfileName.Add(_str_ProfileName);
             Print_All_Settings();
             Clean_Settings();
             Print_All_Settings();
@@ -971,324 +822,123 @@ namespace Weightlifting_Comp_Warmup
             int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
             if (_int_Sequence >= 0)
             {
-                Properties.Settings.Default.ii_int_ProfileIds.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_string_ProfileName.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_ProfileIds.RemoveAt(_int_Sequence);
+                savedSettings.ii_string_ProfileName.RemoveAt(_int_Sequence);
 
-                Properties.Settings.Default.ii_int_Barbell.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_HHmm_StartTimes.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_snatch_Sec_Stage.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_snatch_Wgt_Opener.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_bool_snatch_OpenerWarmup.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_snatch_Sec_End.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_snatch_Lifts_Out.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_Barbell.RemoveAt(_int_Sequence);
+                savedSettings.ii_HHmm_StartTimes.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_snatch_Sec_Stage.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_snatch_Wgt_Opener.RemoveAt(_int_Sequence);
+                savedSettings.ii_bool_snatch_OpenerWarmup.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_snatch_Sec_End.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_snatch_Lifts_Out.RemoveAt(_int_Sequence);
 
-                Properties.Settings.Default.ii_int_cj_Sec_Stage.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_cj_Wgt_Opener.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_cj_Sec_Break.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_bool_cj_OpenerWarmup.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_cj_Sec_End.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_cj_Lifts_Out.RemoveAt(_int_Sequence);
-                Properties.Settings.Default.ii_int_cj_snLifts_Out.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_cj_Sec_Stage.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_cj_Wgt_Opener.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_cj_Sec_Break.RemoveAt(_int_Sequence);
+                savedSettings.ii_bool_cj_OpenerWarmup.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_cj_Sec_End.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_cj_Lifts_Out.RemoveAt(_int_Sequence);
+                savedSettings.ii_int_cj_snLifts_Out.RemoveAt(_int_Sequence);
 
-                for (int i = Properties.Settings.Default.ii_strings_snatch_Extras.Count - 1; i >= 0; i--)
-                {
-                    Parse_string_extras(
-                        _string: Properties.Settings.Default.ii_strings_snatch_Extras[i],
-                        _int_ProfileId: out int __int_ProfileId,
-                        _int_Id: out _,
-                        _int_Order: out _,
-                        _int_Length: out _,
-                        _str_Action: out _);
-                    if (_int_ProfileId == __int_ProfileId)
-                    {
-                        Properties.Settings.Default.ii_strings_snatch_Extras.RemoveAt(i);
-                    }
-                }
-                for (int i = Properties.Settings.Default.ii_strings_snatch_Jumps.Count - 1; i >= 0; i--)
-                {
-                    Parse_string_jumps(
-                        _string: Properties.Settings.Default.ii_strings_snatch_Jumps[i],
-                        _int_ProfileId: out int __int_ProfileId,
-                        _int_Id: out _,
-                        _int_FromWeight: out _,
-                        _int_Jump: out _);
-                    if (_int_ProfileId == __int_ProfileId)
-                    {
-                        Properties.Settings.Default.ii_strings_snatch_Jumps.RemoveAt(i);
-                    }
-                }
-                for (int i = Properties.Settings.Default.ii_strings_snatch_Times.Count - 1; i >= 0; i--)
-                {
-                    Parse_string_times(
-                        _string: Properties.Settings.Default.ii_strings_snatch_Times[i],
-                        _int_ProfileId: out int __int_ProfileId,
-                        _int_Id: out _,
-                        _int_FromWeight: out _,
-                        _int_Time: out _);
-                    if (_int_ProfileId == __int_ProfileId)
-                    {
-                        Properties.Settings.Default.ii_strings_snatch_Times.RemoveAt(i);
-                    }
-                }
-
-                for (int i = Properties.Settings.Default.ii_strings_cj_Extras.Count - 1; i >= 0; i--)
-                {
-                    Parse_string_extras(
-                        _string: Properties.Settings.Default.ii_strings_cj_Extras[i],
-                        _int_ProfileId: out int __int_ProfileId,
-                        _int_Id: out _,
-                        _int_Order: out _,
-                        _int_Length: out _,
-                        _str_Action: out _);
-                    if (_int_ProfileId == __int_ProfileId)
-                    {
-                        Properties.Settings.Default.ii_strings_cj_Extras.RemoveAt(i);
-                    }
-                }
-                for (int i = Properties.Settings.Default.ii_strings_cj_Jumps.Count - 1; i >= 0; i--)
-                {
-                    Parse_string_jumps(
-                        _string: Properties.Settings.Default.ii_strings_cj_Jumps[i],
-                        _int_ProfileId: out int __int_ProfileId,
-                        _int_Id: out _,
-                        _int_FromWeight: out _,
-                        _int_Jump: out _);
-                    if (_int_ProfileId == __int_ProfileId)
-                    {
-                        Properties.Settings.Default.ii_strings_cj_Jumps.RemoveAt(i);
-                    }
-                }
-                for (int i = Properties.Settings.Default.ii_strings_cj_Times.Count - 1; i >= 0; i--)
-                {
-                    Parse_string_times(
-                        _string: Properties.Settings.Default.ii_strings_cj_Times[i],
-                        _int_ProfileId: out int __int_ProfileId,
-                        _int_Id: out _,
-                        _int_FromWeight: out _,
-                        _int_Time: out _);
-                    if (_int_ProfileId == __int_ProfileId)
-                    {
-                        Properties.Settings.Default.ii_strings_cj_Times.RemoveAt(i);
-                    }
-                }
+                savedSettings.ii_strings_snatch_Extras.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
+                savedSettings.ii_strings_snatch_Jumps.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
+                savedSettings.ii_strings_snatch_Times.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
+                savedSettings.ii_strings_cj_Extras.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
+                savedSettings.ii_strings_cj_Jumps.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
+                savedSettings.ii_strings_cj_Times.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
             }
-            if (Properties.Settings.Default.int_ProfileId == _int_ProfileId)
+            if (savedSettings.int_ProfileId == _int_ProfileId)
             {
-                Properties.Settings.Default.int_ProfileId = -1;
+                savedSettings.int_ProfileId = -1;
             }
         }
         private string string_Profile_Name_From_Id(int _int_ProfileId)
         {
-            if (Properties.Settings.Default.ii_string_ProfileName != null &&
-                Properties.Settings.Default.ii_string_ProfileName.Count > 0)
+            if (savedSettings.ii_string_ProfileName != null &&
+                savedSettings.ii_string_ProfileName.Count > 0)
             {
                 int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-                return Properties.Settings.Default.ii_string_ProfileName[_int_Sequence];
+                return savedSettings.ii_string_ProfileName[_int_Sequence];
             }
             return "default";
         }
         private void Settings_Changes_Save()
         {
-            Properties.Settings.Default.Save();
+            savedSettings.Save();
             Print_All_Settings();
         }
         private void Update_Settings()
         {
             Print_All_Settings();
-            Properties.Settings.Default.int_ProfileId = int_ProfileId;
+            savedSettings.int_ProfileId = int_ProfileId;
             Clean_Settings();
             int _int_Sequence = int_Profile_Sequence(_int_ProfileId: int_ProfileId);
             if (_int_Sequence < 0)
             {
-                if (Properties.Settings.Default.ii_int_ProfileIds == null)
+                if (savedSettings.ii_int_ProfileIds == null)
                 {
-                    Properties.Settings.Default.ii_int_ProfileIds = new()
-                    {
+                    savedSettings.ii_int_ProfileIds =
+                    [
                         int_ProfileId.ToString()
-                    };
+                    ];
                 }
                 else
                 {
-                    Properties.Settings.Default.ii_int_ProfileIds.Add(int_ProfileId.ToString());
+                    savedSettings.ii_int_ProfileIds.Add(int_ProfileId.ToString());
                 }
                 Clean_Settings();
             }
-            Properties.Settings.Default.ii_int_Barbell[_int_Sequence] = int_Barbell.ToString();
-            Properties.Settings.Default.ii_HHmm_StartTimes[_int_Sequence] = dateTimePicker_snatch_Start.Value.ToString("HHmm");
-            Properties.Settings.Default.ii_int_snatch_Sec_Stage[_int_Sequence] = int_snatch_Sec_Stage.ToString();
-            Properties.Settings.Default.ii_int_snatch_Wgt_Opener[_int_Sequence] = int_snatch_Wgt_Opener.ToString();
-            Properties.Settings.Default.ii_bool_snatch_OpenerWarmup[_int_Sequence] = bool_snatch_OpenerWarmup.ToString();
-            Properties.Settings.Default.ii_int_snatch_Sec_End[_int_Sequence] = int_snatch_Sec_End.ToString();
-            Properties.Settings.Default.ii_int_snatch_Lifts_Out[_int_Sequence] = int_snatch_Lifts_Out.ToString();
+            savedSettings.ii_int_Barbell[_int_Sequence] = int_Barbell.ToString();
+            savedSettings.ii_HHmm_StartTimes[_int_Sequence] = dateTimePicker_snatch_Start.Value.ToString("HHmm");
+            savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence] = int_snatch_Sec_Stage.ToString();
+            savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence] = int_snatch_Wgt_Opener.ToString();
+            savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence] = bool_snatch_OpenerWarmup.ToString();
+            savedSettings.ii_int_snatch_Sec_End[_int_Sequence] = int_snatch_Sec_End.ToString();
+            savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence] = int_snatch_Lifts_Out.ToString();
 
-            Properties.Settings.Default.ii_int_cj_Sec_Stage[_int_Sequence] = int_cj_Sec_Stage.ToString();
-            Properties.Settings.Default.ii_int_cj_Wgt_Opener[_int_Sequence] = int_cj_Wgt_Opener.ToString();
-            Properties.Settings.Default.ii_int_cj_Sec_Break[_int_Sequence] = int_cj_Sec_Break.ToString();
-            Properties.Settings.Default.ii_bool_cj_OpenerWarmup[_int_Sequence] = bool_cj_OpenerWarmup.ToString();
-            Properties.Settings.Default.ii_int_cj_Sec_End[_int_Sequence] = int_cj_Sec_End.ToString();
-            Properties.Settings.Default.ii_int_cj_Lifts_Out[_int_Sequence] = int_cj_Lifts_Out.ToString();
-            Properties.Settings.Default.ii_int_cj_snLifts_Out[_int_Sequence] = int_cj_snLifts_Out.ToString();
+            savedSettings.ii_int_cj_Sec_Stage[_int_Sequence] = int_cj_Sec_Stage.ToString();
+            savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence] = int_cj_Wgt_Opener.ToString();
+            savedSettings.ii_int_cj_Sec_Break[_int_Sequence] = int_cj_Sec_Break.ToString();
+            savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence] = bool_cj_OpenerWarmup.ToString();
+            savedSettings.ii_int_cj_Sec_End[_int_Sequence] = int_cj_Sec_End.ToString();
+            savedSettings.ii_int_cj_Lifts_Out[_int_Sequence] = int_cj_Lifts_Out.ToString();
+            savedSettings.ii_int_cj_snLifts_Out[_int_Sequence] = int_cj_snLifts_Out.ToString();
 
-            Properties.Settings.Default.ii_bool_Beep[_int_Sequence] = bool_Beep.ToString();
+            savedSettings.ii_bool_Beep[_int_Sequence] = bool_Beep.ToString();
 
-            for (int i = Properties.Settings.Default.ii_strings_snatch_Extras.Count - 1; i >= 0; i--)
-            {
-                Parse_string_extras(
-                    _string: Properties.Settings.Default.ii_strings_snatch_Extras[i],
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_Order: out _,
-                    _int_Length: out _,
-                    _str_Action: out _);
-                if (_int_ProfileId == int_ProfileId ||
-                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
-                {
-                    Properties.Settings.Default.ii_strings_snatch_Extras.RemoveAt(i);
-                }
-            }
-            for (int i = Properties.Settings.Default.ii_strings_snatch_Jumps.Count - 1; i >= 0; i--)
-            {
-                Parse_string_jumps(
-                    _string: Properties.Settings.Default.ii_strings_snatch_Jumps[i],
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_FromWeight: out _,
-                    _int_Jump: out _);
-                if (_int_ProfileId == int_ProfileId ||
-                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
-                {
-                    Properties.Settings.Default.ii_strings_snatch_Jumps.RemoveAt(i);
-                }
-            }
-            for (int i = Properties.Settings.Default.ii_strings_snatch_Times.Count - 1; i >= 0; i--)
-            {
-                Parse_string_times(
-                    _string: Properties.Settings.Default.ii_strings_snatch_Times[i],
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_FromWeight: out _,
-                    _int_Time: out _);
-                if (_int_ProfileId == int_ProfileId ||
-                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
-                {
-                    Properties.Settings.Default.ii_strings_snatch_Times.RemoveAt(i);
-                }
-            }
+            savedSettings.ii_strings_snatch_Extras.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
+            savedSettings.ii_strings_snatch_Jumps.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
+            savedSettings.ii_strings_snatch_Times.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
+            savedSettings.ii_strings_cj_Extras.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
+            savedSettings.ii_strings_cj_Jumps.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
+            savedSettings.ii_strings_cj_Times.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
 
-            for (int i = Properties.Settings.Default.ii_strings_cj_Extras.Count - 1; i >= 0; i--)
-            {
-                Parse_string_extras(
-                    _string: Properties.Settings.Default.ii_strings_cj_Extras[i],
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_Order: out _,
-                    _int_Length: out _,
-                    _str_Action: out _);
-                if (_int_ProfileId == int_ProfileId ||
-                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
-                {
-                    Properties.Settings.Default.ii_strings_cj_Extras.RemoveAt(i);
-                }
-            }
-            for (int i = Properties.Settings.Default.ii_strings_cj_Jumps.Count - 1; i >= 0; i--)
-            {
-                Parse_string_jumps(
-                    _string: Properties.Settings.Default.ii_strings_cj_Jumps[i],
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_FromWeight: out _,
-                    _int_Jump: out _);
-                if (_int_ProfileId == int_ProfileId ||
-                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
-                {
-                    Properties.Settings.Default.ii_strings_cj_Jumps.RemoveAt(i);
-                }
-            }
-            for (int i = Properties.Settings.Default.ii_strings_cj_Times.Count - 1; i >= 0; i--)
-            {
-                Parse_string_times(
-                    _string: Properties.Settings.Default.ii_strings_cj_Times[i],
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_FromWeight: out _,
-                    _int_Time: out _);
-                if (_int_ProfileId == int_ProfileId ||
-                    !Properties.Settings.Default.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
-                {
-                    Properties.Settings.Default.ii_strings_cj_Times.RemoveAt(i);
-                }
-            }
+            savedSettings.ii_strings_snatch_Extras.AddRange(snatchExtras.OrderBy(r => r.id).Select(r => $"{int_ProfileId:000}{r}"));
+            savedSettings.ii_strings_snatch_Jumps.AddRange(snatchJumps.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
+            savedSettings.ii_strings_snatch_Times.AddRange(snatchTimes.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
+            savedSettings.ii_strings_cj_Extras.AddRange(cjExtras.OrderBy(r => r.id).Select(r => $"{int_ProfileId:000}{r}"));
+            savedSettings.ii_strings_cj_Jumps.AddRange(cjJumps.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
+            savedSettings.ii_strings_cj_Times.AddRange(cjTimes.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
 
-            dt_snatch_extras.DefaultView.Sort = str_col_Id + " ASC";
-            foreach (DataRow dR in dt_snatch_extras.DefaultView.ToTable().Rows)
-            {
-                Properties.Settings.Default.ii_strings_snatch_Extras.Add(
-                    int_ProfileId.ToString("000") +
-                    dR.Field<int>(str_col_Id).ToString("000000") +
-                    dR.Field<int>(str_col_Order).ToString("000") +
-                    dR.Field<int>(str_col_Length).ToString("00000") +
-                    dR.Field<string>(str_col_Action));
-            }
-
-            dt_snatch_jumps.DefaultView.Sort = str_col_Id + " ASC";
-            foreach (DataRow dR in dt_snatch_jumps.DefaultView.ToTable().Rows)
-            {
-                Properties.Settings.Default.ii_strings_snatch_Jumps.Add(
-                    int_ProfileId.ToString("000") +
-                    dR.Field<int>(str_col_Id).ToString("000000") +
-                    dR.Field<int>(str_col_FromWeight).ToString("000") +
-                    dR.Field<int>(str_col_Jump).ToString("000"));
-            }
-
-            dt_snatch_times.DefaultView.Sort = str_col_Id + " ASC";
-            foreach (DataRow dR in dt_snatch_times.DefaultView.ToTable().Rows)
-            {
-                Properties.Settings.Default.ii_strings_snatch_Times.Add(
-                    int_ProfileId.ToString("000") +
-                    dR.Field<int>(str_col_Id).ToString("000000") +
-                    dR.Field<int>(str_col_FromWeight).ToString("000") +
-                    dR.Field<int>(str_col_Length).ToString("000"));
-            }
-
-            dt_cj_extras.DefaultView.Sort = str_col_Id + " ASC";
-            foreach (DataRow dR in dt_cj_extras.DefaultView.ToTable().Rows)
-            {
-                Properties.Settings.Default.ii_strings_cj_Extras.Add(
-                    int_ProfileId.ToString("000") +
-                    dR.Field<int>(str_col_Id).ToString("000000") +
-                    dR.Field<int>(str_col_Order).ToString("000") +
-                    dR.Field<int>(str_col_Length).ToString("00000") +
-                    dR.Field<string>(str_col_Action));
-            }
-
-            dt_cj_jumps.DefaultView.Sort = str_col_Id + " ASC";
-            foreach (DataRow dR in dt_cj_jumps.DefaultView.ToTable().Rows)
-            {
-                Properties.Settings.Default.ii_strings_cj_Jumps.Add(
-                    int_ProfileId.ToString("000") +
-                    dR.Field<int>(str_col_Id).ToString("000000") +
-                    dR.Field<int>(str_col_FromWeight).ToString("000") +
-                    dR.Field<int>(str_col_Jump).ToString("000"));
-            }
-
-            dt_cj_times.DefaultView.Sort = str_col_Id + " ASC";
-            foreach (DataRow dR in dt_cj_times.DefaultView.ToTable().Rows)
-            {
-                Properties.Settings.Default.ii_strings_cj_Times.Add(
-                    int_ProfileId.ToString("000") +
-                    dR.Field<int>(str_col_Id).ToString("000000") +
-                    dR.Field<int>(str_col_FromWeight).ToString("000") +
-                    dR.Field<int>(str_col_Length).ToString("000"));
-            }
             Print_All_Settings();
         }
-        private void Parse_string_extras(
-            string _string,
-            out int _int_ProfileId,
-            out int _int_Id,
-            out int _int_Order,
-            out int _int_Length,
-            out string _str_Action)
+        private int int_ParseOutProfileId(string record)
+        {
+            if (string.IsNullOrEmpty(record) ||
+                !int.TryParse(record.Substring(0, Math.Min(record.Length, 3)), out int i))
+            {
+                return default;
+            }
+            else
+            {
+                return i;
+            }
+        }
+        private bool TryParseExtras(
+            string record,
+            out int profileId,
+            out Extra extra)
         {
             //  at character:
             //  0   3 digit profile id
@@ -1296,398 +946,178 @@ namespace Weightlifting_Comp_Warmup
             //  9   3 digit order
             //  12  5 digit length
             //  17  variable length string (action name)
-            _int_ProfileId = default;
-            _int_Id = default;
-            _int_Order = default;
-            _int_Length = default;
-            _str_Action = string.Empty;
-            try
+            profileId = int_ParseOutProfileId(record: record);
+            extra = default;
+            if (record?.Length < 17)
             {
-                _int_ProfileId = int.Parse(_string.Substring(0, 3));
-                _int_Id = int.Parse(_string.Substring(3, 6));
-                _int_Order = int.Parse(_string.Substring(9, 3));
-                _int_Length = int.Parse(_string.Substring(12, 5));
-                _str_Action = _string.Substring(17);
+                return false;
             }
-            catch { }
+
+            if (int.TryParse(record.Substring(3, 6), out int id) &&
+                int.TryParse(record.Substring(9, 3), out int order) &&
+                int.TryParse(record.Substring(12, 5), out int length))
+            {
+                string action = record.Substring(17);
+                extra = new(id, action, length, order);
+                return true;
+            }
+            return false;
         }
-        private void Parse_string_jumps(
-            string _string,
-            out int _int_ProfileId,
-            out int _int_Id,
-            out int _int_FromWeight,
-            out int _int_Jump)
+        private bool TryParseJumpTime(string record, out int profileId, out int fromWeight, out int step)
         {
-            //  at character:
-            //  0   3 digit profile id
-            //  3   6 digit id
-            //  9   3 digit from weight
-            //  12  3 digit jump
-            _int_ProfileId = default;
-            _int_Id = default;
-            _int_FromWeight = default;
-            _int_Jump = default;
-            try
+            profileId = int_ParseOutProfileId(record: record);
+            fromWeight = 0;
+            step = 0;
+            if (record?.Length != 9)
             {
-                _int_ProfileId = int.Parse(_string.Substring(0, 3));
-                _int_Id = int.Parse(_string.Substring(3, 6));
-                _int_FromWeight = int.Parse(_string.Substring(9, 3));
-                _int_Jump = int.Parse(_string.Substring(12, 3));
+                return false;
             }
-            catch { }
+            return int.TryParse(record.Substring(3, 3), out fromWeight) &&
+                   int.TryParse(record.Substring(6, 3), out step);
         }
-        private void Parse_string_times(
-            string _string,
-            out int _int_ProfileId,
-            out int _int_Id,
-            out int _int_FromWeight,
-            out int _int_Time)
+        private void InitialiseCollections()
         {
-            //  at character:
-            //  0   3 digit profile id
-            //  3   6 digit id
-            //  9   3 digit from weight
-            //  12  3 digit time
-            _int_ProfileId = default;
-            _int_Id = default;
-            _int_FromWeight = default;
-            _int_Time = default;
-            try
-            {
-                _int_ProfileId = int.Parse(_string.Substring(0, 3));
-                _int_Id = int.Parse(_string.Substring(3, 6));
-                _int_FromWeight = int.Parse(_string.Substring(9, 3));
-                _int_Time = int.Parse(_string.Substring(12, 3));
-            }
-            catch { }
+            snatchExtras = [];
+            snatchJumps = [];
+            snatchTimes = [];
+            cjExtras = [];
+            cjJumps = [];
+            cjTimes = [];
         }
-        private void Initialise_datatables()
+        private void CheckCollections()
         {
-            dt_snatch_extras = new DataTable();
-            dt_snatch_extras.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_Action, DataType = typeof(string) },
-                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Order, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
+            snatchExtras ??= [];
+            snatchJumps ??= [];
+            snatchTimes ??= [];
+            cjExtras ??= [];
+            cjJumps ??= [];
+            cjTimes ??= [];
 
-            dt_snatch_jumps = new DataTable();
-            dt_snatch_jumps.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Jump, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-
-            dt_snatch_times = new DataTable();
-            dt_snatch_times.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-
-            dt_cj_extras = new DataTable();
-            dt_cj_extras.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_Action, DataType = typeof(string) },
-                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Order, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-
-            dt_cj_jumps = new DataTable();
-            dt_cj_jumps.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Jump, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-
-            dt_cj_times = new DataTable();
-            dt_cj_times.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-        }
-        private void Check_DataTables()
-        {
-            if (dt_snatch_extras == null |
-                dt_snatch_jumps == null |
-                dt_snatch_times == null |
-                dt_cj_extras == null |
-                dt_cj_jumps == null |
-                dt_cj_times == null)
+            if (!snatchJumps.TryGetValue(1, out _))
             {
-                Initialise_datatables(); 
+                snatchJumps[1] = 1;
             }
-
-            bool boolHas1;
-
-            boolHas1 = false;
-            foreach (DataRow dataRow in dt_snatch_jumps.Rows)
+            if (!snatchTimes.TryGetValue(1, out _))
             {
-                if (dataRow.Field<int>(str_col_FromWeight) == 1)
-                {
-                    boolHas1 = true;
-                    break;
-                }
+                snatchTimes[1] = 1;
             }
-            if (!boolHas1)
+            if (!cjJumps.TryGetValue(1, out _))
             {
-                DataRow dataRow = dt_snatch_jumps.NewRow();
-                dataRow[str_col_FromWeight] = 1;
-                dataRow[str_col_Jump] = 1;
-                dt_snatch_jumps.Rows.Add(dataRow);
-                dt_snatch_jumps.AcceptChanges();
+                cjJumps[1] = 1;
             }
-
-            boolHas1 = false;
-            foreach (DataRow dataRow in dt_snatch_times.Rows)
+            if (!cjTimes.TryGetValue(1, out _))
             {
-                if (dataRow.Field<int>(str_col_FromWeight) == 1)
-                {
-                    boolHas1 = true;
-                    break;
-                }
-            }
-            if (!boolHas1)
-            {
-                DataRow dataRow = dt_snatch_times.NewRow();
-                dataRow[str_col_FromWeight] = 1;
-                dataRow[str_col_Jump] = 1;
-                dt_snatch_times.Rows.Add(dataRow);
-                dt_snatch_times.AcceptChanges();
-            }
-
-            boolHas1 = false;
-            foreach (DataRow dataRow in dt_cj_jumps.Rows)
-            {
-                if (dataRow.Field<int>(str_col_FromWeight) == 1)
-                {
-                    boolHas1 = true;
-                    break;
-                }
-            }
-            if (!boolHas1)
-            {
-                DataRow dataRow = dt_cj_jumps.NewRow();
-                dataRow[str_col_FromWeight] = 1;
-                dataRow[str_col_Jump] = 1;
-                dt_cj_jumps.Rows.Add(dataRow);
-                dt_cj_jumps.AcceptChanges();
-            }
-
-            boolHas1 = false;
-            foreach (DataRow dataRow in dt_cj_times.Rows)
-            {
-                if (dataRow.Field<int>(str_col_FromWeight) == 1)
-                {
-                    boolHas1 = true;
-                    break;
-                }
-            }
-            if (!boolHas1)
-            {
-                DataRow dataRow = dt_cj_times.NewRow();
-                dataRow[str_col_FromWeight] = 1;
-                dataRow[str_col_Jump] = 1;
-                dt_cj_times.Rows.Add(dataRow);
-                dt_cj_times.AcceptChanges();
+                cjTimes[1] = 1;
             }
         }
         private void Get_Settings_Defaults_Lists()
         {
-            dt_default_snatch_extras = new();
-            dt_default_snatch_extras.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_Action, DataType = typeof(string) },
-                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Order, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-            dt_default_snatch_jumps = new();
-            dt_default_snatch_jumps.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Jump, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-            dt_default_snatch_times = new();
-            dt_default_snatch_times.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-
-            dt_default_cj_extras = new();
-            dt_default_cj_extras.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_Action, DataType = typeof(string) },
-                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Order, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-            dt_default_cj_jumps = new();
-            dt_default_cj_jumps.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Jump, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
-            dt_default_cj_times = new();
-            dt_default_cj_times.Columns.AddRange(
-                new DataColumn[] {
-                    new DataColumn { ColumnName = str_col_FromWeight, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Length, DataType = typeof(int) },
-                    new DataColumn { ColumnName = str_col_Id, DataType = typeof(int), AutoIncrement = true, AutoIncrementSeed = 1, AutoIncrementStep = 1 },
-                });
+            default_snatchExtras = [];
+            default_snatchJumps = [];
+            default_snatchTimes = [];
+            default_cjExtras = [];
+            default_cjJumps = [];
+            default_cjTimes = [];
             Clean_Settings();
-            foreach (string s in Properties.Settings.Default.ii_strings_snatch_Extras)
+            foreach (string s in savedSettings.ii_strings_snatch_Extras)
             {
-                Parse_string_extras(
-                    _string: s,
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_Order: out int _int_Order,
-                    _int_Length: out int _int_Length,
-                    _str_Action: out string _str_Action);
-                if (_int_ProfileId == int_ProfileId)
+                TryParseExtras(
+                    record: s,
+                    profileId: out int profileId,
+                    extra: out Extra _extra);
+                if (profileId == int_ProfileId)
                 {
-                    dt_default_snatch_extras.Rows.Add(new object[]
-                    {
-                        _str_Action,
-                        _int_Length,
-                        _int_Order
-                    });
+                    default_snatchExtras.Add(_extra);
                 }
             }
-            dt_default_snatch_extras.AcceptChanges();
-            if (dt_default_snatch_extras.Rows.Count == 0)
+            if (default_snatchExtras.Count == 0)
             {
-                Insert_Auto_snatch_Extras(dt_default_snatch_extras);
+                default_snatchExtras = Defaults.default_snatchExtras();
             }
 
-            foreach (string s in Properties.Settings.Default.ii_strings_snatch_Jumps)
+            foreach (string s in savedSettings.ii_strings_snatch_Jumps)
             {
-                Parse_string_jumps(
-                    _string: s,
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_FromWeight: out int _int_FromWeight,
-                    _int_Jump: out int _int_Jump);
-                if (_int_ProfileId == int_ProfileId)
+                TryParseJumpTime(
+                    record: s,
+                    profileId: out int profileId,
+                    fromWeight: out int fromWeight,
+                    step: out int step);
+                if (profileId == int_ProfileId)
                 {
-                    dt_default_snatch_jumps.Rows.Add(new object[]
-                    {
-                        _int_FromWeight,
-                        _int_Jump,
-                    });
+                    default_snatchJumps[fromWeight] = step;
                 }
             }
-            dt_default_snatch_jumps.AcceptChanges();
-            if (dt_default_snatch_jumps.Rows.Count == 0)
+            if (default_snatchJumps.Count == 0)
             {
-                Insert_Default_snatch_Jumps(dt_default_snatch_jumps);
+                default_snatchJumps = Defaults.default_snatchJumps();
             }
 
-            foreach (string s in Properties.Settings.Default.ii_strings_snatch_Times)
+            foreach (string s in savedSettings.ii_strings_snatch_Times)
             {
-                Parse_string_times(
-                    _string: s,
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_FromWeight: out int _int_FromWeight,
-                    _int_Time: out int _int_Time);
-                if (_int_ProfileId == int_ProfileId)
+                TryParseJumpTime(
+                    record: s,
+                    profileId: out int profileId,
+                    fromWeight: out int fromWeight,
+                    step: out int step);
+                if (profileId == int_ProfileId)
                 {
-                    dt_default_snatch_times.Rows.Add(new object[]
-                    {
-                        _int_FromWeight,
-                        _int_Time,
-                    });
+                    default_snatchTimes[fromWeight] = step;
                 }
             }
-            dt_default_snatch_times.AcceptChanges();
-            if (dt_default_snatch_times.Rows.Count == 0)
+            if (default_snatchTimes.Count == 0)
             {
-                Insert_Default_snatch_Times(dt_default_snatch_times);
+                default_snatchTimes = Defaults.default_snatchTimes();
             }
 
 
-            foreach (string s in Properties.Settings.Default.ii_strings_cj_Extras)
+            foreach (string s in savedSettings.ii_strings_cj_Extras)
             {
-                Parse_string_extras(
-                    _string: s,
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_Order: out int _int_Order,
-                    _int_Length: out int _int_Length,
-                    _str_Action: out string _str_Action);
-                if (_int_ProfileId == int_ProfileId)
+                TryParseExtras(
+                    record: s,
+                    profileId: out int profileId,
+                    extra: out Extra _extra);
+                if (profileId == int_ProfileId)
                 {
-                    dt_default_cj_extras.Rows.Add(new object[]
-                    {
-                        _str_Action,
-                        _int_Length,
-                        _int_Order
-                    });
+                    default_cjExtras.Add(_extra);
                 }
             }
-            dt_default_cj_extras.AcceptChanges();
-            if (dt_default_cj_extras.Rows.Count == 0)
+            if (default_cjExtras.Count == 0)
             {
-                Insert_Auto_cj_Extras(dt_default_cj_extras);
+                default_cjExtras = Defaults.default_cjExtras();
             }
 
-            foreach (string s in Properties.Settings.Default.ii_strings_cj_Jumps)
+            foreach (string s in savedSettings.ii_strings_cj_Jumps)
             {
-                Parse_string_jumps(
-                    _string: s,
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_FromWeight: out int _int_FromWeight,
-                    _int_Jump: out int _int_Jump);
-                if (_int_ProfileId == int_ProfileId)
+                TryParseJumpTime(
+                    record: s,
+                    profileId: out int profileId,
+                    fromWeight: out int fromWeight,
+                    step: out int step);
+                if (profileId == int_ProfileId)
                 {
-                    dt_default_cj_jumps.Rows.Add(new object[]
-                    {
-                        _int_FromWeight,
-                        _int_Jump,
-                    });
+                    default_cjJumps[fromWeight] = step;
                 }
             }
-            dt_default_cj_jumps.AcceptChanges();
-            if (dt_default_cj_jumps.Rows.Count == 0)
+            if (default_cjJumps.Count == 0)
             {
-                Insert_Default_cj_Jumps(dt_default_cj_jumps);
+                default_cjJumps = Defaults.default_cjJumps();
             }
 
-            foreach (string s in Properties.Settings.Default.ii_strings_cj_Times)
+            foreach (string s in savedSettings.ii_strings_cj_Times)
             {
-                Parse_string_times(
-                    _string: s,
-                    _int_ProfileId: out int _int_ProfileId,
-                    _int_Id: out _,
-                    _int_FromWeight: out int _int_FromWeight,
-                    _int_Time: out int _int_Time);
-                if (_int_ProfileId == int_ProfileId)
+                TryParseJumpTime(
+                    record: s,
+                    profileId: out int profileId,
+                    fromWeight: out int fromWeight,
+                    step: out int step);
+                if (profileId == int_ProfileId)
                 {
-                    dt_default_cj_times.Rows.Add(new object[]
-                    {
-                        _int_FromWeight,
-                        _int_Time,
-                    });
+                    default_cjTimes[fromWeight] = step;
                 }
             }
-            dt_default_cj_times.AcceptChanges();
-            if (dt_default_cj_times.Rows.Count == 0)
+            if (default_cjTimes.Count == 0)
             {
-                Insert_Default_cj_Times(dt_default_cj_times);
+                default_cjTimes = Defaults.default_cjTimes();
             }
         }
         private void numericUpDown_snatch_weight_barbell_ValueChanged(object sender, EventArgs e)
@@ -1704,7 +1134,7 @@ namespace Weightlifting_Comp_Warmup
                 return;
             }
 
-            if (_int_Barbell < 1) 
+            if (_int_Barbell < 1)
             {
                 (numericUpDown_snatch_weight_barbell).BackColor = Color.Yellow;
                 return;
@@ -1730,9 +1160,9 @@ namespace Weightlifting_Comp_Warmup
             if (MessageBox.Show(@"This will erase all profiles and restore all defaults." +
                 Environment.NewLine + Environment.NewLine + "Continue?",
                 "Reset settings?",
-                buttons:MessageBoxButtons.OKCancel) == DialogResult.OK)
+                buttons: MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
-                Properties.Settings.Default.Reset();
+                savedSettings.Reset();
                 Settings_Changes_Save();
                 int_ProfileId = Add_Profile(_str_ProfileName: "default");
                 Initialise_Form();
@@ -1740,34 +1170,46 @@ namespace Weightlifting_Comp_Warmup
         }
         private void Print_All_Settings()
         {
+            void PrintCollection<T>(string name, IEnumerable<T>? collection)
+            {
+                string value = collection == null ? "null" : string.Join("|", collection);
+                Console.WriteLine($"{name} = {value}");
+            }
+
             Console.WriteLine("+++++++++++++++++++++++++++++++++++++++");
-            Console.WriteLine("int_ProfileId = " + Properties.Settings.Default.int_ProfileId.ToString());
-            Console.WriteLine("ii_int_ProfileIds = " + (Properties.Settings.Default.ii_int_ProfileIds == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_ProfileIds)));
-            Console.WriteLine("ii_string_ProfileName = " + (Properties.Settings.Default.ii_string_ProfileName == null ? "null" : string.Join("|", Properties.Settings.Default.ii_string_ProfileName)));
-            Console.WriteLine("ii_int_Barbell = " + (Properties.Settings.Default.ii_int_Barbell == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_Barbell)));
-            Console.WriteLine("ii_HHmm_StartTimes = " + (Properties.Settings.Default.ii_HHmm_StartTimes == null ? "null" : string.Join("|", Properties.Settings.Default.ii_HHmm_StartTimes)));
 
-            Console.WriteLine("ii_int_snatch_Sec_Stage = " + (Properties.Settings.Default.ii_int_snatch_Sec_Stage == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_snatch_Sec_Stage)));
-            Console.WriteLine("ii_int_snatch_Wgt_Opener = " + (Properties.Settings.Default.ii_int_snatch_Wgt_Opener == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_snatch_Wgt_Opener)));
-            Console.WriteLine("ii_int_snatch_Sec_End = " + (Properties.Settings.Default.ii_int_snatch_Sec_End == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_snatch_Sec_End)));
-            Console.WriteLine("ii_int_snatch_Lifts_Out = " + (Properties.Settings.Default.ii_int_snatch_Lifts_Out == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_snatch_Lifts_Out)));
-            Console.WriteLine("ii_bool_snatch_OpenerWarmup = " + (Properties.Settings.Default.ii_bool_snatch_OpenerWarmup == null ? "null" : string.Join("|", Properties.Settings.Default.ii_bool_snatch_OpenerWarmup)));
-            Console.WriteLine("ii_strings_snatch_Extras = " + (Properties.Settings.Default.ii_strings_snatch_Extras == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_snatch_Extras)));
-            Console.WriteLine("ii_strings_snatch_Jumps = " + (Properties.Settings.Default.ii_strings_snatch_Jumps == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_snatch_Jumps)));
-            Console.WriteLine("ii_strings_snatch_Times = " + (Properties.Settings.Default.ii_strings_snatch_Times == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_snatch_Times)));
+            // Main profile settings
+            Console.WriteLine($"int_ProfileId = {savedSettings.int_ProfileId}");
+            PrintCollection(nameof(savedSettings.ii_int_ProfileIds), savedSettings.ii_int_ProfileIds);
+            PrintCollection(nameof(savedSettings.ii_string_ProfileName), savedSettings.ii_string_ProfileName);
+            PrintCollection(nameof(savedSettings.ii_int_Barbell), savedSettings.ii_int_Barbell);
+            PrintCollection(nameof(savedSettings.ii_HHmm_StartTimes), savedSettings.ii_HHmm_StartTimes);
 
-            Console.WriteLine("ii_int_cj_Sec_Stage = " + (Properties.Settings.Default.ii_int_cj_Sec_Stage == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Sec_Stage)));
-            Console.WriteLine("ii_int_cj_Wgt_Opener = " + (Properties.Settings.Default.ii_int_cj_Wgt_Opener == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Wgt_Opener)));
-            Console.WriteLine("ii_int_cj_Sec_End = " + (Properties.Settings.Default.ii_int_cj_Sec_End == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Sec_End)));
-            Console.WriteLine("ii_int_cj_Lifts_Out = " + (Properties.Settings.Default.ii_int_cj_Lifts_Out == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Lifts_Out)));
-            Console.WriteLine("ii_int_cj_Sec_Break = " + (Properties.Settings.Default.ii_int_cj_Sec_Break == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_Sec_Break)));
-            Console.WriteLine("ii_int_cj_snLifts_Out = " + (Properties.Settings.Default.ii_int_cj_snLifts_Out == null ? "null" : string.Join("|", Properties.Settings.Default.ii_int_cj_snLifts_Out)));
-            Console.WriteLine("ii_bool_cj_OpenerWarmup = " + (Properties.Settings.Default.ii_bool_cj_OpenerWarmup == null ? "null" : string.Join("|", Properties.Settings.Default.ii_bool_cj_OpenerWarmup)));
-            Console.WriteLine("ii_strings_cj_Extras = " + (Properties.Settings.Default.ii_strings_cj_Extras == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_cj_Extras)));
-            Console.WriteLine("ii_strings_cj_Jumps = " + (Properties.Settings.Default.ii_strings_cj_Jumps == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_cj_Jumps)));
-            Console.WriteLine("ii_strings_cj_Times = " + (Properties.Settings.Default.ii_strings_cj_Times == null ? "null" : string.Join("|", Properties.Settings.Default.ii_strings_cj_Times)));
+            // Snatch settings
+            PrintCollection(nameof(savedSettings.ii_int_snatch_Sec_Stage), savedSettings.ii_int_snatch_Sec_Stage);
+            PrintCollection(nameof(savedSettings.ii_int_snatch_Wgt_Opener), savedSettings.ii_int_snatch_Wgt_Opener);
+            PrintCollection(nameof(savedSettings.ii_int_snatch_Sec_End), savedSettings.ii_int_snatch_Sec_End);
+            PrintCollection(nameof(savedSettings.ii_int_snatch_Lifts_Out), savedSettings.ii_int_snatch_Lifts_Out);
+            PrintCollection(nameof(savedSettings.ii_bool_snatch_OpenerWarmup), savedSettings.ii_bool_snatch_OpenerWarmup);
+            PrintCollection(nameof(savedSettings.ii_strings_snatch_Extras), savedSettings.ii_strings_snatch_Extras);
+            PrintCollection(nameof(savedSettings.ii_strings_snatch_Jumps), savedSettings.ii_strings_snatch_Jumps);
+            PrintCollection(nameof(savedSettings.ii_strings_snatch_Times), savedSettings.ii_strings_snatch_Times);
 
-            Console.WriteLine("ii_bool_Beep = " + (Properties.Settings.Default.ii_bool_Beep == null ? "null" : string.Join("|", Properties.Settings.Default.ii_bool_Beep)));
+            // Clean & Jerk settings
+            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_Stage), savedSettings.ii_int_cj_Sec_Stage);
+            PrintCollection(nameof(savedSettings.ii_int_cj_Wgt_Opener), savedSettings.ii_int_cj_Wgt_Opener);
+            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_End), savedSettings.ii_int_cj_Sec_End);
+            PrintCollection(nameof(savedSettings.ii_int_cj_Lifts_Out), savedSettings.ii_int_cj_Lifts_Out);
+            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_Break), savedSettings.ii_int_cj_Sec_Break);
+            PrintCollection(nameof(savedSettings.ii_int_cj_snLifts_Out), savedSettings.ii_int_cj_snLifts_Out);
+            PrintCollection(nameof(savedSettings.ii_bool_cj_OpenerWarmup), savedSettings.ii_bool_cj_OpenerWarmup);
+            PrintCollection(nameof(savedSettings.ii_strings_cj_Extras), savedSettings.ii_strings_cj_Extras);
+            PrintCollection(nameof(savedSettings.ii_strings_cj_Jumps), savedSettings.ii_strings_cj_Jumps);
+            PrintCollection(nameof(savedSettings.ii_strings_cj_Times), savedSettings.ii_strings_cj_Times);
+
+            // Miscellaneous settings
+            PrintCollection(nameof(savedSettings.ii_bool_Beep), savedSettings.ii_bool_Beep);
+
             Console.WriteLine("---------------------------------------");
         }
         private void Populate_MenuStrip()
@@ -1780,9 +1222,9 @@ namespace Weightlifting_Comp_Warmup
                 Font = new("Gadugi", 10F, FontStyle.Italic, GraphicsUnit.Point, 0)
             };
             menuStrip_Profile.Items.Add(toolStripLabel);
-            for (int i = 0; i < Properties.Settings.Default.ii_int_ProfileIds.Count; i++)
+            for (int i = 0; i < savedSettings.ii_int_ProfileIds.Count; i++)
             {
-                if (int.TryParse(s: Properties.Settings.Default.ii_int_ProfileIds[i], result: out int _int_ProfileId) &&
+                if (int.TryParse(s: savedSettings.ii_int_ProfileIds[i], result: out int _int_ProfileId) &&
                     _int_ProfileId > 0)
                 {
                     string _str_ProfileName = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
@@ -1871,7 +1313,7 @@ namespace Weightlifting_Comp_Warmup
                     if (_int_ProfileId == int_ProfileId)
                     {
                         int _int_NewProfileId = -1;
-                        foreach (string s in Properties.Settings.Default.ii_int_ProfileIds)
+                        foreach (string s in savedSettings.ii_int_ProfileIds)
                         {
                             _int_NewProfileId = int.Parse(s: s);
                             break;
@@ -1915,7 +1357,7 @@ namespace Weightlifting_Comp_Warmup
                     int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
                     if (_int_Sequence >= 0)
                     {
-                        Properties.Settings.Default.ii_string_ProfileName[_int_Sequence] = _str_Name;
+                        savedSettings.ii_string_ProfileName[_int_Sequence] = _str_Name;
                         Settings_Changes_Save();
                         Populate_MenuStrip();
                     }
@@ -1942,123 +1384,101 @@ namespace Weightlifting_Comp_Warmup
                         int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
                         if (_int_Sequence >= 0 && _int_New_Sequence >= 0)
                         {
-                            Properties.Settings.Default.ii_int_Barbell[_int_New_Sequence] = Properties.Settings.Default.ii_int_Barbell[_int_Sequence];
-                            Properties.Settings.Default.ii_HHmm_StartTimes[_int_New_Sequence] = Properties.Settings.Default.ii_HHmm_StartTimes[_int_Sequence];
+                            savedSettings.ii_int_Barbell[_int_New_Sequence] = savedSettings.ii_int_Barbell[_int_Sequence];
+                            savedSettings.ii_HHmm_StartTimes[_int_New_Sequence] = savedSettings.ii_HHmm_StartTimes[_int_Sequence];
 
-                            Properties.Settings.Default.ii_int_snatch_Sec_Stage[_int_New_Sequence] = Properties.Settings.Default.ii_int_snatch_Sec_Stage[_int_Sequence];
-                            Properties.Settings.Default.ii_int_snatch_Wgt_Opener[_int_New_Sequence] = Properties.Settings.Default.ii_int_snatch_Wgt_Opener[_int_Sequence];
-                            Properties.Settings.Default.ii_int_snatch_Sec_End[_int_New_Sequence] = Properties.Settings.Default.ii_int_snatch_Sec_End[_int_Sequence];
-                            Properties.Settings.Default.ii_int_snatch_Lifts_Out[_int_New_Sequence] = Properties.Settings.Default.ii_int_snatch_Lifts_Out[_int_Sequence];
-                            Properties.Settings.Default.ii_bool_snatch_OpenerWarmup[_int_New_Sequence] = Properties.Settings.Default.ii_bool_snatch_OpenerWarmup[_int_Sequence];
-                            for (int i = 0; i < Properties.Settings.Default.ii_strings_snatch_Extras.Count; i++)
+                            savedSettings.ii_int_snatch_Sec_Stage[_int_New_Sequence] = savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence];
+                            savedSettings.ii_int_snatch_Wgt_Opener[_int_New_Sequence] = savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence];
+                            savedSettings.ii_int_snatch_Sec_End[_int_New_Sequence] = savedSettings.ii_int_snatch_Sec_End[_int_Sequence];
+                            savedSettings.ii_int_snatch_Lifts_Out[_int_New_Sequence] = savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence];
+                            savedSettings.ii_bool_snatch_OpenerWarmup[_int_New_Sequence] = savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence];
+                            for (int i = 0; i < savedSettings.ii_strings_snatch_Extras.Count; i++)
                             {
-                                string s = Properties.Settings.Default.ii_strings_snatch_Extras[i];
-                                Parse_string_extras(
-                                    _string: s,
-                                    _int_ProfileId: out int __int_ProfileId,
-                                    _int_Id: out _,
-                                    _int_Order: out _,
-                                    _int_Length: out _,
-                                    _str_Action: out _);
+                                string s = savedSettings.ii_strings_snatch_Extras[i];
+                                TryParseExtras(
+                                    record: s,
+                                    profileId: out int __int_ProfileId,
+                                    extra: out _);
                                 if (__int_ProfileId == _int_ProfileId)
                                 {
-                                    Properties.Settings.Default.ii_strings_snatch_Extras.Add(
-                                        _int_New_ProfileId.ToString("000") +
-                                        s.Substring(3));
+                                    savedSettings.ii_strings_snatch_Extras.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
                                 }
                             }
-                            for (int i = 0; i < Properties.Settings.Default.ii_strings_snatch_Jumps.Count; i++)
+                            for (int i = 0; i < savedSettings.ii_strings_snatch_Jumps.Count; i++)
                             {
-                                string s = Properties.Settings.Default.ii_strings_snatch_Jumps[i];
-                                Parse_string_jumps(
-                                    _string: s,
-                                    _int_ProfileId: out int __int_ProfileId,
-                                    _int_Id: out _,
-                                    _int_FromWeight: out _,
-                                    _int_Jump: out _);
+                                string s = savedSettings.ii_strings_snatch_Jumps[i];
+                                TryParseJumpTime(
+                                    record: s,
+                                    profileId: out int __int_ProfileId,
+                                    fromWeight: out _,
+                                    step: out _);
                                 if (__int_ProfileId == _int_ProfileId)
                                 {
-                                    Properties.Settings.Default.ii_strings_snatch_Jumps.Add(
-                                        _int_New_ProfileId.ToString("000") +
-                                        s.Substring(3));
+                                    savedSettings.ii_strings_snatch_Jumps.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
                                 }
                             }
-                            for (int i = 0; i < Properties.Settings.Default.ii_strings_snatch_Times.Count; i++)
+                            for (int i = 0; i < savedSettings.ii_strings_snatch_Times.Count; i++)
                             {
-                                string s = Properties.Settings.Default.ii_strings_snatch_Times[i];
-                                Parse_string_times(
-                                    _string: s,
-                                    _int_ProfileId: out int __int_ProfileId,
-                                    _int_Id: out _,
-                                    _int_FromWeight: out _,
-                                    _int_Time: out _);
+                                string s = savedSettings.ii_strings_snatch_Times[i];
+                                TryParseJumpTime(
+                                    record: s,
+                                    profileId: out int __int_ProfileId,
+                                    fromWeight: out _,
+                                    step: out _);
                                 if (__int_ProfileId == _int_ProfileId)
                                 {
-                                    Properties.Settings.Default.ii_strings_snatch_Times.Add(
-                                        _int_New_ProfileId.ToString("000") +
-                                        s.Substring(3));
-                                }
-                            }
-                            
-                            Properties.Settings.Default.ii_int_cj_Sec_Stage[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Sec_Stage[_int_Sequence];
-                            Properties.Settings.Default.ii_int_cj_Wgt_Opener[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Wgt_Opener[_int_Sequence];
-                            Properties.Settings.Default.ii_int_cj_Sec_End[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Sec_End[_int_Sequence];
-                            Properties.Settings.Default.ii_int_cj_Lifts_Out[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Lifts_Out[_int_Sequence];
-                            Properties.Settings.Default.ii_int_cj_Sec_Break[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_Sec_Break[_int_Sequence];
-                            Properties.Settings.Default.ii_int_cj_snLifts_Out[_int_New_Sequence] = Properties.Settings.Default.ii_int_cj_snLifts_Out[_int_Sequence];
-                            Properties.Settings.Default.ii_bool_cj_OpenerWarmup[_int_New_Sequence] = Properties.Settings.Default.ii_bool_cj_OpenerWarmup[_int_Sequence];
-                            for (int i = 0; i < Properties.Settings.Default.ii_strings_cj_Extras.Count; i++)
-                            {
-                                string s = Properties.Settings.Default.ii_strings_cj_Extras[i];
-                                Parse_string_extras(
-                                    _string: s,
-                                    _int_ProfileId: out int __int_ProfileId,
-                                    _int_Id: out _,
-                                    _int_Order: out _,
-                                    _int_Length: out _,
-                                    _str_Action: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    Properties.Settings.Default.ii_strings_cj_Extras.Add(
-                                        _int_New_ProfileId.ToString("000") +
-                                        s.Substring(3));
-                                }
-                            }
-                            for (int i = 0; i < Properties.Settings.Default.ii_strings_cj_Jumps.Count; i++)
-                            {
-                                string s = Properties.Settings.Default.ii_strings_cj_Jumps[i];
-                                Parse_string_jumps(
-                                    _string: s,
-                                    _int_ProfileId: out int __int_ProfileId,
-                                    _int_Id: out _,
-                                    _int_FromWeight: out _,
-                                    _int_Jump: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    Properties.Settings.Default.ii_strings_cj_Jumps.Add(
-                                        _int_New_ProfileId.ToString("000") +
-                                        s.Substring(3));
-                                }
-                            }
-                            for (int i = 0; i < Properties.Settings.Default.ii_strings_cj_Times.Count; i++)
-                            {
-                                string s = Properties.Settings.Default.ii_strings_cj_Times[i];
-                                Parse_string_times(
-                                    _string: s,
-                                    _int_ProfileId: out int __int_ProfileId,
-                                    _int_Id: out _,
-                                    _int_FromWeight: out _,
-                                    _int_Time: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    Properties.Settings.Default.ii_strings_cj_Times.Add(
-                                        _int_New_ProfileId.ToString("000") +
-                                        s.Substring(3));
+                                    savedSettings.ii_strings_snatch_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
                                 }
                             }
 
-                            Properties.Settings.Default.ii_bool_Beep[_int_New_Sequence] = Properties.Settings.Default.ii_bool_Beep[_int_Sequence];
-             
+                            savedSettings.ii_int_cj_Sec_Stage[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_Stage[_int_Sequence];
+                            savedSettings.ii_int_cj_Wgt_Opener[_int_New_Sequence] = savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence];
+                            savedSettings.ii_int_cj_Sec_End[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_End[_int_Sequence];
+                            savedSettings.ii_int_cj_Lifts_Out[_int_New_Sequence] = savedSettings.ii_int_cj_Lifts_Out[_int_Sequence];
+                            savedSettings.ii_int_cj_Sec_Break[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_Break[_int_Sequence];
+                            savedSettings.ii_int_cj_snLifts_Out[_int_New_Sequence] = savedSettings.ii_int_cj_snLifts_Out[_int_Sequence];
+                            savedSettings.ii_bool_cj_OpenerWarmup[_int_New_Sequence] = savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence];
+                            for (int i = 0; i < savedSettings.ii_strings_cj_Extras.Count; i++)
+                            {
+                                string s = savedSettings.ii_strings_cj_Extras[i];
+                                TryParseExtras(
+                                    record: s,
+                                    profileId: out int __int_ProfileId,
+                                    extra: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    savedSettings.ii_strings_cj_Extras.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
+                                }
+                            }
+                            for (int i = 0; i < savedSettings.ii_strings_cj_Jumps.Count; i++)
+                            {
+                                string s = savedSettings.ii_strings_cj_Jumps[i];
+                                TryParseJumpTime(
+                                    record: s,
+                                    profileId: out int __int_ProfileId,
+                                    fromWeight: out _,
+                                    step: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    savedSettings.ii_strings_cj_Jumps.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
+                                }
+                            }
+                            for (int i = 0; i < savedSettings.ii_strings_cj_Times.Count; i++)
+                            {
+                                string s = savedSettings.ii_strings_cj_Times[i];
+                                TryParseJumpTime(
+                                    record: s,
+                                    profileId: out int __int_ProfileId,
+                                    fromWeight: out _,
+                                    step: out _);
+                                if (__int_ProfileId == _int_ProfileId)
+                                {
+                                    savedSettings.ii_strings_cj_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
+                                }
+                            }
+
+                            savedSettings.ii_bool_Beep[_int_New_Sequence] = savedSettings.ii_bool_Beep[_int_Sequence];
+
                             Settings_Changes_Save();
                         }
                     }
@@ -2092,7 +1512,7 @@ namespace Weightlifting_Comp_Warmup
                 return;
             }
 
-            if (_int_snatch_Sec_Stage < 1) 
+            if (_int_snatch_Sec_Stage < 1)
             {
                 (numericUpDown_snatch_time_stage).BackColor = Color.Yellow;
                 return;
@@ -2158,7 +1578,7 @@ namespace Weightlifting_Comp_Warmup
                 return;
             }
             (numericUpDown_snatch_time_PostWarmup).BackColor = Color.White;
-            
+
             int_snatch_Sec_End = _int_snatch_Sec_End;
 
             snatch_Populate_Steps(boolPreserveLifts: true);
@@ -2167,196 +1587,145 @@ namespace Weightlifting_Comp_Warmup
         #endregion
 
         #region snatch extras
-        private void Insert_Auto_snatch_Extras(DataTable dataTable)
-        {
-            int intOrder = 0;
-
-            dataTable.Rows.Clear();
-            dt_default_snatch_extras.Rows.Add(new object[]
-            {
-                "Ibuprofen, Coffee, Pre",
-                20 * 60,
-                intOrder
-            });
-            intOrder++;
-
-            dt_default_snatch_extras.Rows.Add(new object[]
-            {
-                "Foam Roll",
-                5 * 60,
-                intOrder
-            });
-            intOrder++;
-
-            dt_default_snatch_extras.Rows.Add(new object[]
-            {
-                "Shoes, tape, etc.",
-                5 * 60,
-                intOrder
-            });
-            intOrder++;
-
-            dt_default_snatch_extras.Rows.Add(new object[]
-            {
-                "Stretch",
-                10 * 60,
-                intOrder
-            });
-            intOrder++;
-
-            dt_default_snatch_extras.Rows.Add(new object[]
-            {
-                "Empty bar stretch",
-                5 * 60,
-                intOrder
-            });
-
-            dataTable.AcceptChanges();
-        }
         private void snatch_Populate_Extras()
         {
             snatch_Stop_Live();
             int intY = 1;
             panel_snatch_extra.Controls.Clear();
 
-            dt_snatch_extras.DefaultView.Sort = str_col_Order + " ASC";
-            foreach (DataRow dataRow in dt_snatch_extras.DefaultView.ToTable().Rows)
+            void snatch_Add_Extra_IndividualControls(
+                int intY,
+                int intId,
+                string strTBText,
+                int intLength,
+                bool bool_Add_Blank)
+            {
+                TextBox tb = new()
+                {
+                    Text = strTBText,
+                    Location = new Point(6, intY),
+                    Size = new Size(157, 25),
+                    Tag = intId,
+                    BackColor = Color.White
+                };
+                NumericUpDown nmud = new()
+                {
+                    Location = new Point(169, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intLength, 0, 0, 0]),
+                    Tag = intId,
+                    BackColor = Color.White
+                };
+                Label lbl = new()
+                {
+                    Location = new Point(250, intY + 3),
+                    Text = Seconds_To_String(intLength),
+                    Tag = intId
+                };
+                tb.TextChanged += textBox_snatch_extra_TextChanged;
+                nmud.ValueChanged += numericUpDown_snatch_extra_ValueChanged;
+                panel_snatch_extra.Controls.AddRange([tb, nmud, lbl]);
+
+                if (bool_Add_Blank)
+                {
+                    Button btn4 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(258 + 100, intY),
+                        Size = new Size(125, 25),
+                        Text = str_buttontext_commit,
+                        UseVisualStyleBackColor = true
+                    };
+                    btn4.Click += button_snatch_extra_commit_click;
+                    panel_snatch_extra.Controls.Add(btn4);
+
+                    tb.Select();
+                }
+                else
+                {
+                    Button btn1 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(258 + 100, intY),
+                        Size = new Size(32, 25),
+                        Text = str_buttontext_up,
+                        UseVisualStyleBackColor = true,
+                        Tag = intId
+                    };
+                    Button btn2 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(301 + 100, intY),
+                        Size = new Size(32, 25),
+                        Text = str_buttontext_down,
+                        UseVisualStyleBackColor = true,
+                        Tag = intId
+                    };
+                    Button btn3 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(347 + 100, intY),
+                        Size = new Size(36, 25),
+                        Text = str_buttontext_delete,
+                        UseVisualStyleBackColor = true,
+                        Tag = intId
+                    };
+                    btn1.Click += button_snatch_extra_up_click;
+                    btn2.Click += button_snatch_extra_down_click;
+                    btn3.Click += button_snatch_extra_delete_click;
+                    panel_snatch_extra.Controls.AddRange([btn1, btn2, btn3]);
+                }
+            }
+
+            foreach (Extra _extra in snatchExtras.OrderBy(r => r.Order))
             {
                 snatch_Add_Extra_IndividualControls(
-                    intY: intY
-                    , intId: dataRow.Field<int>(str_col_Id)
-                    , strTBText: dataRow.Field<string>(str_col_Action)
-                    , intLength: dataRow.Field<int>(str_col_Length)
-                    , bool_Add_Blank: false
-                    );
+                    intY: intY,
+                    intId: _extra.id,
+                    strTBText: _extra.Action,
+                    intLength: _extra.Length,
+                    bool_Add_Blank: false);
                 intY += 30;
             }
             snatch_Add_Extra_IndividualControls(
-                intY: intY
-                , intId: -1
-                , strTBText: string.Empty
-                , intLength: 60
-                , bool_Add_Blank: true
-                );
-        }
-        private void snatch_Add_Extra_IndividualControls(
-            int intY
-            , int intId
-            , string strTBText
-            , int intLength
-            , bool bool_Add_Blank
-            )
-        {
-            TextBox tb = new()
-            {
-                Text = strTBText,
-                Location = new Point(6, intY),
-                Size = new Size(157, 25),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            NumericUpDown nmud = new()
-            {
-                Location = new Point(169, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intLength, 0, 0, 0 }),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            Label lbl = new()
-            {
-                Location = new Point(250, intY + 3),
-                Text = Seconds_To_String(intLength),
-                Tag = intId
-            };
-            tb.TextChanged += textBox_snatch_extra_TextChanged;
-            nmud.ValueChanged += numericUpDown_snatch_extra_ValueChanged;
-            panel_snatch_extra.Controls.AddRange(new Control[] { tb, nmud, lbl });
-
-            if (bool_Add_Blank)
-            {
-                Button btn4 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(258 + 100, intY),
-                    Size = new Size(125, 25),
-                    Text = str_buttontext_commit,
-                    UseVisualStyleBackColor = true
-                };
-                btn4.Click += button_snatch_extra_commit_click;
-                panel_snatch_extra.Controls.Add(btn4);
-
-                tb.Select();
-            }
-            else
-            {
-                Button btn1 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(258 + 100, intY),
-                    Size = new Size(32, 25),
-                    Text = str_buttontext_up,
-                    UseVisualStyleBackColor = true,
-                    Tag = intId
-                };
-                Button btn2 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(301 + 100, intY),
-                    Size = new Size(32, 25),
-                    Text = str_buttontext_down,
-                    UseVisualStyleBackColor = true,
-                    Tag = intId
-                };
-                Button btn3 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(347 + 100, intY),
-                    Size = new Size(36, 25),
-                    Text = str_buttontext_delete,
-                    UseVisualStyleBackColor = true,
-                    Tag = intId
-                };
-                btn1.Click += button_snatch_extra_up_click;
-                btn2.Click += button_snatch_extra_down_click;
-                btn3.Click += button_snatch_extra_delete_click;
-                panel_snatch_extra.Controls.AddRange(new Control[] { btn1, btn2, btn3 });
-            }
+                intY: intY,
+                intId: -1,
+                strTBText: string.Empty,
+                intLength: 60,
+                bool_Add_Blank: true);
         }
         private void button_snatch_extra_up_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
-
-            int intOrder = -1;
-
-            foreach (DataRow dataRow in dt_snatch_extras.Rows)
-            { 
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    intOrder = dataRow.Field<int>(str_col_Order);
-                }
+            int _id = (int)(((Button)(sender)).Tag);
+            Extra _extra = snatchExtras.FirstOrDefault(r => r.id == _id);
+            if (_extra.id < 1)
+            {
+                return;
             }
+            int _order = _extra.Order;
 
-            if (intOrder < 1)
+            if (_order < 1)
             { return; }
 
-            foreach (DataRow dataRow in dt_snatch_extras.Rows)
+            for (int i = 0; i < snatchExtras.Count; i++)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI & dataRow.Field<int>(str_col_Order) == intOrder)
+                _extra = snatchExtras[i];
+                if (_extra.id == _id && _extra.Order == _order)
                 {
-                    dataRow[str_col_Order] = intOrder - 1;
+                    _extra.Order = _order - 1;
                 }
-                else if (dataRow.Field<int>(str_col_Order) == intOrder - 1)
+                else if (_extra.Order == _order - 1)
                 {
-                    dataRow[str_col_Order] = intOrder;
+                    _extra.Order = _order;
                 }
+                snatchExtras[i] = _extra;
             }
 
             snatch_Populate_Extras();
@@ -2364,32 +1733,32 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_snatch_extra_down_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
-
-            int intMax = dt_snatch_extras_Max_Order();
-            int intOrder = -1;
-
-            foreach (DataRow dataRow in dt_snatch_extras.Rows)
+            int _id = (int)(((Button)(sender)).Tag);
+            Extra _extra = snatchExtras.FirstOrDefault(r => r.id == _id);
+            if (_extra.id < 1)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    intOrder = dataRow.Field<int>(str_col_Order);
-                }
+                return;
+            }
+            int _order = _extra.Order;
+            int _max = snatchExtras_Max_Order();
+
+            if (_order < 0 || _order == _max)
+            {
+                return;
             }
 
-            if (intOrder < 0 | intOrder == intMax)
-            { return; }
-
-            foreach (DataRow dataRow in dt_snatch_extras.Rows)
+            for (int i = 0; i < snatchExtras.Count; i++)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI & dataRow.Field<int>(str_col_Order) == intOrder)
+                _extra = snatchExtras[i];
+                if (_extra.id == _id && _extra.Order == _order)
                 {
-                    dataRow[str_col_Order] = intOrder + 1;
+                    _extra.Order = _order + 1;
                 }
-                else if (dataRow.Field<int>(str_col_Order) == intOrder + 1)
+                else if (_extra.Order == _order + 1)
                 {
-                    dataRow[str_col_Order] = intOrder;
+                    _extra.Order = _order;
                 }
+                snatchExtras[i] = _extra;
             }
 
             snatch_Populate_Extras();
@@ -2397,19 +1766,11 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_snatch_extra_delete_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
+            int _id = (int)(((Button)(sender)).Tag);
 
-            for (int i = 0; i < dt_snatch_extras.Rows.Count; i++)
-            {
-                DataRow dataRow = dt_snatch_extras.Rows[i];
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dt_snatch_extras.Rows.RemoveAt(i);
-                    break;
-                }
-            }
-            
-            dt_snatch_extras_Reassign_Order();
+            snatchExtras.RemoveAll(r => r.id == _id);
+
+            snatchExtras_Reassign_Order();
             snatch_Populate_Extras();
             snatch_Populate_Steps(boolPreserveLifts: true);
         }
@@ -2462,12 +1823,9 @@ namespace Weightlifting_Comp_Warmup
                     MessageBox.Show("Length cannot be < 1");
                     return;
                 }
-                DataRow dataRow = dt_snatch_extras.NewRow();
-                dataRow[str_col_Action] = strAction;
-                dataRow[str_col_Length] = intLength;
-                dataRow[str_col_Order] = dt_snatch_extras_Max_Order() + 1;
-                dt_snatch_extras.Rows.Add(dataRow);
-                dt_snatch_extras_Reassign_Order();
+                Extra _extra = new(action: strAction, length: intLength, order: snatchExtras_Max_Order() + 1);
+                snatchExtras.Add(_extra);
+                snatchExtras_Reassign_Order();
                 snatch_Populate_Extras();
                 snatch_Populate_Steps(boolPreserveLifts: true);
             }
@@ -2480,9 +1838,9 @@ namespace Weightlifting_Comp_Warmup
         }
         private void textBox_snatch_extra_TextChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((TextBox)(sender)).Tag);
+            int _id = (int)(((TextBox)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             string strAction = ((TextBox)sender).Text;
 
@@ -2496,11 +1854,13 @@ namespace Weightlifting_Comp_Warmup
                 ((TextBox)sender).BackColor = Color.White;
             }
 
-            foreach (DataRow dataRow in dt_snatch_extras.Rows)
+            for (int i = 0; i < snatchExtras.Count; i++)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI)
+                Extra _extra = snatchExtras[i];
+                if (_extra.id == _id)
                 {
-                    dataRow[str_col_Action] = strAction;
+                    _extra.Action = strAction;
+                    snatchExtras[i] = _extra;
                     return;
                 }
             }
@@ -2509,9 +1869,9 @@ namespace Weightlifting_Comp_Warmup
         }
         private void numericUpDown_snatch_extra_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
+            int _id = (int)(((NumericUpDown)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             int intLength;
             try
@@ -2527,11 +1887,13 @@ namespace Weightlifting_Comp_Warmup
             if (intLength < 1) { return; }
             ((NumericUpDown)sender).BackColor = Color.White;
 
-            foreach (DataRow dataRow in dt_snatch_extras.Rows)
+            for (int i = 0; i < snatchExtras.Count; i++)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI)
+                Extra _extra = snatchExtras[i];
+                if (_extra.id == _id)
                 {
-                    dataRow[str_col_Length] = intLength;
+                    _extra.Length = intLength;
+                    snatchExtras[i] = _extra;
                     break;
                 }
             }
@@ -2540,7 +1902,7 @@ namespace Weightlifting_Comp_Warmup
             {
                 if (control.GetType() == typeof(Label))
                 {
-                    if ((int)((Label)control).Tag == intI)
+                    if ((int)((Label)control).Tag == _id)
                     {
                         ((Label)control).Text = Seconds_To_String(intLength);
                         break;
@@ -2550,68 +1912,24 @@ namespace Weightlifting_Comp_Warmup
 
             snatch_Populate_Steps(boolPreserveLifts: true);
         }
-        private int dt_snatch_extras_Max_Order()
+        private int snatchExtras_Max_Order()
         {
-            int intOut = -1;
-            foreach (DataRow dataRow in dt_snatch_extras.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Order) > intOut)
-                {
-                    intOut = dataRow.Field<int>(str_col_Order);
-                }
-            }
-
-            return intOut;
+            return snatchExtras.Max(r => r.Order);
         }
-        private void dt_snatch_extras_Reassign_Order()
+        private void snatchExtras_Reassign_Order()
         {
-            dt_snatch_extras.DefaultView.Sort = str_col_Order + " ASC";
-            DataTable dataTable = dt_snatch_extras.DefaultView.ToTable();
-
-            int intI = 0;
-            foreach (DataRow dataRow in dataTable.Rows)
+            snatchExtras = snatchExtras.OrderBy(r => r.Order).ToList();
+            int _order = 0;
+            for (int i = 0; i < snatchExtras.Count; i++)
             {
-                dataRow[str_col_Order] = intI;
-                intI++;
+                Extra _extra = snatchExtras[i];
+                _extra.Order = _order; _order++;
+                snatchExtras[i] = _extra;
             }
-
-            dt_snatch_extras = dataTable;
         }
         #endregion
 
         #region snatch jumps
-        private void Insert_Default_snatch_Jumps(DataTable dataTable)
-        {
-            dataTable.Rows.Clear();
-
-            dataTable.Rows.Add(new object[]
-            {
-                1,
-                20,
-            });
-            dataTable.Rows.Add(new object[]
-            {
-                40,
-                10,
-            });
-            dataTable.Rows.Add(new object[]
-            {
-                50,
-                5,
-            });
-            dataTable.Rows.Add(new object[]
-            {
-                80,
-                4,
-            });
-            dataTable.Rows.Add(new object[]
-            {
-                89,
-                3,
-            });
-
-            dataTable.AcceptChanges();
-        }
         private void snatch_Populate_Jumps()
         {
             snatch_Stop_Live();
@@ -2619,117 +1937,102 @@ namespace Weightlifting_Comp_Warmup
             int intFromWeight = 0, intJump = 1;
             panel_snatch_jump.Controls.Clear();
 
-            if (dt_snatch_jumps.Rows.Count == 0)
+            if (snatchJumps.Count == 0)
             {
-                Insert_Default_snatch_Jumps(dt_snatch_jumps); 
+                snatchJumps = Defaults.default_snatchJumps();
             }
 
-            dt_snatch_jumps.DefaultView.Sort = str_col_FromWeight + " ASC";
-            foreach (DataRow dataRow in dt_snatch_jumps.DefaultView.ToTable().Rows)
+            void snatch_Add_Jump_IndividualControls(
+            int intY,
+            int intFromWeight,
+            int intJump,
+            bool bool_Add_Blank)
             {
-                intFromWeight = dataRow.Field<int>(str_col_FromWeight);
-                intJump = dataRow.Field<int>(str_col_Jump);
+                NumericUpDown nmud1 = new()
+                {
+                    Location = new Point(6, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intFromWeight, 0, 0, 0]),
+                    Tag = intFromWeight,
+                    BackColor = Color.White
+                };
+                NumericUpDown nmud2 = new()
+                {
+                    Location = new Point(100, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intJump, 0, 0, 0]),
+                    Tag = intFromWeight,
+                    BackColor = Color.White
+                };
+                nmud1.ValueChanged += button_snatch_jump_FromWeight_ValueChanged;
+                nmud2.ValueChanged += button_snatch_jump_Jump_ValueChanged;
+                panel_snatch_jump.Controls.AddRange([nmud1, nmud2]);
+
+                if (bool_Add_Blank)
+                {
+                    Button btn4 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(200, intY),
+                        Size = new Size(90, 25),
+                        Text = str_buttontext_commit,
+                        UseVisualStyleBackColor = true
+                    };
+                    btn4.Click += button_snatch_jump_commit_click;
+                    panel_snatch_jump.Controls.Add(btn4);
+
+                    nmud1.Select();
+                }
+                else
+                {
+                    if (intFromWeight > 1)
+                    {
+                        Button btn1 = new()
+                        {
+                            FlatStyle = FlatStyle.Flat,
+                            Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                            Location = new Point(200, intY),
+                            Size = new Size(36, 25),
+                            Text = str_buttontext_delete,
+                            UseVisualStyleBackColor = true,
+                            Tag = intFromWeight
+                        };
+                        btn1.Click += button_snatch_jump_delete_click;
+                        panel_snatch_jump.Controls.Add(btn1);
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<int, int> _jump in snatchJumps.OrderBy(r => r.Key))
+            {
+                intFromWeight = _jump.Key;
+                intJump = _jump.Value;
                 snatch_Add_Jump_IndividualControls(
-                    intY
-                    , dataRow.Field<int>(str_col_Id)
-                    , intFromWeight
-                    , intJump
-                    , false
-                    );
+                    intY,
+                    intFromWeight,
+                    intJump,
+                    bool_Add_Blank: false);
                 intY += 30;
             }
             snatch_Add_Jump_IndividualControls(
-                intY
-                , -1
-                , intFromWeight + 1
-                , intJump
-                , true
-                );
-        }
-        private void snatch_Add_Jump_IndividualControls(
-            int intY
-            , int intId
-            , int intFromWeight
-            , int intJump
-            , bool bool_Add_Blank
-            )
-        {
-            NumericUpDown nmud1 = new()
-            {
-                Location = new Point(6, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intFromWeight, 0, 0, 0 }),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            NumericUpDown nmud2 = new()
-            {
-                Location = new Point(100, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intJump, 0, 0, 0 }),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            nmud1.ValueChanged += button_snatch_jump_FromWeight_ValueChanged;
-            nmud2.ValueChanged += button_snatch_jump_Jump_ValueChanged;
-            panel_snatch_jump.Controls.AddRange(new Control[] { nmud1, nmud2 });
-
-            if (bool_Add_Blank)
-            {
-                Button btn4 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(200, intY),
-                    Size = new Size(90, 25),
-                    Text = str_buttontext_commit,
-                    UseVisualStyleBackColor = true
-                };
-                btn4.Click += button_snatch_jump_commit_click;
-                panel_snatch_jump.Controls.Add(btn4);
-
-                nmud1.Select();
-            }
-            else
-            {
-                if (intFromWeight > 1)
-                {
-                    Button btn1 = new()
-                    {
-                        FlatStyle = FlatStyle.Flat,
-                        Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                        Location = new Point(200, intY),
-                        Size = new Size(36, 25),
-                        Text = str_buttontext_delete,
-                        UseVisualStyleBackColor = true,
-                        Tag = intId
-                    };
-                    btn1.Click += button_snatch_jump_delete_click;
-                    panel_snatch_jump.Controls.Add(btn1);
-                }
-            }
+                intY,
+                intFromWeight + 1,
+                intJump,
+                bool_Add_Blank: true);
         }
         private void button_snatch_jump_delete_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
-
-            for (int i = 0; i < dt_snatch_jumps.Rows.Count; i++)
+            int _id = (int)(((Button)(sender)).Tag);
+            if (snatchJumps.TryGetValue(_id, out int _step))
             {
-                DataRow dataRow = dt_snatch_jumps.Rows[i];
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    if (dataRow.Field<int>(str_col_FromWeight) > 1)
-                    {
-                        dt_snatch_jumps.Rows.RemoveAt(i);
-                        break;
-                    }
-                }
+                snatchJumps.Remove(_id);
             }
 
             snatch_Populate_Jumps();
@@ -2787,17 +2090,14 @@ namespace Weightlifting_Comp_Warmup
             }
             if (intFromWeight > 0 & intJump > 0)
             {
-                if (snatch_Jump_Exists(intFromWeight, -1))
+                if (snatchJumps.TryGetValue(intFromWeight, out _))
                 {
                     MessageBox.Show("From Weight - Jump already exists");
                     return;
                 }
                 else
                 {
-                    DataRow dataRow = dt_snatch_jumps.NewRow();
-                    dataRow[str_col_FromWeight] = intFromWeight;
-                    dataRow[str_col_Jump] = intJump;
-                    dt_snatch_jumps.Rows.Add(dataRow);
+                    snatchJumps[intFromWeight] = intJump;
                     snatch_Populate_Jumps();
                     snatch_Populate_Steps(boolPreserveLifts: false);
                 }
@@ -2811,9 +2111,9 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_snatch_jump_FromWeight_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
+            int _id = (int)(((NumericUpDown)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             int intFromWeight;
             try
@@ -2826,34 +2126,28 @@ namespace Weightlifting_Comp_Warmup
                 return;
             }
 
-            if (intFromWeight < 1) 
+            if (intFromWeight < 1)
             {
                 ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return; 
-            }
-            else if (snatch_Jump_Exists(intFromWeight, intI)) 
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return; 
+                return;
             }
             ((NumericUpDown)sender).BackColor = Color.White;
-
-            foreach (DataRow dataRow in dt_snatch_jumps.Rows)
+            if (_id == intFromWeight)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dataRow[str_col_FromWeight] = intFromWeight;
-                    break;
-                }
+                return;
             }
+
+            snatchJumps.TryGetValue(_id, out int _step);
+            snatchJumps.Remove(_id);
+            snatchJumps[intFromWeight] = _step;
 
             snatch_Populate_Steps(boolPreserveLifts: false);
         }
         private void button_snatch_jump_Jump_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
+            int _id = (int)(((NumericUpDown)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             int intJump;
             try
@@ -2866,52 +2160,20 @@ namespace Weightlifting_Comp_Warmup
                 return;
             }
 
-            if (intJump < 1) 
+            if (intJump < 1)
             {
                 ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return; 
+                return;
             }
             ((NumericUpDown)sender).BackColor = Color.White;
-
-            foreach (DataRow dataRow in dt_snatch_jumps.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dataRow[str_col_Jump] = intJump;
-                    break;
-                }
-            }
+            snatchJumps[_id] = intJump;
 
             snatch_Populate_Steps(boolPreserveLifts: false);
-        }
-        private bool snatch_Jump_Exists(int intFromWeight, int intExcludeId)
-        {
-            foreach (DataRow dataRow in dt_snatch_jumps.Rows)
-            {
-                if (dataRow.Field<int>(str_col_FromWeight) == intFromWeight & dataRow.Field<int>(str_col_Id) != intExcludeId) { return true; }
-            }
-            return false;
         }
 
         #endregion
 
         #region snatch times
-        private void Insert_Default_snatch_Times(DataTable dataTable)
-        {
-            dataTable.Rows.Clear();
-            dataTable.Rows.Add(new object[]
-            {
-                1,
-                210,
-            });
-            dataTable.Rows.Add(new object[]
-            {
-                41,
-                150,
-            });
-
-            dataTable.AcceptChanges();
-        }
         private void snatch_Populate_Times()
         {
             snatch_Stop_Live();
@@ -2919,66 +2181,59 @@ namespace Weightlifting_Comp_Warmup
             int intFromWeight = 0, intTime = 1;
             panel_snatch_time.Controls.Clear();
 
-            if (dt_snatch_times.Rows.Count == 0)
+            if (snatchTimes.Count == 0)
             {
-                Insert_Default_snatch_Times(dt_snatch_times);
+                snatchTimes = Defaults.default_snatchTimes();
             }
 
-            dt_snatch_times.DefaultView.Sort = str_col_FromWeight + " ASC";
-            foreach (DataRow dataRow in dt_snatch_times.DefaultView.ToTable().Rows)
+            foreach (KeyValuePair<int, int> _time in snatchTimes.OrderBy(r => r.Key))
             {
-                intFromWeight = dataRow.Field<int>(str_col_FromWeight);
-                intTime = dataRow.Field<int>(str_col_Length);
+                intFromWeight = _time.Key;
+                intTime = _time.Value;
                 snatch_Add_Time_IndividualControls(
-                    intY
-                    , dataRow.Field<int>(str_col_Id)
-                    , intFromWeight
-                    , intTime
-                    , false
-                    );
+                    intY,
+                    intFromWeight,
+                    intTime,
+                    bool_Add_Blank: false);
                 intY += 30;
             }
             snatch_Add_Time_IndividualControls(
-                intY
-                , -1
-                , intFromWeight + 1
-                , intTime
-                , true
-                );
+                intY,
+                intFromWeight + 1,
+                intTime,
+                bool_Add_Blank: true);
         }
         private void snatch_Add_Time_IndividualControls(
-            int intY
-            , int intId
-            , int intFromWeight
-            , int intTime
-            , bool bool_Add_Blank
-            )
+            int intY,
+            int intFromWeight,
+            int intTime,
+            bool bool_Add_Blank)
         {
             NumericUpDown nmud1 = new()
             {
                 Location = new Point(6, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
+                Maximum = new decimal([9999, 0, 0, 0]),
+                Minimum = new decimal([1, 0, 0, 0]),
                 Size = new Size(72, 25),
                 TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intFromWeight, 0, 0, 0 }),
-                Tag = intId,
+                Value = new decimal([intFromWeight, 0, 0, 0]),
+                Tag = intFromWeight,
                 BackColor = Color.White
             };
             NumericUpDown nmud2 = new()
             {
                 Location = new Point(100, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
+                Maximum = new decimal([9999, 0, 0, 0]),
+                Minimum = new decimal([1, 0, 0, 0]),
                 Size = new Size(72, 25),
                 TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intTime, 0, 0, 0 }),
-                Tag = intId,
+                Value = new decimal([intTime, 0, 0, 0]),
+                Tag = intFromWeight,
                 BackColor = Color.White
             };
             nmud1.ValueChanged += button_snatch_time_FromWeight_ValueChanged;
             nmud2.ValueChanged += button_snatch_time_Time_ValueChanged;
-            panel_snatch_time.Controls.AddRange(new Control[] { nmud1, nmud2 });
+            panel_snatch_time.Controls.AddRange([nmud1, nmud2]);
 
             if (bool_Add_Blank)
             {
@@ -3008,7 +2263,7 @@ namespace Weightlifting_Comp_Warmup
                         Size = new Size(36, 25),
                         Text = str_buttontext_delete,
                         UseVisualStyleBackColor = true,
-                        Tag = intId
+                        Tag = intFromWeight
                     };
                     btn1.Click += button_snatch_time_delete_click;
                     panel_snatch_time.Controls.Add(btn1);
@@ -3017,19 +2272,10 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_snatch_time_delete_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
-
-            for (int i = 0; i < dt_snatch_times.Rows.Count; i++)
+            int _id = (int)(((Button)(sender)).Tag);
+            if (snatchTimes.TryGetValue(_id, out int _step))
             {
-                DataRow dataRow = dt_snatch_times.Rows[i];
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    if (dataRow.Field<int>(str_col_FromWeight) > 1)
-                    {
-                        dt_snatch_times.Rows.RemoveAt(i);
-                        break;
-                    }
-                }
+                snatchTimes.Remove(_id);
             }
 
             snatch_Populate_Times();
@@ -3087,17 +2333,14 @@ namespace Weightlifting_Comp_Warmup
             }
             if (intFromWeight > 0 & intTime > 0)
             {
-                if (snatch_Time_Exists(intFromWeight, -1))
+                if (snatchTimes.TryGetValue(intFromWeight, out _))
                 {
                     MessageBox.Show("From Weight - Time already exists");
                     return;
                 }
                 else
                 {
-                    DataRow dataRow = dt_snatch_times.NewRow();
-                    dataRow[str_col_FromWeight] = intFromWeight;
-                    dataRow[str_col_Length] = intTime;
-                    dt_snatch_times.Rows.Add(dataRow);
+                    snatchTimes[intFromWeight] = intTime;
                     snatch_Populate_Times();
                     snatch_Populate_Steps(boolPreserveLifts: true);
                 }
@@ -3111,9 +2354,9 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_snatch_time_FromWeight_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
+            int _id = (int)(((NumericUpDown)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             int intFromWeight;
             try
@@ -3125,35 +2368,28 @@ namespace Weightlifting_Comp_Warmup
                 ((NumericUpDown)sender).BackColor = Color.Yellow;
                 return;
             }
-
             if (intFromWeight < 1)
             {
                 ((NumericUpDown)sender).BackColor = Color.Yellow;
                 return;
             }
-            else if (snatch_Time_Exists(intFromWeight, intI))
+            ((NumericUpDown)sender).BackColor = Color.White;
+            if (_id == intFromWeight)
             {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
                 return;
             }
-            ((NumericUpDown)sender).BackColor = Color.White;
 
-            foreach (DataRow dataRow in dt_snatch_times.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dataRow[str_col_FromWeight] = intFromWeight;
-                    break;
-                }
-            }
+            snatchTimes.TryGetValue(_id, out int _step);
+            snatchTimes.Remove(_id);
+            snatchTimes[intFromWeight] = _step;
 
             snatch_Populate_Steps(boolPreserveLifts: true);
         }
         private void button_snatch_time_Time_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
+            int _id = (int)(((NumericUpDown)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             int intTime;
             try
@@ -3173,24 +2409,9 @@ namespace Weightlifting_Comp_Warmup
             }
             ((NumericUpDown)sender).BackColor = Color.White;
 
-            foreach (DataRow dataRow in dt_snatch_times.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dataRow[str_col_Length] = intTime;
-                    break;
-                }
-            }
+            snatchTimes[_id] = intTime;
 
             snatch_Populate_Steps(boolPreserveLifts: true);
-        }
-        private bool snatch_Time_Exists(int intFromWeight, int intExcludeId)
-        {
-            foreach (DataRow dataRow in dt_snatch_times.Rows)
-            {
-                if (dataRow.Field<int>(str_col_FromWeight) == intFromWeight & dataRow.Field<int>(str_col_Id) != intExcludeId) { return true; }
-            }
-            return false;
         }
 
         #endregion
@@ -3202,41 +2423,33 @@ namespace Weightlifting_Comp_Warmup
             int intY = 1;
             bool boolHasOverrides = false;
             panel_snatch_steps.Controls.Clear();
-            
-            dt_snatch_PLAN = datatable_snatch_Steps(
-                boolPreserveLifts: boolPreserveLifts,
-                datatableIn: dt_snatch_PLAN);
 
-            if (dt_snatch_PLAN == null) { return; }
-            dt_snatch_PLAN.DefaultView.Sort = str_col_Order + " ASC";
-            foreach (DataRow dataRow in dt_snatch_PLAN.DefaultView.ToTable().Rows)
+            snatchStepsPLAN = snatchSteps(
+                _bool_PreserveLifts: boolPreserveLifts,
+                _stepsIn: snatchStepsPLAN);
+
+            if (snatchStepsPLAN == null) { return; }
+            foreach (Step _step in snatchStepsPLAN.OrderBy(r => r.Order))
             {
                 if (!boolHasOverrides)
                 {
-                    if (dataRow.Field<bool>(str_col_Override))
+                    if (_step.Override)
                     {
                         boolHasOverrides = true;
                     }
                 }
-                if (! dataRow.Field<bool>(str_col_PreStep))
+                if (!_step.PreStep)
                 {
-                    snatch_Add_Step_IndividualControls(
-                        intY: intY
-                        , strAction: dataRow.Field<string>(str_col_Action)
-                        , intWeight: dataRow.Field<int>(str_col_Weight)
-                        , intSeconds: dataRow.Field<int>(str_col_Length)
-                        , intTotalSeconds: dataRow.Field<int>(str_col_TotalLength)
-                        , boolOverride: dataRow.Field<bool>(str_col_Override)
-                        );
+                    snatch_Add_Step_IndividualControls(intY: intY, _step: _step);
                     intY += 30;
                 }
             }
             Button btn = new()
-            { 
+            {
                 Location = new Point(6, intY),
                 Size = new Size(50, 28),
                 Text = "+"
-                };
+            };
             btn.Click += snatch_Step_Add;
             panel_snatch_steps.Controls.Add(btn);
             if (boolHasOverrides)
@@ -3250,44 +2463,37 @@ namespace Weightlifting_Comp_Warmup
                 btn2.Click += snatch_Step_ResetOverrides;
                 panel_snatch_steps.Controls.Add(btn2);
             }
-            label_snatch_Setup_StepCount.Text = (dt_snatch_PLAN.Rows.Count - 1).ToString() + " steps";
+            label_snatch_Setup_StepCount.Text = (snatchStepsPLAN.Count - 1).ToString() + " steps";
         }
-        private void snatch_Add_Step_IndividualControls(
-            int intY
-            , string strAction
-            , int intWeight
-            , int intSeconds
-            , int intTotalSeconds
-            , bool boolOverride
-            )
+        private void snatch_Add_Step_IndividualControls(int intY, Step _step)
         {
             Label lbl1 = new()
             {
                 Location = new Point(6, intY),
                 AutoSize = false,
-                Size = new Size(150,28),
-                Text = strAction,
-                Tag = intWeight
+                Size = new Size(150, 28),
+                Text = _step.Action,
+                Tag = _step.Weight
             };
             Label lbl3 = new()
             {
                 Location = new Point(226, intY),
                 AutoSize = false,
                 Size = new Size(90, 28),
-                Text = Seconds_To_String(intSeconds),
-                Tag = intWeight
+                Text = Seconds_To_String(_step.Length),
+                Tag = _step.Weight
             };
             Label lbl4 = new()
             {
                 Location = new Point(317, intY),
                 AutoSize = false,
                 Size = new Size(90, 28),
-                Text = Seconds_To_String(intTotalSeconds),
-                Tag = intWeight
+                Text = Seconds_To_String(_step.TotalLength),
+                Tag = _step.Weight
             };
-            panel_snatch_steps.Controls.AddRange(new Control[] { lbl1, lbl3, lbl4 });
+            panel_snatch_steps.Controls.AddRange([lbl1, lbl3, lbl4]);
 
-            if (intWeight > 0)
+            if (_step.Weight > 0)
             {
                 lbl1.Click += snatch_Weight_Override_Click;
                 lbl3.Click += snatch_Weight_Override_Click;
@@ -3297,13 +2503,13 @@ namespace Weightlifting_Comp_Warmup
                     Location = new Point(152, intY),
                     AutoSize = false,
                     Size = new Size(50, 28),
-                    Text = intWeight.ToString(),
-                    Tag = intWeight
+                    Text = _step.Weight.ToString(),
+                    Tag = _step.Weight
                 };
                 lbl2.Click += snatch_Weight_Override_Click;
-                if (boolOverride)
+                if (_step.Override)
                 {
-                    Font fontx = new("Gadugi", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                    Font fontx = new("Gadugi", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
                     lbl1.Font = fontx;
                     lbl2.Font = fontx;
                     lbl3.Font = fontx;
@@ -3312,21 +2518,21 @@ namespace Weightlifting_Comp_Warmup
                 panel_snatch_steps.Controls.Add(lbl2);
             }
         }
-        
-        private DataTable datatable_snatch_Steps(
-            bool boolPreserveLifts,
-            DataTable datatableIn = null
+
+        private List<Step> snatchSteps(
+            bool _bool_PreserveLifts,
+            List<Step> _stepsIn = null
             )
         {
-            return datatable_X_Steps(
-                boolPreserveLifts: boolPreserveLifts,
-                dt_x_extras: dt_snatch_extras,
-                dt_x_jumps: dt_snatch_jumps,
-                dt_x_times: dt_snatch_times,
-                int_x_Sec_End: int_snatch_Sec_End,
-                int_x_Wgt_Opener: int_snatch_Wgt_Opener,
-                bool_Opener_in_Warmup: bool_snatch_OpenerWarmup,
-                datatableIn: datatableIn);
+            return x_Steps(
+                _bool_PreserveLifts: _bool_PreserveLifts,
+                _extras: snatchExtras,
+                _jumps: snatchJumps,
+                _times: snatchTimes,
+                _int_x_Sec_End: int_snatch_Sec_End,
+                _int_x_Wgt_Opener: int_snatch_Wgt_Opener,
+                _bool_Opener_in_Warmup: bool_snatch_OpenerWarmup,
+                _stepsIn: _stepsIn);
         }
         private void snatch_Step_Add(object sender, EventArgs e)
         {
@@ -3335,49 +2541,25 @@ namespace Weightlifting_Comp_Warmup
                 snatch_Stop_Live();
             }
 
-            if (dt_snatch_PLAN != null)
+            if (snatchStepsPLAN != null && snatchStepsPLAN.Count > 2 &&
+                snatchStepsPLAN[snatchStepsPLAN.Count - 1].Weight > 0)
             {
-                if (dt_snatch_PLAN.Rows.Count > 2)
+                int _int_RowIndex = snatchStepsPLAN.Count - 1;
+                string _str_NewWeight = snatchStepsPLAN[_int_RowIndex].Weight.ToString();
+                ShowInputDialog(ref _str_NewWeight);
+                if (int.TryParse(_str_NewWeight, out int _int_NewWeight))
                 {
-                    if (!dt_snatch_PLAN.Rows[dt_snatch_PLAN.Rows.Count - 1].IsNull(str_col_Weight))
+                    if (snatchStepsPLAN.Any(r => r.Weight == _int_NewWeight))
                     {
-                        if (dt_snatch_PLAN.Rows[dt_snatch_PLAN.Rows.Count - 1].Field<int>(str_col_Weight) > 0)
-                        {
-                            int int_RowIndex = dt_snatch_PLAN.Rows.Count - 1;
-                            string strNewWeight = dt_snatch_PLAN.Rows[int_RowIndex].Field<int>(str_col_Weight).ToString();
-                            ShowInputDialog(ref strNewWeight);
-                            if (int.TryParse(strNewWeight, out int intNewWeight))
-                            {
-                                bool boolFound = false;
-                                foreach (DataRow dR in dt_snatch_PLAN.Rows)
-                                {
-                                    if (!dR.IsNull(str_col_Weight))
-                                    {
-                                        if (dR.Field<int>(str_col_Weight) == intNewWeight)
-                                        {
-                                            boolFound = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (boolFound)
-                                {
-                                    MessageBox.Show(intNewWeight.ToString() + " is already a step");
-                                }
-                                else
-                                {
-                                    DataRow dRNew = dt_snatch_PLAN.NewRow();
-                                    dRNew[str_col_Action] = "Lift";
-                                    dRNew[str_col_Weight] = intNewWeight;
-                                    dRNew[str_col_PreStep] = false;
-                                    dRNew[str_col_Override] = true;
-                                    dt_snatch_PLAN.Rows.Add(dRNew);
-                                    dt_snatch_PLAN.AcceptChanges();
-
-                                    snatch_Populate_Steps(boolPreserveLifts: true);
-                                }
-                            }
-                        }
+                        MessageBox.Show(_int_NewWeight.ToString() + " is already a step");
+                    }
+                    else
+                    {
+                        snatchStepsPLAN.Add(new(
+                            action: "Lift",
+                            weight: _int_NewWeight,
+                            @override: true));
+                        snatch_Populate_Steps(boolPreserveLifts: true);
                     }
                 }
             }
@@ -3392,58 +2574,41 @@ namespace Weightlifting_Comp_Warmup
         }
         private void snatch_Weight_Override_Click(object sender, EventArgs e)
         {
-            int intStartWeight = 0;
+            int _int_StartWeight = 0;
             Label _labelI = (Label)sender;
             try
             {
-                intStartWeight = (int)_labelI.Tag;
-            } catch { }
+                _int_StartWeight = (int)_labelI.Tag;
+            }
+            catch { }
 
-            if (intStartWeight > 0 & dt_snatch_PLAN != null)
+            if (_int_StartWeight > 0 & snatchStepsPLAN != null)
             {
-                foreach (DataRow dR in dt_snatch_PLAN.Rows)
+                Step _step = snatchStepsPLAN.FirstOrDefault(r => r.Weight.HasValue && r.Weight.Value == _int_StartWeight);
+                if (_step != null)
                 {
-                    if (!dR.IsNull(str_col_Weight))
+                    if (bool_snatch_Live)
                     {
-                        if (dR.Field<int>(str_col_Weight) == intStartWeight)
+                        snatch_Stop_Live();
+                    }
+                    string strNewWeight = _int_StartWeight.ToString();
+                    if (ShowInputDialog(ref strNewWeight) == DialogResult.OK)
+                    {
+                        if (int.TryParse(strNewWeight, out int _int_NewWeight))
                         {
-                            if (bool_snatch_Live)
+                            if (_int_NewWeight != _int_StartWeight)
                             {
-                                snatch_Stop_Live();
-                            }
-                            string strNewWeight = intStartWeight.ToString();
-                            if (ShowInputDialog(ref strNewWeight) == DialogResult.OK)
-                            {
-                                if (int.TryParse(strNewWeight, out int intNewWeight))
+                                if (snatchStepsPLAN.Any(r => r.Weight == _int_NewWeight))
                                 {
-                                    if (intNewWeight != intStartWeight)
-                                    {
-                                        bool boolFound = false;
-                                        foreach (DataRow dRCheck in dt_snatch_PLAN.Rows)
-                                        {
-                                            if (!dRCheck.IsNull(str_col_Weight))
-                                            {
-                                                if (dRCheck.Field<int>(str_col_Weight) == intNewWeight)
-                                                {
-                                                    boolFound = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        if (boolFound)
-                                        {
-                                            MessageBox.Show(intNewWeight.ToString() + " is already a step");
-                                        }
-                                        else
-                                        {
-                                            dR[str_col_Weight] = intNewWeight;
-                                            dR[str_col_Override] = true;
-                                            snatch_Populate_Steps(boolPreserveLifts: true);
-                                        }
-                                    }
+                                    MessageBox.Show(_int_NewWeight.ToString() + " is already a step");
+                                }
+                                else
+                                {
+                                    _step.Weight = _int_NewWeight;
+                                    _step.Override = true;
+                                    snatch_Populate_Steps(boolPreserveLifts: true);
                                 }
                             }
-                            break;
                         }
                     }
                 }
@@ -3486,11 +2651,12 @@ namespace Weightlifting_Comp_Warmup
             {
                 if (timer_snatch_Live.Enabled)
                 {
-                    timer_snatch_Live.Enabled = false; 
+                    timer_snatch_Live.Enabled = false;
                     try
                     {
                         timer_snatch_Live.Tick -= timer_snatch_Live_Tick;
-                    } catch { }
+                    }
+                    catch { }
                 }
             }
             datetime_snatch_Start = DateTime.Today.AddHours(dateTimePicker_snatch_Start.Value.Hour).AddMinutes(dateTimePicker_snatch_Start.Value.Minute);
@@ -3523,35 +2689,24 @@ namespace Weightlifting_Comp_Warmup
         }
         private void Clear_snatch_Live_Steps()
         {
-            dt_snatch_LIVE = null;
+            snatchStepsLIVE = null;
             panel_snatch_Live_Steps.Controls.Clear();
         }
         private void Populate_snatch_Live_Steps()
         {
             Clear_snatch_Live_Steps();
 
-            if (dt_snatch_PLAN is null)
+            if (snatchStepsPLAN is null)
             {
                 snatch_Populate_Steps(boolPreserveLifts: false);
             }
-            if (dt_snatch_PLAN is null)
+            if (snatchStepsPLAN is null)
             {
                 MessageBox.Show("An error has occurred. Step plan could not be determined.");
                 this.Close();
                 return;
             }
-            dt_snatch_LIVE = dt_snatch_PLAN.Copy();
-            dt_snatch_LIVE.Columns.AddRange(
-                new DataColumn[]
-                {
-                    new DataColumn(str_col_PanelLiveStep, typeof(Panel))
-                    , new DataColumn(str_col_LabelAction, typeof(Label))
-                    , new DataColumn(str_col_LabelTime, typeof(Label))
-                    , new DataColumn(str_col_LabelProgressTime, typeof(Label))
-                    , new DataColumn(str_col_LabelWeight, typeof(Label))
-                    , new DataColumn(str_col_ProgressBarStep, typeof(ProgressBar))
-                    , new DataColumn(str_col_GraphicPanel, typeof(Panel))
-                });
+            snatchStepsLIVE = snatchStepsPLAN.Select(r => r.Clone()).ToList();
 
             int intY = 1;
             int _int_panel_Live_Step_Width = panel_snatch_Live_Steps.Width - 4;
@@ -3561,7 +2716,7 @@ namespace Weightlifting_Comp_Warmup
             Point _point_progressBar_Step_Location = new(300, 6);
 
             SuspendLayout();
-            foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
+            foreach (Step _step in snatchStepsLIVE)
             {
                 if (panel_snatch_Live_Steps.VerticalScroll.Visible)
                 {
@@ -3571,20 +2726,8 @@ namespace Weightlifting_Comp_Warmup
                 {
                     _int_progressBar_Step_Width = _int_progressBar_Step_Width_NoScroll;
                 }
-                string strActionText;
-                bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
-                if (boolIsLift)
-                {
-                    strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString() + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
-                        Environment.NewLine +
-                        "from " + Seconds_To_String(dataRow.Field<int>(str_col_TotalLengthReverse)) + " out";
-                }
-                else
-                {
-                    strActionText = dataRow.Field<string>(str_col_Action) + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
-                        Environment.NewLine +
-                        "from " + Seconds_To_String(dataRow.Field<int>(str_col_TotalLengthReverse)) + " out";
-                }
+                bool _isLift = (_step.Weight > 0);
+                string strActionText = ActionTextString(_step: _step, _isFuture: true);
                 Panel panel_Live_Step = new()
                 {
                     Size = new Size(_int_panel_Live_Step_Width, 80),
@@ -3605,7 +2748,7 @@ namespace Weightlifting_Comp_Warmup
                 {
                     Size = new Size(_int_progressBar_Step_Width, 65),
                     Location = _point_progressBar_Step_Location,
-                    Maximum = dataRow.Field<int>(str_col_Length),
+                    Maximum = _step.Length,
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 };
                 if (progressBar_Step.Maximum == 0)
@@ -3614,7 +2757,7 @@ namespace Weightlifting_Comp_Warmup
                     progressBar_Step.Value = 1;
                 }
                 Label label_Weight = null;
-                if (boolIsLift)
+                if (_isLift)
                 {
                     label_Weight = new Label
                     {
@@ -3624,13 +2767,13 @@ namespace Weightlifting_Comp_Warmup
                         Size = new Size(105, 30),
                         Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
                         ForeColor = SystemColors.Window,
-                        Text = "lift " + dataRow.Field<int>(str_col_Weight).ToString(),
+                        Text = "lift " + _step.Weight.ToString(),
                         TextAlign = ContentAlignment.MiddleCenter,
                         Anchor = AnchorStyles.Top | AnchorStyles.Right,
                     };
-                    label_Weight.Text = "lift " + dataRow.Field<int>(str_col_Weight).ToString();
+                    label_Weight.Text = "lift " + _step.Weight.ToString();
 
-                    if (dataRow.Field<bool>(str_col_Override))
+                    if (_step.Override)
                     {
                         label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Italic);
                         label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold | FontStyle.Italic);
@@ -3665,21 +2808,21 @@ namespace Weightlifting_Comp_Warmup
                     TextAlign = ContentAlignment.MiddleCenter,
                     Anchor = AnchorStyles.Top | AnchorStyles.Right,
                 };
-                panel_Live_Step.Controls.AddRange(new Control[]
-                {
+                panel_Live_Step.Controls.AddRange(
+                [
                     label_Action,
                     progressBar_Step,
                     label_Progress_Time,
                     label_Time
-                });
+                ]);
                 WeightBox weightBoxGraphic = null;
-                if (boolIsLift)
+                if (_isLift)
                 {
                     weightBoxGraphic = new()
                     {
                         boolOpener = false,
                         intWeightBar = int_Barbell,
-                        intWeight = dataRow.Field<int>(str_col_Weight),
+                        intWeight = (int)_step.Weight,
                         intShadowWidth = 1,
                         intPlateGap = -1,
                         Size = new Size(120, 65),
@@ -3692,25 +2835,24 @@ namespace Weightlifting_Comp_Warmup
                     panel_Live_Step.Controls.Add(weightBoxGraphic);
                 }
                 progressBar_Step.BringToFront();
-                dataRow[str_col_PanelLiveStep] = panel_Live_Step;
-                dataRow[str_col_LabelAction] = label_Action;
-                dataRow[str_col_ProgressBarStep] = progressBar_Step;
+                _step.Controls.PanelLiveStep = panel_Live_Step;
+                _step.Controls.LabelAction = label_Action;
+                _step.Controls.ProgressBarStep = progressBar_Step;
                 weightBoxGraphic?.BringToFront();
-                if (label_Weight != null) 
+                if (label_Weight != null)
                 {
                     panel_Live_Step.Controls.Add(label_Weight);
-                    dataRow[str_col_LabelWeight] = label_Weight;
+                    _step.Controls.LabelWeight = label_Weight;
                     label_Weight.BringToFront();
                 }
                 label_Time.BringToFront();
-                dataRow[str_col_LabelTime] = label_Time;
+                _step.Controls.LabelTime = label_Time;
                 label_Progress_Time.BringToFront();
-                dataRow[str_col_LabelProgressTime] = label_Progress_Time;
+                _step.Controls.LabelProgressTime = label_Progress_Time;
                 panel_snatch_Live_Steps.Controls.Add(panel_Live_Step);
 
                 intY += 81;
             }
-            dt_snatch_LIVE.AcceptChanges();
             int_snatch_Warmup_Step = -1;
             label_snatch_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
             panel_snatch_Live_Times.Visible = true;
@@ -3831,51 +2973,49 @@ namespace Weightlifting_Comp_Warmup
             }
 
             int _intStep = -1;
-            foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
+            foreach (Step _step in snatchStepsLIVE)
             {
-                if (dataRow.Field<int>(str_col_TotalLengthReverse) >= intSecondsToOpen)
+                if (_step.TotalLengthReverse >= intSecondsToOpen &&
+                    _step.Order > _intStep)
                 {
-                    if (dataRow.Field<int>(str_col_Order) > _intStep)
-                    {
-                        _intStep = dataRow.Field<int>(str_col_Order);
-                    }
+                    _intStep = _step.Order;
                 }
             }
 
             if (_intStep == -1) // adjust wait time
             {
                 int intTLR = 0;
-                foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
+                foreach (Step _step in snatchStepsLIVE)
                 {
-                    if (dataRow.Field<int>(str_col_Order) == 1)
+                    if (_step.Order == 1)
                     {
-                        intTLR = dataRow.Field<int>(str_col_TotalLengthReverse);
+                        intTLR = _step.TotalLengthReverse;
                         break;
                     }
                 }
                 if (intTLR > 0 & intSecondsToOpen > intTLR)
                 {
                     int intSecToAdd = 0;
-                    foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
+                    foreach (Step _step in snatchStepsLIVE)
                     {
-                        if (dataRow.Field<bool>(str_col_PreStep))
+                        if (_step.PreStep)
                         {
-                            intSecToAdd = (intSecondsToOpen - intTLR) - dataRow.Field<int>(str_col_Length);
-                            dataRow[str_col_Length] = intSecondsToOpen - intTLR;
-                            dataRow.Field<ProgressBar>(str_col_ProgressBarStep).Maximum = intSecondsToOpen - intTLR;
-                            dataRow[str_col_TotalLength] = intSecondsToOpen - intTLR;
-                            dataRow[str_col_TotalLengthReverse] = intSecondsToOpen;
+                            intSecToAdd = (intSecondsToOpen - intTLR) - _step.Length;
+                            _step.Length = intSecondsToOpen - intTLR;
+                            _step.Controls.ProgressBarStep.Maximum = intSecondsToOpen - intTLR;
+                            _step.TotalLength = intSecondsToOpen - intTLR;
+                            _step.TotalLengthReverse = intSecondsToOpen;
                             _intStep = 0;
                             break;
                         }
                     }
                     if (_intStep == 0 & intSecToAdd != 0)
                     {
-                        foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
+                        foreach (Step _step in snatchStepsLIVE)
                         {
-                            if (! dataRow.Field<bool>(str_col_PreStep))
+                            if (!_step.PreStep)
                             {
-                                dataRow[str_col_TotalLength] = dataRow.Field<int>(str_col_TotalLength) + intSecToAdd;
+                                _step.TotalLength += intSecToAdd;
                             }
                         }
                     }
@@ -3890,14 +3030,14 @@ namespace Weightlifting_Comp_Warmup
                 Label label_Progress_Time;
                 bool boolUpdBGsFGs = (_intStep != int_snatch_Warmup_Step);
 
-                foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
+                foreach (Step _step in snatchStepsLIVE)
                 {
-                    int _int_Order = dataRow.Field<int>(str_col_Order);
-                    Label label_Time = dataRow.Field<Label>(str_col_LabelTime);
+                    int _int_Order = _step.Order;
+                    Label label_Time = _step.Controls.LabelTime;
                     if (_int_Order > _intStep)
                     {
                         label_Time.Visible = true;
-                        label_Time.Text = _dateTime_Open.AddSeconds(-dataRow.Field<int>(str_col_TotalLengthReverse)).ToString("HH:mm:ss");
+                        label_Time.Text = _dateTime_Open.AddSeconds(-_step.TotalLengthReverse).ToString("HH:mm:ss");
                     }
                     else
                     {
@@ -3905,34 +3045,24 @@ namespace Weightlifting_Comp_Warmup
                     }
                 }
 
-                foreach (DataRow dataRow in dt_snatch_LIVE.Rows)
+                foreach (Step _step in snatchStepsLIVE)
                 {
-                    int _int_Order = dataRow.Field<int>(str_col_Order);
+                    int _int_Order = _step.Order;
                     if (_int_Order == _intStep)
                     {
-                        panel_Live_Step = dataRow.Field<Panel>(str_col_PanelLiveStep);
-                        label_Progress_Time = dataRow.Field<Label>(str_col_LabelProgressTime);
-                        progressBar_Step = dataRow.Field<ProgressBar>(str_col_ProgressBarStep);
+                        panel_Live_Step = _step.Controls.PanelLiveStep;
+                        label_Progress_Time = _step.Controls.LabelProgressTime;
+                        progressBar_Step = _step.Controls.ProgressBarStep;
 
-                        int intStepLength = dataRow.Field<int>(str_col_Length);
-                        int intSecIntoStep = dataRow.Field<int>(str_col_TotalLengthReverse) - intSecondsToOpen;
+                        int intStepLength = _step.Length;
+                        int intSecIntoStep = _step.TotalLengthReverse - intSecondsToOpen;
                         label_Progress_Time.Text = Seconds_To_String(_int_Seconds: intStepLength - intSecIntoStep, _bool_ShortString: true);
                         progressBar_Step.Value = intSecIntoStep;
 
                         if (boolUpdBGsFGs)
                         {
-                            string strActionText;
-                            bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
-                            if (boolIsLift)
-                            {
-                                strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString();
-                            }
-                            else
-                            {
-                                strActionText = dataRow.Field<string>(str_col_Action);
-                            }
-                            label_Action = dataRow.Field<Label>(str_col_LabelAction);
-                            label_Action.Text = strActionText;
+                            label_Action = _step.Controls.LabelAction;
+                            label_Action.Text = ActionTextString(_step: _step, _isFuture: false);
                             label_Progress_Time.Visible = true;
                         }
 
@@ -3948,44 +3078,17 @@ namespace Weightlifting_Comp_Warmup
                     }
                     else if (boolUpdBGsFGs)
                     {
-                        panel_Live_Step = dataRow.Field<Panel>(str_col_PanelLiveStep);
+                        panel_Live_Step = _step.Controls.PanelLiveStep;
                         panel_Live_Step.BackColor = color_snatch_Live_BG;
                         panel_Live_Step.ForeColor = color_Live_Default_FG;
-                        label_Progress_Time = dataRow.Field<Label>(str_col_LabelProgressTime);
+                        label_Progress_Time = _step.Controls.LabelProgressTime;
                         label_Progress_Time.Visible = false;
-                        progressBar_Step = dataRow.Field<ProgressBar>(str_col_ProgressBarStep);
-                        label_Action = dataRow.Field<Label>(str_col_LabelAction);
-                        string strActionText;
-                        bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
-
-                        if (_int_Order < _intStep)
-                        {
-                            progressBar_Step.Value = progressBar_Step.Maximum;
-                            if (boolIsLift)
-                            {
-                                strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString();
-                            }
-                            else
-                            {
-                                strActionText = dataRow.Field<string>(str_col_Action);
-                            }
-                        }
-                        else
-                        {
-                            progressBar_Step.Value = 0;
-                            if (boolIsLift)
-                            {
-                                strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString() + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
-                                    Environment.NewLine +
-                                    "from " + Seconds_To_String(dataRow.Field<int>(str_col_TotalLengthReverse)) + " out";
-                            }
-                            else
-                            {
-                                strActionText = dataRow.Field<string>(str_col_Action) + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
-                                    Environment.NewLine +
-                                    "from " + Seconds_To_String(dataRow.Field<int>(str_col_TotalLengthReverse)) + " out";
-                            }
-                        }
+                        progressBar_Step = _step.Controls.ProgressBarStep;
+                        label_Action = _step.Controls.LabelAction;
+                        bool _isFuture = (_int_Order >= _intStep);
+                        string strActionText = ActionTextString(_step: _step, _isFuture: _isFuture);
+                        bool boolIsLift = (_step.Weight > 0);
+                        progressBar_Step.Value = (_isFuture ? 0 : progressBar_Step.Maximum);
 
                         label_Action.Text = strActionText;
                     }
@@ -4011,10 +3114,10 @@ namespace Weightlifting_Comp_Warmup
         {
             if (bool_snatch_Live & bool_snatch_LiveLifting)
             {
-                double dbl_Percent = (double)(e.X) / (double)(progressBar_snatch_Live_StageLift.Width);
+                double dbl_Percent = e.X / (double)(progressBar_snatch_Live_StageLift.Width);
                 if (dbl_Percent >= 0 & dbl_Percent <= 1)
                 {
-                    progressBar_snatch_Live_StageLift.Value = (int)((double)progressBar_snatch_Live_StageLift.Maximum * dbl_Percent);
+                    progressBar_snatch_Live_StageLift.Value = (int)(progressBar_snatch_Live_StageLift.Maximum * dbl_Percent);
                 }
             }
         }
@@ -4150,7 +3253,7 @@ namespace Weightlifting_Comp_Warmup
                 return;
             }
 
-            if (_int_cj_Sec_Stage < 1) 
+            if (_int_cj_Sec_Stage < 1)
             {
                 (numericUpDown_cj_time_stage).BackColor = Color.Yellow;
                 return;
@@ -4226,165 +3329,145 @@ namespace Weightlifting_Comp_Warmup
         #endregion
 
         #region cj extras
-        private void Insert_Auto_cj_Extras(DataTable dataTable)
-        {
-            DataRow dataRow;
-            int intOrder = 0;
-
-            dataTable.Rows.Clear();
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_Action] = "Stretch";
-            dataRow[str_col_Length] = 5 * 60;
-            dataRow[str_col_Order] = intOrder;
-            dataTable.Rows.Add(dataRow);
-
-            dataTable.AcceptChanges();
-        }
         private void cj_Populate_Extras()
         {
             cj_Stop_Live();
             int intY = 1;
             panel_cj_extra.Controls.Clear();
 
-            dt_cj_extras.DefaultView.Sort = str_col_Order + " ASC";
-            foreach (DataRow dataRow in dt_cj_extras.DefaultView.ToTable().Rows)
+            void cj_Add_Extra_IndividualControls(
+                int intY,
+                int intId,
+                string strTBText,
+                int intLength,
+                bool bool_Add_Blank)
+            {
+                TextBox tb = new()
+                {
+                    Text = strTBText,
+                    Location = new Point(6, intY),
+                    Size = new Size(157, 25),
+                    Tag = intId,
+                    BackColor = Color.White
+                };
+                NumericUpDown nmud = new()
+                {
+                    Location = new Point(169, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intLength, 0, 0, 0]),
+                    Tag = intId,
+                    BackColor = Color.White
+                };
+                Label lbl = new()
+                {
+                    Location = new Point(250, intY + 3),
+                    Text = Seconds_To_String(intLength),
+                    Tag = intId
+                };
+                tb.TextChanged += textBox_cj_extra_TextChanged;
+                nmud.ValueChanged += numericUpDown_cj_extra_ValueChanged;
+                panel_cj_extra.Controls.AddRange([tb, nmud, lbl]);
+
+                if (bool_Add_Blank)
+                {
+                    Button btn4 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(258 + 100, intY),
+                        Size = new Size(125, 25),
+                        Text = str_buttontext_commit,
+                        UseVisualStyleBackColor = true
+                    };
+                    btn4.Click += button_cj_extra_commit_click;
+                    panel_cj_extra.Controls.Add(btn4);
+
+                    tb.Select();
+                }
+                else
+                {
+                    Button btn1 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(258 + 100, intY),
+                        Size = new Size(32, 25),
+                        Text = str_buttontext_up,
+                        UseVisualStyleBackColor = true,
+                        Tag = intId
+                    };
+                    Button btn2 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(301 + 100, intY),
+                        Size = new Size(32, 25),
+                        Text = str_buttontext_down,
+                        UseVisualStyleBackColor = true,
+                        Tag = intId
+                    };
+                    Button btn3 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(347 + 100, intY),
+                        Size = new Size(36, 25),
+                        Text = str_buttontext_delete,
+                        UseVisualStyleBackColor = true,
+                        Tag = intId
+                    };
+                    btn1.Click += button_cj_extra_up_click;
+                    btn2.Click += button_cj_extra_down_click;
+                    btn3.Click += button_cj_extra_delete_click;
+                    panel_cj_extra.Controls.AddRange([btn1, btn2, btn3]);
+                }
+            }
+
+            foreach (Extra _extra in cjExtras.OrderBy(r => r.Order))
             {
                 cj_Add_Extra_IndividualControls(
-                    intY: intY
-                    , intId: dataRow.Field<int>(str_col_Id)
-                    , strTBText: dataRow.Field<string>(str_col_Action)
-                    , intLength: dataRow.Field<int>(str_col_Length)
-                    , bool_Add_Blank: false
-                    );
+                    intY: intY,
+                    intId: _extra.id,
+                    strTBText: _extra.Action,
+                    intLength: _extra.Length,
+                    bool_Add_Blank: false);
                 intY += 30;
             }
             cj_Add_Extra_IndividualControls(
-                intY: intY
-                , intId: -1
-                , strTBText: string.Empty
-                , intLength: 60
-                , bool_Add_Blank: true
-                );
-        }
-        private void cj_Add_Extra_IndividualControls(
-            int intY
-            , int intId
-            , string strTBText
-            , int intLength
-            , bool bool_Add_Blank
-            )
-        {
-            TextBox tb = new()
-            {
-                Text = strTBText,
-                Location = new Point(6, intY),
-                Size = new Size(157, 25),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            NumericUpDown nmud = new()
-            {
-                Location = new Point(169, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intLength, 0, 0, 0 }),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            Label lbl = new()
-            {
-                Location = new Point(250, intY + 3),
-                Text = Seconds_To_String(intLength),
-                Tag = intId
-            };
-            tb.TextChanged += textBox_cj_extra_TextChanged;
-            nmud.ValueChanged += numericUpDown_cj_extra_ValueChanged;
-            panel_cj_extra.Controls.AddRange(new Control[] { tb, nmud, lbl });
-
-            if (bool_Add_Blank)
-            {
-                Button btn4 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(258 + 100, intY),
-                    Size = new Size(125, 25),
-                    Text = str_buttontext_commit,
-                    UseVisualStyleBackColor = true
-                };
-                btn4.Click += button_cj_extra_commit_click;
-                panel_cj_extra.Controls.Add(btn4);
-
-                tb.Select();
-            }
-            else
-            {
-                Button btn1 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(258 + 100, intY),
-                    Size = new Size(32, 25),
-                    Text = str_buttontext_up,
-                    UseVisualStyleBackColor = true,
-                    Tag = intId
-                };
-                Button btn2 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(301 + 100, intY),
-                    Size = new Size(32, 25),
-                    Text = str_buttontext_down,
-                    UseVisualStyleBackColor = true,
-                    Tag = intId
-                };
-                Button btn3 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(347 + 100, intY),
-                    Size = new Size(36, 25),
-                    Text = str_buttontext_delete,
-                    UseVisualStyleBackColor = true,
-                    Tag = intId
-                };
-                btn1.Click += button_cj_extra_up_click;
-                btn2.Click += button_cj_extra_down_click;
-                btn3.Click += button_cj_extra_delete_click;
-                panel_cj_extra.Controls.AddRange(new Control[] { btn1, btn2, btn3 });
-            }
+                intY: intY,
+                intId: -1,
+                strTBText: string.Empty,
+                intLength: 60,
+                bool_Add_Blank: true);
         }
         private void button_cj_extra_up_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
-
-            int intOrder = -1;
-
-            foreach (DataRow dataRow in dt_cj_extras.Rows)
-            { 
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    intOrder = dataRow.Field<int>(str_col_Order);
-                }
+            int _id = (int)(((Button)(sender)).Tag);
+            Extra _extra = cjExtras.FirstOrDefault(r => r.id == _id);
+            if (_extra.id < 1)
+            {
+                return;
             }
+            int _order = _extra.Order;
 
-            if (intOrder < 1)
+            if (_order < 1)
             { return; }
 
-            foreach (DataRow dataRow in dt_cj_extras.Rows)
+            for (int i = 0; i < cjExtras.Count; i++)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI & dataRow.Field<int>(str_col_Order) == intOrder)
+                _extra = cjExtras[i];
+                if (_extra.id == _id && _extra.Order == _order)
                 {
-                    dataRow[str_col_Order] = intOrder - 1;
+                    _extra.Order = _order - 1;
                 }
-                else if (dataRow.Field<int>(str_col_Order) == intOrder - 1)
+                else if (_extra.Order == _order - 1)
                 {
-                    dataRow[str_col_Order] = intOrder;
+                    _extra.Order = _order;
                 }
+                cjExtras[i] = _extra;
             }
 
             cj_Populate_Extras();
@@ -4392,32 +3475,32 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_cj_extra_down_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
-
-            int intMax = dt_cj_extras_Max_Order();
-            int intOrder = -1;
-
-            foreach (DataRow dataRow in dt_cj_extras.Rows)
+            int _id = (int)(((Button)(sender)).Tag);
+            Extra _extra = cjExtras.FirstOrDefault(r => r.id == _id);
+            if (_extra.id < 1)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    intOrder = dataRow.Field<int>(str_col_Order);
-                }
+                return;
+            }
+            int _order = _extra.Order;
+            int _max = cjExtras_Max_Order();
+
+            if (_order < 0 || _order == _max)
+            {
+                return;
             }
 
-            if (intOrder < 0 | intOrder == intMax)
-            { return; }
-
-            foreach (DataRow dataRow in dt_cj_extras.Rows)
+            for (int i = 0; i < cjExtras.Count; i++)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI & dataRow.Field<int>(str_col_Order) == intOrder)
+                _extra = cjExtras[i];
+                if (_extra.id == _id && _extra.Order == _order)
                 {
-                    dataRow[str_col_Order] = intOrder + 1;
+                    _extra.Order = _order + 1;
                 }
-                else if (dataRow.Field<int>(str_col_Order) == intOrder + 1)
+                else if (_extra.Order == _order + 1)
                 {
-                    dataRow[str_col_Order] = intOrder;
+                    _extra.Order = _order;
                 }
+                cjExtras[i] = _extra;
             }
 
             cj_Populate_Extras();
@@ -4425,19 +3508,11 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_cj_extra_delete_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
+            int _id = (int)(((Button)(sender)).Tag);
 
-            for (int i = 0; i < dt_cj_extras.Rows.Count; i++)
-            {
-                DataRow dataRow = dt_cj_extras.Rows[i];
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dt_cj_extras.Rows.RemoveAt(i);
-                    break;
-                }
-            }
-            
-            dt_cj_extras_Reassign_Order();
+            cjExtras.RemoveAll(r => r.id == _id);
+
+            cjExtras_Reassign_Order();
             cj_Populate_Extras();
             cj_Populate_Steps(boolPreserveLifts: true);
         }
@@ -4490,12 +3565,9 @@ namespace Weightlifting_Comp_Warmup
                     MessageBox.Show("Length cannot be < 1");
                     return;
                 }
-                DataRow dataRow = dt_cj_extras.NewRow();
-                dataRow[str_col_Action] = strAction;
-                dataRow[str_col_Length] = intLength;
-                dataRow[str_col_Order] = dt_cj_extras_Max_Order() + 1;
-                dt_cj_extras.Rows.Add(dataRow);
-                dt_cj_extras_Reassign_Order();
+                Extra _extra = new(action: strAction, length: intLength, order: cjExtras_Max_Order() + 1);
+                cjExtras.Add(_extra);
+                cjExtras_Reassign_Order();
                 cj_Populate_Extras();
                 cj_Populate_Steps(boolPreserveLifts: true);
             }
@@ -4508,9 +3580,9 @@ namespace Weightlifting_Comp_Warmup
         }
         private void textBox_cj_extra_TextChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((TextBox)(sender)).Tag);
+            int _id = (int)(((TextBox)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             string strAction = ((TextBox)sender).Text;
 
@@ -4524,11 +3596,13 @@ namespace Weightlifting_Comp_Warmup
                 ((TextBox)sender).BackColor = Color.White;
             }
 
-            foreach (DataRow dataRow in dt_cj_extras.Rows)
+            for (int i = 0; i < cjExtras.Count; i++)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI)
+                Extra _extra = cjExtras[i];
+                if (_extra.id == _id)
                 {
-                    dataRow[str_col_Action] = strAction;
+                    _extra.Action = strAction;
+                    cjExtras[i] = _extra;
                     return;
                 }
             }
@@ -4537,9 +3611,9 @@ namespace Weightlifting_Comp_Warmup
         }
         private void numericUpDown_cj_extra_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
+            int _id = (int)(((NumericUpDown)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             int intLength;
             try
@@ -4555,11 +3629,13 @@ namespace Weightlifting_Comp_Warmup
             if (intLength < 1) { return; }
             ((NumericUpDown)sender).BackColor = Color.White;
 
-            foreach (DataRow dataRow in dt_cj_extras.Rows)
+            for (int i = 0; i < cjExtras.Count; i++)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI)
+                Extra _extra = cjExtras[i];
+                if (_extra.id == _id)
                 {
-                    dataRow[str_col_Length] = intLength;
+                    _extra.Length = intLength;
+                    cjExtras[i] = _extra;
                     break;
                 }
             }
@@ -4568,7 +3644,7 @@ namespace Weightlifting_Comp_Warmup
             {
                 if (control.GetType() == typeof(Label))
                 {
-                    if ((int)((Label)control).Tag == intI)
+                    if ((int)((Label)control).Tag == _id)
                     {
                         ((Label)control).Text = Seconds_To_String(intLength);
                         break;
@@ -4578,69 +3654,24 @@ namespace Weightlifting_Comp_Warmup
 
             cj_Populate_Steps(boolPreserveLifts: true);
         }
-        private int dt_cj_extras_Max_Order()
+        private int cjExtras_Max_Order()
         {
-            int intOut = -1;
-            foreach (DataRow dataRow in dt_cj_extras.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Order) > intOut)
-                {
-                    intOut = dataRow.Field<int>(str_col_Order);
-                }
-            }
-
-            return intOut;
+            return cjExtras.Max(r => r.Order);
         }
-        private void dt_cj_extras_Reassign_Order()
+        private void cjExtras_Reassign_Order()
         {
-            dt_cj_extras.DefaultView.Sort = str_col_Order + " ASC";
-            DataTable dataTable = dt_cj_extras.DefaultView.ToTable();
-
-            int intI = 0;
-            foreach (DataRow dataRow in dataTable.Rows)
+            cjExtras = cjExtras.OrderBy(r => r.Order).ToList();
+            int _order = 0;
+            for (int i = 0; i < cjExtras.Count; i++)
             {
-                dataRow[str_col_Order] = intI;
-                intI++;
+                Extra _extra = cjExtras[i];
+                _extra.Order = _order; _order++;
+                cjExtras[i] = _extra;
             }
-
-            dt_cj_extras = dataTable;
         }
         #endregion
 
         #region cj jumps
-        private void Insert_Default_cj_Jumps(DataTable dataTable)
-        {
-            DataRow dataRow;
-
-            dataTable.Rows.Clear();
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 1;
-            dataRow[str_col_Jump] = 30;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 50;
-            dataRow[str_col_Jump] = 10;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 90;
-            dataRow[str_col_Jump] = 7;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 100;
-            dataRow[str_col_Jump] = 5;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 105;
-            dataRow[str_col_Jump] = 4;
-            dataTable.Rows.Add(dataRow);
-
-            dataTable.AcceptChanges();
-        }
         private void cj_Populate_Jumps()
         {
             cj_Stop_Live();
@@ -4648,117 +3679,103 @@ namespace Weightlifting_Comp_Warmup
             int intFromWeight = 0, intJump = 1;
             panel_cj_jump.Controls.Clear();
 
-            if (dt_cj_jumps.Rows.Count == 0)
+            if (cjJumps.Count == 0)
             {
-                Insert_Default_cj_Jumps(dt_cj_jumps); 
+                cjJumps = Defaults.default_cjJumps();
             }
 
-            dt_cj_jumps.DefaultView.Sort = str_col_FromWeight + " ASC";
-            foreach (DataRow dataRow in dt_cj_jumps.DefaultView.ToTable().Rows)
+            void cj_Add_Jump_IndividualControls(
+                int intY,
+     int intFromWeight,
+     int intJump,
+     bool bool_Add_Blank
+                )
             {
-                intFromWeight = dataRow.Field<int>(str_col_FromWeight);
-                intJump = dataRow.Field<int>(str_col_Jump);
+                NumericUpDown nmud1 = new()
+                {
+                    Location = new Point(6, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intFromWeight, 0, 0, 0]),
+                    Tag = intFromWeight,
+                    BackColor = Color.White
+                };
+                NumericUpDown nmud2 = new()
+                {
+                    Location = new Point(100, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intJump, 0, 0, 0]),
+                    Tag = intFromWeight,
+                    BackColor = Color.White
+                };
+                nmud1.ValueChanged += button_cj_jump_FromWeight_ValueChanged;
+                nmud2.ValueChanged += button_cj_jump_Jump_ValueChanged;
+                panel_cj_jump.Controls.AddRange([nmud1, nmud2]);
+
+                if (bool_Add_Blank)
+                {
+                    Button btn4 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(200, intY),
+                        Size = new Size(90, 25),
+                        Text = str_buttontext_commit,
+                        UseVisualStyleBackColor = true
+                    };
+                    btn4.Click += button_cj_jump_commit_click;
+                    panel_cj_jump.Controls.Add(btn4);
+
+                    nmud1.Select();
+                }
+                else
+                {
+                    if (intFromWeight > 1)
+                    {
+                        Button btn1 = new()
+                        {
+                            FlatStyle = FlatStyle.Flat,
+                            Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                            Location = new Point(200, intY),
+                            Size = new Size(36, 25),
+                            Text = str_buttontext_delete,
+                            UseVisualStyleBackColor = true,
+                            Tag = intFromWeight
+                        };
+                        btn1.Click += button_cj_jump_delete_click;
+                        panel_cj_jump.Controls.Add(btn1);
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<int, int> _jump in cjJumps.OrderBy(r => r.Key))
+            {
+                intFromWeight = _jump.Key;
+                intJump = _jump.Value;
                 cj_Add_Jump_IndividualControls(
-                    intY
-                    , dataRow.Field<int>(str_col_Id)
-                    , intFromWeight
-                    , intJump
-                    , false
-                    );
+                    intY,
+                    intFromWeight,
+                    intJump,
+                    bool_Add_Blank: false);
                 intY += 30;
             }
             cj_Add_Jump_IndividualControls(
-                intY
-                , -1
-                , intFromWeight + 1
-                , intJump
-                , true
-                );
-        }
-        private void cj_Add_Jump_IndividualControls(
-            int intY
-            , int intId
-            , int intFromWeight
-            , int intJump
-            , bool bool_Add_Blank
-            )
-        {
-            NumericUpDown nmud1 = new()
-            {
-                Location = new Point(6, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intFromWeight, 0, 0, 0 }),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            NumericUpDown nmud2 = new()
-            {
-                Location = new Point(100, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intJump, 0, 0, 0 }),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            nmud1.ValueChanged += button_cj_jump_FromWeight_ValueChanged;
-            nmud2.ValueChanged += button_cj_jump_Jump_ValueChanged;
-            panel_cj_jump.Controls.AddRange(new Control[] { nmud1, nmud2 });
-
-            if (bool_Add_Blank)
-            {
-                Button btn4 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(200, intY),
-                    Size = new Size(90, 25),
-                    Text = str_buttontext_commit,
-                    UseVisualStyleBackColor = true
-                };
-                btn4.Click += button_cj_jump_commit_click;
-                panel_cj_jump.Controls.Add(btn4);
-
-                nmud1.Select();
-            }
-            else
-            {
-                if (intFromWeight > 1)
-                {
-                    Button btn1 = new()
-                    {
-                        FlatStyle = FlatStyle.Flat,
-                        Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                        Location = new Point(200, intY),
-                        Size = new Size(36, 25),
-                        Text = str_buttontext_delete,
-                        UseVisualStyleBackColor = true,
-                        Tag = intId
-                    };
-                    btn1.Click += button_cj_jump_delete_click;
-                    panel_cj_jump.Controls.Add( btn1);
-                }
-            }
+                intY,
+                intFromWeight + 1,
+                intJump,
+                bool_Add_Blank: true);
         }
         private void button_cj_jump_delete_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
-
-            for (int i = 0; i < dt_cj_jumps.Rows.Count; i++)
+            int _id = (int)(((Button)(sender)).Tag);
+            if (snatchJumps.TryGetValue(_id, out int _step))
             {
-                DataRow dataRow = dt_cj_jumps.Rows[i];
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    if (dataRow.Field<int>(str_col_FromWeight) > 1)
-                    {
-                        dt_cj_jumps.Rows.RemoveAt(i);
-                        break;
-                    }
-                }
+                snatchJumps.Remove(_id);
             }
 
             cj_Populate_Jumps();
@@ -4816,17 +3833,17 @@ namespace Weightlifting_Comp_Warmup
             }
             if (intFromWeight > 0 & intJump > 0)
             {
-                if (cj_Jump_Exists(intFromWeight, -1))
+                if (cjJumps.TryGetValue(intFromWeight, out _))
                 {
                     MessageBox.Show("From Weight - Jump already exists");
                     return;
                 }
                 else
                 {
-                    DataRow dataRow = dt_cj_jumps.NewRow();
+                    DataRow dataRow = cjJumps.NewRow();
                     dataRow[str_col_FromWeight] = intFromWeight;
                     dataRow[str_col_Jump] = intJump;
-                    dt_cj_jumps.Rows.Add(dataRow);
+                    cjJumps.Rows.Add(dataRow);
                     cj_Populate_Jumps();
                     cj_Populate_Steps(boolPreserveLifts: false);
                 }
@@ -4840,9 +3857,9 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_cj_jump_FromWeight_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
+            int _id = (int)(((NumericUpDown)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             int intFromWeight;
             try
@@ -4855,26 +3872,20 @@ namespace Weightlifting_Comp_Warmup
                 return;
             }
 
-            if (intFromWeight < 1) 
+            if (intFromWeight < 1)
             {
                 ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return; 
-            }
-            else if (cj_Jump_Exists(intFromWeight, intI)) 
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return; 
+                return;
             }
             ((NumericUpDown)sender).BackColor = Color.White;
-
-            foreach (DataRow dataRow in dt_cj_jumps.Rows)
+            if (_id == intFromWeight)
             {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dataRow[str_col_FromWeight] = intFromWeight;
-                    break;
-                }
+                return;
             }
+
+            cjJumps.TryGetValue(_id, out int _step);
+            cjJumps.Remove(_id);
+            cjJumps[intFromWeight] = _step;
 
             cj_Populate_Steps(boolPreserveLifts: false);
         }
@@ -4895,14 +3906,14 @@ namespace Weightlifting_Comp_Warmup
                 return;
             }
 
-            if (intJump < 1) 
+            if (intJump < 1)
             {
                 ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return; 
+                return;
             }
             ((NumericUpDown)sender).BackColor = Color.White;
 
-            foreach (DataRow dataRow in dt_cj_jumps.Rows)
+            foreach (DataRow dataRow in cjJumps.Rows)
             {
                 if (dataRow.Field<int>(str_col_Id) == intI)
                 {
@@ -4913,41 +3924,10 @@ namespace Weightlifting_Comp_Warmup
 
             cj_Populate_Steps(boolPreserveLifts: false);
         }
-        private bool cj_Jump_Exists(int intFromWeight, int intExcludeId)
-        {
-            foreach (DataRow dataRow in dt_cj_jumps.Rows)
-            {
-                if (dataRow.Field<int>(str_col_FromWeight) == intFromWeight & dataRow.Field<int>(str_col_Id) != intExcludeId) { return true; }
-            }
-            return false;
-        }
 
         #endregion
 
         #region cj times
-        private void Insert_Default_cj_Times(DataTable dataTable)
-        {
-            DataRow dataRow;
-
-            dataTable.Rows.Clear();
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 1;
-            dataRow[str_col_Length] = 5 * 60;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 21;
-            dataRow[str_col_Length] = 140;
-            dataTable.Rows.Add(dataRow);
-
-            dataRow = dataTable.NewRow();
-            dataRow[str_col_FromWeight] = 100;
-            dataRow[str_col_Length] = 150;
-            dataTable.Rows.Add(dataRow);
-
-            dataTable.AcceptChanges();
-        }
         private void cj_Populate_Times()
         {
             cj_Stop_Live();
@@ -4955,66 +3935,65 @@ namespace Weightlifting_Comp_Warmup
             int intFromWeight = 0, intTime = 1;
             panel_cj_time.Controls.Clear();
 
-            if (dt_cj_times.Rows.Count == 0)
+            if (cjTimes.Rows.Count == 0)
             {
-                Insert_Default_cj_Times(dt_cj_times);
+                Insert_Default_cj_Times(cjTimes);
             }
 
-            dt_cj_times.DefaultView.Sort = str_col_FromWeight + " ASC";
-            foreach (DataRow dataRow in dt_cj_times.DefaultView.ToTable().Rows)
+            cjTimes.DefaultView.Sort = str_col_FromWeight + " ASC";
+            foreach (DataRow dataRow in cjTimes.DefaultView.ToTable().Rows)
             {
                 intFromWeight = dataRow.Field<int>(str_col_FromWeight);
                 intTime = dataRow.Field<int>(str_col_Length);
                 cj_Add_Time_IndividualControls(
-                    intY
-                    , dataRow.Field<int>(str_col_Id)
-                    , intFromWeight
-                    , intTime
-                    , false
+                    intY,
+ dataRow.Field<int>(str_col_Id),
+ intFromWeight,
+ intTime,
+ false
                     );
                 intY += 30;
             }
             cj_Add_Time_IndividualControls(
-                intY
-                , -1
-                , intFromWeight + 1
-                , intTime
-                , true
+                intY,
+ -1,
+ intFromWeight + 1,
+ intTime,
+ true
                 );
         }
         private void cj_Add_Time_IndividualControls(
-            int intY
-            , int intId
-            , int intFromWeight
-            , int intTime
-            , bool bool_Add_Blank
-            )
+            int intY,
+            int intId,
+            int intFromWeight,
+            int intTime,
+            bool bool_Add_Blank)
         {
             NumericUpDown nmud1 = new()
             {
                 Location = new Point(6, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
+                Maximum = new decimal([9999, 0, 0, 0]),
+                Minimum = new decimal([1, 0, 0, 0]),
                 Size = new Size(72, 25),
                 TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intFromWeight, 0, 0, 0 }),
+                Value = new decimal([intFromWeight, 0, 0, 0]),
                 Tag = intId,
                 BackColor = Color.White
             };
             NumericUpDown nmud2 = new()
             {
                 Location = new Point(100, intY),
-                Maximum = new decimal(new int[] { 9999, 0, 0, 0 }),
-                Minimum = new decimal(new int[] { 1, 0, 0, 0 }),
+                Maximum = new decimal([9999, 0, 0, 0]),
+                Minimum = new decimal([1, 0, 0, 0]),
                 Size = new Size(72, 25),
                 TextAlign = HorizontalAlignment.Center,
-                Value = new decimal(new int[] { intTime, 0, 0, 0 }),
+                Value = new decimal([intTime, 0, 0, 0]),
                 Tag = intId,
                 BackColor = Color.White
             };
             nmud1.ValueChanged += button_cj_time_FromWeight_ValueChanged;
             nmud2.ValueChanged += button_cj_time_Time_ValueChanged;
-            panel_cj_time.Controls.AddRange(new Control[] { nmud1, nmud2 });
+            panel_cj_time.Controls.AddRange([nmud1, nmud2]);
 
             if (bool_Add_Blank)
             {
@@ -5053,19 +4032,10 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_cj_time_delete_click(object sender, EventArgs e)
         {
-            int intI = (int)(((Button)(sender)).Tag);
-
-            for (int i = 0; i < dt_cj_times.Rows.Count; i++)
+            int _id = (int)(((Button)(sender)).Tag);
+            if (cjTimes.TryGetValue(_id, out int _step))
             {
-                DataRow dataRow = dt_cj_times.Rows[i];
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    if (dataRow.Field<int>(str_col_FromWeight) > 1)
-                    {
-                        dt_cj_times.Rows.RemoveAt(i);
-                        break;
-                    }
-                }
+                cjTimes.Remove(_id);
             }
 
             cj_Populate_Times();
@@ -5130,10 +4100,10 @@ namespace Weightlifting_Comp_Warmup
                 }
                 else
                 {
-                    DataRow dataRow = dt_cj_times.NewRow();
+                    DataRow dataRow = cjTimes.NewRow();
                     dataRow[str_col_FromWeight] = intFromWeight;
                     dataRow[str_col_Length] = intTime;
-                    dt_cj_times.Rows.Add(dataRow);
+                    cjTimes.Rows.Add(dataRow);
                     cj_Populate_Times();
                     cj_Populate_Steps(boolPreserveLifts: true);
                 }
@@ -5147,9 +4117,9 @@ namespace Weightlifting_Comp_Warmup
         }
         private void button_cj_time_FromWeight_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
+            int _id = (int)(((NumericUpDown)(sender)).Tag);
 
-            if (intI < 1) { return; }
+            if (_id < 1) { return; }
 
             int intFromWeight;
             try
@@ -5167,21 +4137,15 @@ namespace Weightlifting_Comp_Warmup
                 ((NumericUpDown)sender).BackColor = Color.Yellow;
                 return;
             }
-            else if (cj_Time_Exists(intFromWeight, intI))
+            ((NumericUpDown)sender).BackColor = Color.White;
+            if (_id == intFromWeight)
             {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
                 return;
             }
-            ((NumericUpDown)sender).BackColor = Color.White;
 
-            foreach (DataRow dataRow in dt_cj_times.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dataRow[str_col_FromWeight] = intFromWeight;
-                    break;
-                }
-            }
+            cjTimes.TryGetValue(_id, out int _step);
+            cjTimes.Remove(_id);
+            cjTimes[intFromWeight] = _step;
 
             cj_Populate_Steps(boolPreserveLifts: true);
         }
@@ -5209,7 +4173,7 @@ namespace Weightlifting_Comp_Warmup
             }
             ((NumericUpDown)sender).BackColor = Color.White;
 
-            foreach (DataRow dataRow in dt_cj_times.Rows)
+            foreach (DataRow dataRow in cjTimes.Rows)
             {
                 if (dataRow.Field<int>(str_col_Id) == intI)
                 {
@@ -5219,14 +4183,6 @@ namespace Weightlifting_Comp_Warmup
             }
 
             cj_Populate_Steps(boolPreserveLifts: true);
-        }
-        private bool cj_Time_Exists(int intFromWeight, int intExcludeId)
-        {
-            foreach (DataRow dataRow in dt_cj_times.Rows)
-            {
-                if (dataRow.Field<int>(str_col_FromWeight) == intFromWeight & dataRow.Field<int>(str_col_Id) != intExcludeId) { return true; }
-            }
-            return false;
         }
 
         #endregion
@@ -5239,30 +4195,19 @@ namespace Weightlifting_Comp_Warmup
             bool boolHasOverrides = false;
             panel_cj_steps.Controls.Clear();
 
-            dt_cj_PLAN = datatable_cj_Steps(
+            cjStepsPLAN = datatable_cj_Steps(
                 boolPreserveLifts: boolPreserveLifts,
-                datatableIn: dt_cj_PLAN);
-            if (dt_cj_PLAN == null) { return; }
-            dt_cj_PLAN.DefaultView.Sort = str_col_Order + " ASC";
-            foreach (DataRow dataRow in dt_cj_PLAN.DefaultView.ToTable().Rows)
+                datatableIn: cjStepsPLAN);
+            if (cjStepsPLAN == null) { return; }
+            foreach (Step _step in cjStepsPLAN.OrderBy(r => r.Order))
             {
-                if (!boolHasOverrides)
+                if (!boolHasOverrides && _step.Override)
                 {
-                    if (dataRow.Field<bool>(str_col_Override))
-                    {
-                        boolHasOverrides = true;
-                    }
+                    boolHasOverrides = true;
                 }
-                if (!dataRow.Field<bool>(str_col_PreStep))
+                if (!_step.PreStep)
                 {
-                    cj_Add_Step_IndividualControls(
-                        intY: intY
-                        , strAction: dataRow.Field<string>(str_col_Action)
-                        , intWeight: dataRow.Field<int>(str_col_Weight)
-                        , intSeconds: dataRow.Field<int>(str_col_Length)
-                        , intTotalSeconds: dataRow.Field<int>(str_col_TotalLength)
-                        , boolOverride: dataRow.Field<bool>(str_col_Override)
-                    );
+                    cj_Add_Step_IndividualControls(intY: intY, _step: _step);
                     intY += 30;
                 }
             }
@@ -5285,44 +4230,37 @@ namespace Weightlifting_Comp_Warmup
                 btn2.Click += cj_Step_ResetOverrides;
                 panel_cj_steps.Controls.Add(btn2);
             }
-            label_cj_Setup_StepCount.Text = (dt_cj_PLAN.Rows.Count - 1).ToString() + " steps";
+            label_cj_Setup_StepCount.Text = (cjStepsPLAN.Rows.Count - 1).ToString() + " steps";
         }
-        private void cj_Add_Step_IndividualControls(
-            int intY
-            , string strAction
-            , int intWeight
-            , int intSeconds
-            , int intTotalSeconds
-            , bool boolOverride
-            )
+        private void cj_Add_Step_IndividualControls(int intY, Step _step)
         {
             Label lbl1 = new()
             {
                 Location = new Point(6, intY),
                 AutoSize = false,
-                Size = new Size(150,28),
-                Text = strAction,
-                Tag = intWeight
+                Size = new Size(150, 28),
+                Text = _step.Action,
+                Tag = _step.Weight
             };
             Label lbl3 = new()
             {
                 Location = new Point(226, intY),
                 AutoSize = false,
                 Size = new Size(90, 28),
-                Text = Seconds_To_String(intSeconds),
-                Tag = intWeight
+                Text = Seconds_To_String(_step.Length),
+                Tag = _step.Weight
             };
             Label lbl4 = new()
             {
                 Location = new Point(317, intY),
                 AutoSize = false,
                 Size = new Size(90, 28),
-                Text = Seconds_To_String(intTotalSeconds),
-                Tag = intWeight
+                Text = Seconds_To_String(_step.TotalLength),
+                Tag = _step.Weight
             };
-            panel_cj_steps.Controls.AddRange(new Control[] { lbl1, lbl3, lbl4 });
+            panel_cj_steps.Controls.AddRange([lbl1, lbl3, lbl4]);
 
-            if (intWeight > 0)
+            if (_step.Weight > 0)
             {
                 lbl1.Click += cj_Weight_Override_Click;
                 lbl3.Click += cj_Weight_Override_Click;
@@ -5332,13 +4270,13 @@ namespace Weightlifting_Comp_Warmup
                     Location = new Point(152, intY),
                     AutoSize = false,
                     Size = new Size(50, 28),
-                    Text = intWeight.ToString(),
-                    Tag = intWeight
+                    Text = _step.Weight.ToString(),
+                    Tag = _step.Weight
                 };
                 lbl2.Click += cj_Weight_Override_Click;
-                if (boolOverride)
+                if (_step.Override)
                 {
-                    Font fontx = new("Gadugi", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+                    Font fontx = new("Gadugi", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
                     lbl1.Font = fontx;
                     lbl2.Font = fontx;
                     lbl3.Font = fontx;
@@ -5351,11 +4289,11 @@ namespace Weightlifting_Comp_Warmup
             bool boolPreserveLifts,
             DataTable datatableIn = null)
         {
-            return datatable_X_Steps(
+            return x_Steps(
                 boolPreserveLifts: boolPreserveLifts,
-                dt_x_extras: dt_cj_extras,
-                dt_x_jumps: dt_cj_jumps,
-                dt_x_times: dt_cj_times,
+                dt_x_extras: cjExtras,
+                dt_x_jumps: cjJumps,
+                dt_x_times: cjTimes,
                 int_x_Sec_End: int_cj_Sec_End,
                 int_x_Wgt_Opener: int_cj_Wgt_Opener,
                 bool_Opener_in_Warmup: bool_cj_OpenerWarmup,
@@ -5368,49 +4306,25 @@ namespace Weightlifting_Comp_Warmup
                 cj_Stop_Live();
             }
 
-            if (dt_cj_PLAN != null)
+            if (cjStepsPLAN != null && cjStepsPLAN.Count > 2 &&
+                cjStepsPLAN[cjStepsPLAN.Count - 1].Weight > 0)
             {
-                if (dt_cj_PLAN.Rows.Count > 2)
+                int _int_RowIndex = cjStepsPLAN.Count - 1;
+                string _str_NewWeight = cjStepsPLAN[_int_RowIndex].Weight.ToString();
+                ShowInputDialog(ref _str_NewWeight);
+                if (int.TryParse(_str_NewWeight, out int _int_NewWeight))
                 {
-                    if (!dt_cj_PLAN.Rows[dt_cj_PLAN.Rows.Count - 1].IsNull(str_col_Weight))
+                    if (cjStepsPLAN.Any(r => r.Weight == _int_NewWeight))
                     {
-                        if (dt_cj_PLAN.Rows[dt_cj_PLAN.Rows.Count - 1].Field<int>(str_col_Weight) > 0)
-                        {
-                            int int_RowIndex = dt_cj_PLAN.Rows.Count - 1;
-                            string strNewWeight = dt_cj_PLAN.Rows[int_RowIndex].Field<int>(str_col_Weight).ToString();
-                            ShowInputDialog(ref strNewWeight);
-                            if (int.TryParse(strNewWeight, out int intNewWeight))
-                            {
-                                bool boolFound = false;
-                                foreach (DataRow dR in dt_cj_PLAN.Rows)
-                                {
-                                    if (!dR.IsNull(str_col_Weight))
-                                    {
-                                        if (dR.Field<int>(str_col_Weight) == intNewWeight)
-                                        {
-                                            boolFound = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (boolFound)
-                                {
-                                    MessageBox.Show(intNewWeight.ToString() + " is already a step");
-                                }
-                                else
-                                {
-                                    DataRow dRNew = dt_cj_PLAN.NewRow();
-                                    dRNew[str_col_Action] = "Lift";
-                                    dRNew[str_col_Weight] = intNewWeight;
-                                    dRNew[str_col_PreStep] = false;
-                                    dRNew[str_col_Override] = true;
-                                    dt_cj_PLAN.Rows.Add(dRNew);
-                                    dt_cj_PLAN.AcceptChanges();
-
-                                    cj_Populate_Steps(boolPreserveLifts: true);
-                                }
-                            }
-                        }
+                        MessageBox.Show(_int_NewWeight.ToString() + " is already a step");
+                    }
+                    else
+                    {
+                        cjStepsPLAN.Add(new(
+                            action: "Lift",
+                            weight: _int_NewWeight,
+                            @override: true));
+                        cj_Populate_Steps(boolPreserveLifts: true);
                     }
                 }
             }
@@ -5425,59 +4339,41 @@ namespace Weightlifting_Comp_Warmup
         }
         private void cj_Weight_Override_Click(object sender, EventArgs e)
         {
-            int intStartWeight = 0;
+            int _int_StartWeight = 0;
             Label _labelI = (Label)sender;
             try
             {
-                intStartWeight = (int)_labelI.Tag;
+                _int_StartWeight = (int)_labelI.Tag;
             }
             catch { }
 
-            if (intStartWeight > 0 & dt_cj_PLAN != null)
+            if (_int_StartWeight > 0 & cjStepsPLAN != null)
             {
-                foreach (DataRow dR in dt_cj_PLAN.Rows)
+                Step _step = cjStepsPLAN.FirstOrDefault(r => r.Weight.HasValue && r.Weight.Value == _int_StartWeight);
+                if (_step != null)
                 {
-                    if (!dR.IsNull(str_col_Weight))
+                    if (bool_cj_Live)
                     {
-                        if (dR.Field<int>(str_col_Weight) == intStartWeight)
+                        cj_Stop_Live();
+                    }
+                    string strNewWeight = _int_StartWeight.ToString();
+                    if (ShowInputDialog(ref strNewWeight) == DialogResult.OK)
+                    {
+                        if (int.TryParse(strNewWeight, out int _int_NewWeight))
                         {
-                            if (bool_cj_Live)
+                            if (_int_NewWeight != _int_StartWeight)
                             {
-                                cj_Stop_Live();
-                            }
-                            string strNewWeight = intStartWeight.ToString();
-                            if (ShowInputDialog(ref strNewWeight) == DialogResult.OK)
-                            {
-                                if (int.TryParse(strNewWeight, out int intNewWeight))
+                                if (cjStepsPLAN.Any(r => r.Weight == _int_NewWeight))
                                 {
-                                    if (intNewWeight != intStartWeight)
-                                    {
-                                        bool boolFound = false;
-                                        foreach (DataRow dRCheck in dt_cj_PLAN.Rows)
-                                        {
-                                            if (!dRCheck.IsNull(str_col_Weight))
-                                            {
-                                                if (dRCheck.Field<int>(str_col_Weight) == intNewWeight)
-                                                {
-                                                    boolFound = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        if (boolFound)
-                                        {
-                                            MessageBox.Show(intNewWeight.ToString() + " is already a step");
-                                        }
-                                        else
-                                        {
-                                            dR[str_col_Weight] = intNewWeight;
-                                            dR[str_col_Override] = true;
-                                            cj_Populate_Steps(boolPreserveLifts: true);
-                                        }
-                                    }
+                                    MessageBox.Show(_int_NewWeight.ToString() + " is already a step");
+                                }
+                                else
+                                {
+                                    _step.Weight = _int_NewWeight;
+                                    _step.Override = true;
+                                    cj_Populate_Steps(boolPreserveLifts: true);
                                 }
                             }
-                            break;
                         }
                     }
                 }
@@ -5527,11 +4423,12 @@ namespace Weightlifting_Comp_Warmup
             {
                 if (timer_cj_Live.Enabled)
                 {
-                    timer_cj_Live.Enabled = false; 
+                    timer_cj_Live.Enabled = false;
                     try
                     {
                         timer_cj_Live.Tick -= timer_cj_Live_Tick;
-                    } catch { }
+                    }
+                    catch { }
                 }
             }
             textBox_cj_Live_snLeft.Visible = false;
@@ -5568,35 +4465,24 @@ namespace Weightlifting_Comp_Warmup
         }
         private void Clear_cj_Live_Steps()
         {
-            dt_cj_LIVE = null;
+            cjStepsLIVE = null;
             panel_cj_Live_Steps.Controls.Clear();
         }
         private void Populate_cj_Live_Steps()
         {
             Clear_cj_Live_Steps();
 
-            if (dt_cj_PLAN is null)
+            if (cjStepsPLAN is null)
             {
                 cj_Populate_Steps(boolPreserveLifts: false);
             }
-            if (dt_cj_PLAN is null)
+            if (cjStepsPLAN is null)
             {
                 MessageBox.Show("An error has occurred. Step plan could not be determined.");
                 this.Close();
                 return;
             }
-            dt_cj_LIVE = dt_cj_PLAN.Copy();
-            dt_cj_LIVE.Columns.AddRange(
-                new DataColumn[]
-                {
-                    new DataColumn(str_col_PanelLiveStep, typeof(Panel))
-                    , new DataColumn(str_col_LabelAction, typeof(Label))
-                    , new DataColumn(str_col_LabelTime, typeof(Label))
-                    , new DataColumn(str_col_LabelProgressTime, typeof(Label))
-                    , new DataColumn(str_col_LabelWeight, typeof(Label))
-                    , new DataColumn(str_col_ProgressBarStep, typeof(ProgressBar))
-                    , new DataColumn(str_col_GraphicPanel, typeof(Panel))
-                });
+            cjStepsLIVE = cjStepsPLAN.Select(r => r.Clone()).ToList();
 
             int intY = 1;
             int _int_panel_Live_Step_Width = panel_cj_Live_Steps.Width - 4;
@@ -5606,7 +4492,7 @@ namespace Weightlifting_Comp_Warmup
             Point _point_progressBar_Step_Location = new(300, 6);
 
             SuspendLayout();
-            foreach (DataRow dataRow in dt_cj_LIVE.Rows)
+            foreach (Step _step in cjStepsLIVE)
             {
                 if (panel_cj_Live_Steps.VerticalScroll.Visible)
                 {
@@ -5617,19 +4503,9 @@ namespace Weightlifting_Comp_Warmup
                     _int_progressBar_Step_Width = _int_progressBar_Step_Width_NoScroll;
                 }
                 string strActionText;
-                bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
-                if (boolIsLift)
-                {
-                    strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString() + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
-                        Environment.NewLine +
-                        "from " + Seconds_To_String(dataRow.Field<int>(str_col_TotalLengthReverse)) + " out";
-                }
-                else
-                {
-                    strActionText = dataRow.Field<string>(str_col_Action) + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
-                        Environment.NewLine +
-                        "from " + Seconds_To_String(dataRow.Field<int>(str_col_TotalLengthReverse)) + " out";
-                }
+                bool boolIsLift = (_step.Weight > 0);
+                strActionText = (boolIsLift ? $"lift {_step.Weight}" : $"{_step.Action}") + $" ({Seconds_To_String(_step.Length)})" +
+                    $"{Environment.NewLine}from {Seconds_To_String(_step.TotalLengthReverse)} out";
                 Panel panel_Live_Step = new()
                 {
                     Size = new Size(_int_panel_Live_Step_Width, 80),
@@ -5650,7 +4526,7 @@ namespace Weightlifting_Comp_Warmup
                 {
                     Size = new Size(_int_progressBar_Step_Width, 65),
                     Location = _point_progressBar_Step_Location,
-                    Maximum = dataRow.Field<int>(str_col_Length),
+                    Maximum = _step.Field<int>(str_col_Length),
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 };
                 if (progressBar_Step.Maximum == 0)
@@ -5669,13 +4545,13 @@ namespace Weightlifting_Comp_Warmup
                         Size = new Size(105, 30),
                         Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
                         ForeColor = SystemColors.Window,
-                        Text = "lift " + dataRow.Field<int>(str_col_Weight).ToString(),
+                        Text = "lift " + _step.Weight.ToString(),
                         TextAlign = ContentAlignment.MiddleCenter,
                         Anchor = AnchorStyles.Top | AnchorStyles.Right,
                     };
-                    label_Weight.Text = "lift " + dataRow.Field<int>(str_col_Weight).ToString();
+                    label_Weight.Text = "lift " + _step.Weight.ToString();
 
-                    if (dataRow.Field<bool>(str_col_Override))
+                    if (_step.Field<bool>(str_col_Override))
                     {
                         label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Italic);
                         label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold | FontStyle.Italic);
@@ -5710,13 +4586,13 @@ namespace Weightlifting_Comp_Warmup
                     TextAlign = ContentAlignment.MiddleCenter,
                     Anchor = AnchorStyles.Top | AnchorStyles.Right,
                 };
-                panel_Live_Step.Controls.AddRange(new Control[]
-                {
+                panel_Live_Step.Controls.AddRange(
+                [
                     label_Action,
                     progressBar_Step,
                     label_Progress_Time,
                     label_Time
-                });
+                ]);
                 WeightBox weightBoxGraphic = null;
                 if (boolIsLift)
                 {
@@ -5724,7 +4600,7 @@ namespace Weightlifting_Comp_Warmup
                     {
                         boolOpener = false,
                         intWeightBar = int_Barbell,
-                        intWeight = dataRow.Field<int>(str_col_Weight),
+                        intWeight = _step.Weight,
                         intShadowWidth = 1,
                         intPlateGap = -1,
                         Size = new Size(120, 65),
@@ -5737,25 +4613,24 @@ namespace Weightlifting_Comp_Warmup
                     panel_Live_Step.Controls.Add(weightBoxGraphic);
                 }
                 progressBar_Step.BringToFront();
-                dataRow[str_col_PanelLiveStep] = panel_Live_Step;
-                dataRow[str_col_LabelAction] = label_Action;
-                dataRow[str_col_ProgressBarStep] = progressBar_Step;
+                _step.Controls.PanelLiveStep = panel_Live_Step;
+                _step.Controls.LabelAction = label_Action;
+                _step.Controls.ProgressBarStep = progressBar_Step;
                 weightBoxGraphic?.BringToFront();
                 if (label_Weight != null)
                 {
                     panel_Live_Step.Controls.Add(label_Weight);
-                    dataRow[str_col_LabelWeight] = label_Weight;
+                    _step.Controls.LabelWeight = label_Weight;
                     label_Weight.BringToFront();
                 }
                 label_Time.BringToFront();
-                dataRow[str_col_LabelTime] = label_Time;
+                _step.Controls.LabelTime = label_Time;
                 label_Progress_Time.BringToFront();
-                dataRow[str_col_LabelProgressTime] = label_Progress_Time;
+                _step.Controls.LabelProgressTime = label_Progress_Time;
                 panel_cj_Live_Steps.Controls.Add(panel_Live_Step);
 
                 intY += 81;
             }
-            dt_cj_LIVE.AcceptChanges();
             int_cj_Warmup_Step = -1;
             label_cj_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
             panel_cj_Live_Times.Visible = true;
@@ -5881,7 +4756,7 @@ namespace Weightlifting_Comp_Warmup
             {
                 label_cj_Live_Break.Text = String.Empty;
             }
-            
+
             if (bool_cj_LiveLifting) // stage lifts are going
             {
                 progressBar_cj_Live_StageLift.PerformStep();
@@ -5985,13 +4860,13 @@ namespace Weightlifting_Comp_Warmup
             }
 
             int _intStep = -1;
-            foreach (DataRow dataRow in dt_cj_LIVE.Rows)
+            foreach (DataRow dataRow in cjStepsLIVE.Rows)
             {
-                if (dataRow.Field<int>(str_col_TotalLengthReverse) >= intSecondsToOpen)
+                if (_step.TotalLengthReverse >= intSecondsToOpen)
                 {
-                    if (dataRow.Field<int>(str_col_Order) > _intStep)
+                    if (_step.Order > _intStep)
                     {
-                        _intStep = dataRow.Field<int>(str_col_Order);
+                        _intStep = _step.Order;
                     }
                 }
             }
@@ -5999,18 +4874,18 @@ namespace Weightlifting_Comp_Warmup
             if (_intStep == -1) // adjust wait time
             {
                 int intTLR = 0;
-                foreach (DataRow dataRow in dt_cj_LIVE.Rows)
+                foreach (DataRow dataRow in cjStepsLIVE.Rows)
                 {
-                    if (dataRow.Field<int>(str_col_Order) == 1)
+                    if (_step.Order == 1)
                     {
-                        intTLR = dataRow.Field<int>(str_col_TotalLengthReverse);
+                        intTLR = _step.TotalLengthReverse;
                         break;
                     }
                 }
                 if (intTLR > 0 & intSecondsToOpen > intTLR)
                 {
                     int intSecToAdd = 0;
-                    foreach (DataRow dataRow in dt_cj_LIVE.Rows)
+                    foreach (DataRow dataRow in cjStepsLIVE.Rows)
                     {
                         if (dataRow.Field<bool>(str_col_PreStep))
                         {
@@ -6025,7 +4900,7 @@ namespace Weightlifting_Comp_Warmup
                     }
                     if (_intStep == 0 & intSecToAdd != 0)
                     {
-                        foreach (DataRow dataRow in dt_cj_LIVE.Rows)
+                        foreach (DataRow dataRow in cjStepsLIVE.Rows)
                         {
                             if (!dataRow.Field<bool>(str_col_PreStep))
                             {
@@ -6044,14 +4919,14 @@ namespace Weightlifting_Comp_Warmup
                 Label label_Progress_Time;
                 bool boolUpdBGsFGs = (_intStep != int_cj_Warmup_Step);
 
-                foreach (DataRow dataRow in dt_cj_LIVE.Rows)
+                foreach (DataRow dataRow in cjStepsLIVE.Rows)
                 {
-                    int _int_Order = dataRow.Field<int>(str_col_Order);
+                    int _int_Order = _step.Order;
                     Label label_Time = dataRow.Field<Label>(str_col_LabelTime);
                     if (_int_Order > _intStep)
                     {
                         label_Time.Visible = true;
-                        label_Time.Text = _dateTime_Open.AddSeconds(-dataRow.Field<int>(str_col_TotalLengthReverse)).ToString("HH:mm:ss");
+                        label_Time.Text = _dateTime_Open.AddSeconds(-_step.TotalLengthReverse).ToString("HH:mm:ss");
                     }
                     else
                     {
@@ -6059,9 +4934,9 @@ namespace Weightlifting_Comp_Warmup
                     }
                 }
 
-                foreach (DataRow dataRow in dt_cj_LIVE.Rows)
+                foreach (DataRow dataRow in cjStepsLIVE.Rows)
                 {
-                    int _int_Order = dataRow.Field<int>(str_col_Order);
+                    int _int_Order = _step.Order;
                     if (_int_Order == _intStep)
                     {
                         panel_Live_Step = dataRow.Field<Panel>(str_col_PanelLiveStep);
@@ -6069,7 +4944,7 @@ namespace Weightlifting_Comp_Warmup
                         progressBar_Step = dataRow.Field<ProgressBar>(str_col_ProgressBarStep);
 
                         int intStepLength = dataRow.Field<int>(str_col_Length);
-                        int intSecIntoStep = dataRow.Field<int>(str_col_TotalLengthReverse) - intSecondsToOpen;
+                        int intSecIntoStep = _step.TotalLengthReverse - intSecondsToOpen;
                         label_Progress_Time.Text = Seconds_To_String(_int_Seconds: intStepLength - intSecIntoStep, _bool_ShortString: true);
                         progressBar_Step.Value = intSecIntoStep;
 
@@ -6131,13 +5006,13 @@ namespace Weightlifting_Comp_Warmup
                             {
                                 strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString() + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
                                     Environment.NewLine +
-                                    "from " + Seconds_To_String(dataRow.Field<int>(str_col_TotalLengthReverse)) + " out";
+                                    "from " + Seconds_To_String(_step.TotalLengthReverse) + " out";
                             }
                             else
                             {
                                 strActionText = dataRow.Field<string>(str_col_Action) + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
                                     Environment.NewLine +
-                                    "from " + Seconds_To_String(dataRow.Field<int>(str_col_TotalLengthReverse)) + " out";
+                                    "from " + Seconds_To_String(_step.TotalLengthReverse) + " out";
                             }
                         }
 
@@ -6161,35 +5036,35 @@ namespace Weightlifting_Comp_Warmup
         {
             if (bool_cj_Live & bool_cj_LiveLifting)
             {
-                double dbl_Percent = (double)(e.X) / (double)(progressBar_cj_Live_StageLift.Width);
+                double dbl_Percent = e.X / (double)(progressBar_cj_Live_StageLift.Width);
                 if (dbl_Percent >= 0 & dbl_Percent <= 1)
                 {
-                    progressBar_cj_Live_StageLift.Value = (int)((double)progressBar_cj_Live_StageLift.Maximum * dbl_Percent);
+                    progressBar_cj_Live_StageLift.Value = (int)(progressBar_cj_Live_StageLift.Maximum * dbl_Percent);
                 }
             }
-        } 
+        }
         private void progressBar_cj_Live_sn_MouseClick(object sender, MouseEventArgs e)
         {
             if (bool_cj_Live & bool_cj_sn_Lifting)
             {
-                double dbl_Percent = (double)(e.X) / (double)(progressBar_cj_Live_sn.Width);
+                double dbl_Percent = e.X / (double)(progressBar_cj_Live_sn.Width);
                 if (dbl_Percent >= 0 & dbl_Percent <= 1)
                 {
-                    progressBar_cj_Live_sn.Value = (int)((double)progressBar_cj_Live_sn.Maximum * dbl_Percent);
+                    progressBar_cj_Live_sn.Value = (int)(progressBar_cj_Live_sn.Maximum * dbl_Percent);
                 }
             }
-        } 
+        }
         private void progressBar_cj_Live_Break_MouseClick(object sender, MouseEventArgs e)
         {
             if (bool_cj_Live & bool_cj_BreakRunning)
             {
-                double dbl_Percent = (double)(e.X) / (double)(progressBar_cj_Live_Break.Width);
+                double dbl_Percent = e.X / (double)(progressBar_cj_Live_Break.Width);
                 if (dbl_Percent >= 0 & dbl_Percent <= 1)
                 {
-                    progressBar_cj_Live_Break.Value = (int)((double)progressBar_cj_Live_Break.Maximum * dbl_Percent);
+                    progressBar_cj_Live_Break.Value = (int)(progressBar_cj_Live_Break.Maximum * dbl_Percent);
                 }
             }
-        } 
+        }
         private void button_cj_Live_LiftsDecr_Click(object sender, EventArgs e)
         {
             if (int_cj_Lifts_Out > 0)
@@ -6291,7 +5166,7 @@ namespace Weightlifting_Comp_Warmup
             int _int_cj_Sec_Break = (int)(numericUpDown_cj_Live_Break.Value);
             if (_int_cj_Sec_Break < 1)
             {
-                int_cj_Sec_Break = 1; 
+                int_cj_Sec_Break = 1;
             }
             else
             {
@@ -6392,6 +5267,12 @@ namespace Weightlifting_Comp_Warmup
         #endregion
 
         #region utilities
+        private string ActionTextString(Step _step, bool _isFuture)
+        {
+            return (_step.Weight.HasValue ? $"lift {_step.Weight}" : $"{_step.Action}") + (_isFuture ?
+                $" ({Seconds_To_String(_step.Length)})" +
+                $"{Environment.NewLine}from {Seconds_To_String(_step.TotalLengthReverse)} out" : string.Empty);
+        }
         private string Seconds_To_String(int _int_Seconds, bool _bool_ShortString = false)
         {
             int intHrs = (_int_Seconds - (_int_Seconds % 3600)) / 3600;
@@ -6460,7 +5341,7 @@ namespace Weightlifting_Comp_Warmup
                                     {
                                         if (!dataRow.Field<bool>(str_col_Override))
                                         {
-                                            dataRow[str_col_Weight] = (int)Math.Floor((decimal)(intLastWarmup - intThirdToLastWarmup) / 2 + (decimal)intThirdToLastWarmup);
+                                            dataRow[str_col_Weight] = (int)Math.Floor((decimal)(intLastWarmup - intThirdToLastWarmup) / 2 + intThirdToLastWarmup);
                                         }
                                         break;
                                     }
@@ -6481,7 +5362,7 @@ namespace Weightlifting_Comp_Warmup
                                 {
                                     if (!dataRow.Field<bool>(str_col_Override))
                                     {
-                                        dataRow[str_col_Weight] = (int)Math.Floor((decimal)(intOpener - intSecondToLastWarmup) / 2 + (decimal)intSecondToLastWarmup);
+                                        dataRow[str_col_Weight] = (int)Math.Floor((decimal)(intOpener - intSecondToLastWarmup) / 2 + intSecondToLastWarmup);
                                     }
                                     break;
                                 }
@@ -6491,104 +5372,78 @@ namespace Weightlifting_Comp_Warmup
                 }
             }
         }
-        private DataTable datatable_X_Steps(
-            bool boolPreserveLifts,
-            DataTable dt_x_extras,
-            DataTable dt_x_jumps,
-            DataTable dt_x_times,
-            int int_x_Sec_End,
-            int int_x_Wgt_Opener,
-            bool bool_Opener_in_Warmup,
-            DataTable datatableIn = null
+        private List<Step> x_Steps(
+            bool _bool_PreserveLifts,
+            List<Extra> _extras,
+            Dictionary<int, int> _jumps,
+            Dictionary<int, int> _times,
+            int _int_x_Sec_End,
+            int _int_x_Wgt_Opener,
+            bool _bool_Opener_in_Warmup,
+            List<Step> _stepsIn = null
             )
         {
-            if (dt_x_extras == null | dt_x_jumps == null | dt_x_times == null) { return null; }
-            int _intSeconds
-                , intTotalSeconds = 0
-                , intOrder = 1
-                ;
-            DataTable dt = new(),
-                dataTableWeight_Input = new(),
-                dataTableWeights;
-
-            dt.Columns.AddRange(
-                new DataColumn[]
-                {
-                    new DataColumn(str_col_Action, typeof(string)),
-                    new DataColumn(str_col_Weight, typeof(int)),
-                    new DataColumn(str_col_Length, typeof(int)),
-                    new DataColumn(str_col_TotalLength, typeof(int)),
-                    new DataColumn(str_col_TotalLengthReverse, typeof(int)),
-                    new DataColumn(str_col_Order, typeof(int)),
-                    new DataColumn(str_col_PreStep, typeof(bool)),
-                    new DataColumn(str_col_Override, typeof(bool)),
-                }
-            );
-
-            dataTableWeight_Input.Columns.AddRange(new DataColumn[]
+            if (_extras == null | _jumps == null | _times == null) { return null; }
+            int _int_Seconds;
+            int _int_TotalSeconds = 0;
+            int _int_Order = 1;
+            Dictionary<int, bool> _weightInputOverrides = new();
+            Dictionary<int, bool> _weightOverrides = new();
+            List<Step> _steps = new();
+            if (_bool_PreserveLifts & _stepsIn != null)
             {
-                new DataColumn(str_col_Weight, typeof(int)),
-                new DataColumn(str_col_Override, typeof(bool))
-            });
-            if (boolPreserveLifts & datatableIn != null)
-            {
-                foreach (DataRow dR in datatableIn.Rows)
+                foreach (DataRow dR in _stepsIn.Rows)
                 {
-                    if (!dR.IsNull(str_col_Weight))
+                    if (!dR.IsNull(str_col_Weight) && dR.Field<int>(str_col_Weight) > 0)
                     {
-                        if (dR.Field<int>(str_col_Weight) > 0)
-                        {
-                            dataTableWeight_Input.Rows.Add(
-                                dR.Field<int>(str_col_Weight),
-                                dR.Field<bool>(str_col_Override));
-                        }
+                        _weightInputOverrides[dR.Field<int>(str_col_Weight)] = dR.Field<bool>(str_col_Override);
                     }
                 }
                 //remove final auto populated weights
-                for (int i = dataTableWeight_Input.Rows.Count - 1; i >= 0; i--)
+                for (int i = _weightInputOverrides.Rows.Count - 1; i >= 0; i--)
                 {
-                    if (dataTableWeight_Input.Rows[i].Field<bool>(str_col_Override))
+                    if (_weightInputOverrides.Rows[i].Field<bool>(str_col_Override))
                     { break; }
                     else
                     {
-                        dataTableWeight_Input.Rows.RemoveAt(i);
+                        _weightInputOverrides.Rows.RemoveAt(i);
                     }
                 }
             }
             dataTableWeights = dataTable_Weights(
-                dt_x_jumps:dt_x_jumps,
-                _dataTableWeight_Input: dataTableWeight_Input,
-                bool_Opener_in_Warmup: bool_Opener_in_Warmup,
-                int_x_Wgt_Opener:int_x_Wgt_Opener
+                dt_x_jumps: _jumps,
+                _dataTableWeight_Input: _weightInputOverrides,
+                bool_Opener_in_Warmup: _bool_Opener_in_Warmup,
+                int_x_Wgt_Opener: _int_x_Wgt_Opener
                 );
 
-            dt_x_extras.DefaultView.Sort = str_col_Order + " ASC";
-            foreach (DataRow dataRow in dt_x_extras.DefaultView.ToTable().Rows)
+            _extras.DefaultView.Sort = str_col_Order + " ASC";
+            foreach (DataRow dataRow in _extras.DefaultView.ToTable().Rows)
             {
-                DataRow dR = dt.NewRow();
-                _intSeconds = dataRow.Field<int>(str_col_Length);
-                intTotalSeconds += _intSeconds;
+                DataRow dR = _steps.NewRow();
+                _int_Seconds = dataRow.Field<int>(str_col_Length);
+                _int_TotalSeconds += _int_Seconds;
                 dR[str_col_Action] = dataRow.Field<string>(str_col_Action);
                 dR[str_col_Weight] = 0;
-                dR[str_col_Length] = _intSeconds;
-                dR[str_col_TotalLength] = intTotalSeconds;
-                dR[str_col_Order] = intOrder;
+                dR[str_col_Length] = _int_Seconds;
+                dR[str_col_TotalLength] = _int_TotalSeconds;
+                dR[str_col_Order] = _int_Order;
                 dR[str_col_PreStep] = false;
                 dR[str_col_Override] = false;
-                intOrder++;
-                dt.Rows.Add(dR);
+                _int_Order++;
+                _steps.Rows.Add(dR);
             }
 
             int intWeight;
             int intTime;
-            dt_x_times.DefaultView.Sort = str_col_FromWeight;
-            using (DataTable dTTimes = dt_x_times.DefaultView.ToTable())
+            _times.DefaultView.Sort = str_col_FromWeight;
+            using (DataTable dTTimes = _times.DefaultView.ToTable())
             {
                 foreach (DataRow dRWeight in dataTableWeights.Rows)
                 {
                     intWeight = dRWeight.Field<int>(str_col_Weight);
                     intTime = 0;
-                    foreach (DataRow dataRow in dt_x_times.DefaultView.ToTable().Rows)
+                    foreach (DataRow dataRow in _times.DefaultView.ToTable().Rows)
                     {
                         if (dataRow.Field<int>(str_col_FromWeight) <= intWeight)
                         {
@@ -6598,58 +5453,58 @@ namespace Weightlifting_Comp_Warmup
                     }
                     if (dataTableWeights.Rows.IndexOf(dRWeight) == dataTableWeights.Rows.Count - 1)
                     {
-                        intTime += int_x_Sec_End;
+                        intTime += _int_x_Sec_End;
                     }
-                    intTotalSeconds += intTime;
-                    DataRow dR = dt.NewRow();
+                    _int_TotalSeconds += intTime;
+                    DataRow dR = _steps.NewRow();
                     dR[str_col_Action] = "Lift";
                     dR[str_col_Weight] = intWeight;
                     dR[str_col_Length] = intTime;
-                    dR[str_col_TotalLength] = intTotalSeconds;
-                    dR[str_col_Order] = intOrder;
+                    dR[str_col_TotalLength] = _int_TotalSeconds;
+                    dR[str_col_Order] = _int_Order;
                     dR[str_col_PreStep] = false;
                     dR[str_col_Override] = dRWeight.Field<bool>(str_col_Override);
-                    intOrder++;
-                    dt.Rows.Add(dR);
+                    _int_Order++;
+                    _steps.Rows.Add(dR);
                 }
             }
 
-            intTotalSeconds = 0;
-            for (int i = dt.Rows.Count - 1; i >= 0; i--)
+            _int_TotalSeconds = 0;
+            for (int i = _steps.Rows.Count - 1; i >= 0; i--)
             {
-                _intSeconds = dt.Rows[i].Field<int>(str_col_Length);
-                intTotalSeconds += _intSeconds;
-                dt.Rows[i][str_col_TotalLengthReverse] = intTotalSeconds;
+                _int_Seconds = _steps.Rows[i].Field<int>(str_col_Length);
+                _int_TotalSeconds += _int_Seconds;
+                _steps.Rows[i][str_col_TotalLengthReverse] = _int_TotalSeconds;
             }
 
-            Smooth_Last_Jumps(ref dt, int_x_Wgt_Opener);
+            Smooth_Last_Jumps(ref _steps, _int_x_Wgt_Opener);
 
-            DataRow dRPre = dt.NewRow();
+            DataRow dRPre = _steps.NewRow();
             dRPre[str_col_Action] = "wait";
             dRPre[str_col_Weight] = 0;
             dRPre[str_col_Length] = 0;
             dRPre[str_col_TotalLength] = 0;
-            dRPre[str_col_TotalLengthReverse] = intTotalSeconds;
+            dRPre[str_col_TotalLengthReverse] = _int_TotalSeconds;
             dRPre[str_col_Order] = 0;
             dRPre[str_col_PreStep] = true;
             dRPre[str_col_Override] = false;
-            dt.Rows.InsertAt(dRPre, 0);
+            _steps.Rows.InsertAt(dRPre, 0);
 
-            return dt;
+            return _steps;
         }
-        private DataTable dataTable_Weights(
-            DataTable dt_x_jumps,
+        private Dictionary<int, bool> dictionary_Weights(
+            Dictionary<int, int> _jumps,
             DataTable _dataTableWeight_Input,
             int int_x_Wgt_Opener,
             bool bool_Opener_in_Warmup
             )
         {
             DataTable dt = new();
-            dt.Columns.AddRange(new DataColumn[]
-            {
-                new DataColumn(str_col_Weight, typeof(int)),
-                new DataColumn(str_col_Override, typeof(bool))
-            });
+            dt.Columns.AddRange(
+            [
+                new(str_col_Weight, typeof(int)),
+                new(str_col_Override, typeof(bool))
+            ]);
 
             int intWeight = 0;
             int intJump;
@@ -6776,9 +5631,9 @@ namespace Weightlifting_Comp_Warmup
             return result;
         }
         private void Apply_Opener_Graphic_Vector(
-            int _intWeightBar
-            , int _intWeightOpener
-            , bool _boolSnatch
+            int _intWeightBar,
+ int _intWeightOpener,
+ bool _boolSnatch
             )
         {
             Panel _panelGraphic;
@@ -6869,7 +5724,7 @@ namespace Weightlifting_Comp_Warmup
                     _boolOpener ?
                     Math.Min(400, weightBoxGraphic.Width - intLBuffer - (2 * _int_Shadow_Width)) :
                     10);
-            int int_Sleeve_Width = 
+            int int_Sleeve_Width =
                 (
                     _boolOpener ?
                     (
@@ -6898,7 +5753,7 @@ namespace Weightlifting_Comp_Warmup
 
             //add bar
             //add bar shadow
-            Rectangle 
+            Rectangle
                 rect_MainBar, rectShadow_MainBar,
                 rect_SleeveKnuckle_Right, rectShadow_SleeveKnuckle_Right,
                 rect_Sleeve_Right, rectShadow_Sleeve_Right,
@@ -7008,7 +5863,7 @@ namespace Weightlifting_Comp_Warmup
                     brush: brush_BarGrey,
                     rect: rect_Sleeve_Left);
             }
-            
+
             // add plates
             Rectangle rect, rectShadow;
             int intLeft = rect_SleeveKnuckle_Right.X + int_SleeveKnuckle_Width + _int_Shadow_Width + 1;
@@ -7052,7 +5907,7 @@ namespace Weightlifting_Comp_Warmup
                     intRight -= _intPlateGap;
                 }
             }
-            
+
             if (bool20_0)
             {
                 rect = new(
@@ -7092,7 +5947,7 @@ namespace Weightlifting_Comp_Warmup
                     intRight -= _intPlateGap;
                 }
             }
-            
+
             if (bool15_0)
             {
                 rect = new(
@@ -7132,7 +5987,7 @@ namespace Weightlifting_Comp_Warmup
                     intRight -= _intPlateGap;
                 }
             }
-            
+
             if (bool10_0)
             {
                 rect = new(
@@ -7481,19 +6336,19 @@ namespace Weightlifting_Comp_Warmup
             }
         }
         private void Plates_Count_For_Weight(
-            int _intWeightBar
-            , bool _bool5KGCollar
-            , int _intWeightLift
-            , out int _int25_0     // 25kg     red
-            , out bool _bool20_0     // 20kg     blue
-            , out bool _bool15_0     // 15kg     yellow
-            , out bool _bool10_0     // 10kg     green
-            , out bool _bool05_0      // 5kg      largechange_white
-            , out bool _bool02_5    // 2.5kg    change_red
-            , out bool _bool02_0      // 2kg      change_blue
-            , out bool _bool01_5    // 1.5kg    change_yellow
-            , out bool _bool01_0      // 1kg      change_green
-            , out bool _bool00_5    // 0.5kg    change_white
+            int _intWeightBar,
+ bool _bool5KGCollar,
+ int _intWeightLift,
+ out int _int25_0,     // 25kg     red
+ out bool _bool20_0,     // 20kg     blue
+ out bool _bool15_0,     // 15kg     yellow
+ out bool _bool10_0,     // 10kg     green
+ out bool _bool05_0,      // 5kg      largechange_white
+ out bool _bool02_5,    // 2.5kg    change_red
+ out bool _bool02_0,      // 2kg      change_blue
+ out bool _bool01_5,    // 1.5kg    change_yellow
+ out bool _bool01_0,      // 1kg      change_green
+ out bool _bool00_5    // 0.5kg    change_white
             )
         {
             _bool20_0 = false;

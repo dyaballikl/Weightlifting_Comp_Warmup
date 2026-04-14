@@ -1,6 +1,6 @@
-﻿namespace Weightlifting_Comp_Warmup
+﻿namespace Weightlifting_Comp_Warmup.Main
 {
-    partial class Form_WL_Comp_Warmup
+    partial class form_Main
     {
         /// <summary>
         /// Required designer variable.
