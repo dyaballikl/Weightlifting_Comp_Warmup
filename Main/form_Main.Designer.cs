@@ -146,6 +146,7 @@
             this.label_cj_Live_LiftsOut = new System.Windows.Forms.Label();
             this.label48 = new System.Windows.Forms.Label();
             this.panel10 = new System.Windows.Forms.Panel();
+            this.textBox_cj_Live_Break = new System.Windows.Forms.TextBox();
             this.label_cj_Live_Break = new System.Windows.Forms.Label();
             this.progressBar_cj_Live_Break = new System.Windows.Forms.ProgressBar();
             this.numericUpDown_cj_Live_Break = new System.Windows.Forms.NumericUpDown();
@@ -321,7 +322,6 @@
             this.checkBox_snatch_Param_OpenerWarmup.TabIndex = 23;
             this.checkBox_snatch_Param_OpenerWarmup.Text = "hit opener in warmup";
             this.checkBox_snatch_Param_OpenerWarmup.UseVisualStyleBackColor = true;
-            this.checkBox_snatch_Param_OpenerWarmup.CheckedChanged += new System.EventHandler(this.checkBox_snatch_Param_OpenerWarmup_CheckedChanged);
             // 
             // panel_snatch_Param_Opener
             // 
@@ -361,7 +361,6 @@
             0,
             0,
             0});
-            this.numericUpDown_snatch_time_PostWarmup.ValueChanged += new System.EventHandler(this.numericUpDown_snatch_time_PostWarmup_ValueChanged);
             // 
             // label14
             // 
@@ -429,7 +428,6 @@
             0,
             0,
             0});
-            this.numericUpDown_snatch_weight_opener.ValueChanged += new System.EventHandler(this.numericUpDown_snatch_weight_opener_ValueChanged);
             // 
             // label3
             // 
@@ -463,7 +461,6 @@
             0,
             0,
             0});
-            this.numericUpDown_snatch_time_stage.ValueChanged += new System.EventHandler(this.numericUpDown_snatch_time_stage_ValueChanged);
             // 
             // label2
             // 
@@ -1073,7 +1070,6 @@
             this.checkBox_cj_Param_OpenerWarmup.TabIndex = 24;
             this.checkBox_cj_Param_OpenerWarmup.Text = "hit opener in warmup";
             this.checkBox_cj_Param_OpenerWarmup.UseVisualStyleBackColor = true;
-            this.checkBox_cj_Param_OpenerWarmup.CheckedChanged += new System.EventHandler(this.checkBox_cj_Param_OpenerWarmup_CheckedChanged);
             // 
             // panel_cj_Param_Opener
             // 
@@ -1100,7 +1096,6 @@
             0,
             0,
             0});
-            this.numericUpDown_cj_time_PostWarmup.ValueChanged += new System.EventHandler(this.numericUpDown_cj_time_PostWarmup_ValueChanged);
             // 
             // label26
             // 
@@ -1134,7 +1129,6 @@
             0,
             0,
             0});
-            this.numericUpDown_cj_weight_opener.ValueChanged += new System.EventHandler(this.numericUpDown_cj_weight_opener_ValueChanged);
             // 
             // label28
             // 
@@ -1168,7 +1162,6 @@
             0,
             0,
             0});
-            this.numericUpDown_cj_time_stage.ValueChanged += new System.EventHandler(this.numericUpDown_cj_time_stage_ValueChanged);
             // 
             // label29
             // 
@@ -1622,6 +1615,7 @@
             // panel10
             // 
             this.panel10.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel10.Controls.Add(this.textBox_cj_Live_Break);
             this.panel10.Controls.Add(this.label_cj_Live_Break);
             this.panel10.Controls.Add(this.progressBar_cj_Live_Break);
             this.panel10.Controls.Add(this.numericUpDown_cj_Live_Break);
@@ -1630,6 +1624,21 @@
             this.panel10.Name = "panel10";
             this.panel10.Size = new System.Drawing.Size(325, 88);
             this.panel10.TabIndex = 34;
+            // 
+            // textBox_cj_Live_Break
+            // 
+            this.textBox_cj_Live_Break.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.textBox_cj_Live_Break.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.textBox_cj_Live_Break.Location = new System.Drawing.Point(140, 30);
+            this.textBox_cj_Live_Break.MaxLength = 4;
+            this.textBox_cj_Live_Break.Name = "textBox_cj_Live_Break";
+            this.textBox_cj_Live_Break.Size = new System.Drawing.Size(41, 25);
+            this.textBox_cj_Live_Break.TabIndex = 34;
+            this.textBox_cj_Live_Break.Text = "textBox_cj_Live_Break";
+            this.textBox_cj_Live_Break.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_cj_Live_Break.Visible = false;
+            this.textBox_cj_Live_Break.TextChanged += new System.EventHandler(this.textBox_cj_Live_Break_TextChanged);
+            this.textBox_cj_Live_Break.Leave += new System.EventHandler(this.textBox_cj_Live_Break_Leave);
             // 
             // label_cj_Live_Break
             // 
@@ -1641,6 +1650,7 @@
             this.label_cj_Live_Break.TabIndex = 33;
             this.label_cj_Live_Break.Text = "label_cj_Live_Break";
             this.label_cj_Live_Break.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label_cj_Live_Break.Click += new System.EventHandler(this.label_cj_Live_Break_Click);
             // 
             // progressBar_cj_Live_Break
             // 
@@ -1907,7 +1917,7 @@
             this.label_Battery.Text = "battery";
             this.label_Battery.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // Form_WL_Comp_Warmup
+            // form_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1923,7 +1933,7 @@
             this.MainMenuStrip = this.menuStrip_Profile;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MinimumSize = new System.Drawing.Size(1645, 684);
-            this.Name = "Form_WL_Comp_Warmup";
+            this.Name = "form_Main";
             this.Text = "Weightlifting Comp Warmup";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_WL_Comp_Warmup_FormClosing);
@@ -2131,6 +2141,7 @@
         private System.Windows.Forms.ProgressBar progressBar_Battery;
         private System.Windows.Forms.Label label_Battery;
         private System.Windows.Forms.Label label_Battery_Percentage;
+        private System.Windows.Forms.TextBox textBox_cj_Live_Break;
     }
 }
 

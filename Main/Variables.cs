@@ -113,7 +113,8 @@ namespace Weightlifting_Comp_Warmup.Main
         private Color color_snatch_Live_BG;
         private Color color_cj_Live_BG;
 
-        PropertyData propertyData_Battery = null;
+        PropertyData propertyData_BatteryPercent = null;
+        PropertyData propertyData_BatteryMinutesRemaining = null;
         readonly Properties.Settings savedSettings = Properties.Settings.Default;
     }
 }

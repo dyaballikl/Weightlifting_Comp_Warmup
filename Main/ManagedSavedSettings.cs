@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Management;
 using System.Windows.Forms;
 
 namespace Weightlifting_Comp_Warmup.Main
@@ -448,6 +447,13 @@ namespace Weightlifting_Comp_Warmup.Main
                     }
                     savedSettings.ii_bool_Beep = _strings;
                 }
+
+                savedSettings.ii_strings_snatch_Extras.RemoveAll(r => !TryParseExtras(record: r, profileId: out _, extra: out _));
+                savedSettings.ii_strings_snatch_Jumps.RemoveAll(r => !TryParseJumpTime(record: r, profileId: out _, fromWeight: out _, step: out _));
+                savedSettings.ii_strings_snatch_Times.RemoveAll(r => !TryParseJumpTime(record: r, profileId: out _, fromWeight: out _, step: out _));
+                savedSettings.ii_strings_cj_Extras.RemoveAll(r => !TryParseExtras(record: r, profileId: out _, extra: out _));
+                savedSettings.ii_strings_cj_Jumps.RemoveAll(r => !TryParseJumpTime(record: r, profileId: out _, fromWeight: out _, step: out _));
+                savedSettings.ii_strings_cj_Times.RemoveAll(r => !TryParseJumpTime(record: r, profileId: out _, fromWeight: out _, step: out _));
             }
             Print_All_Settings();
         }
@@ -639,7 +645,7 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 snatchExtras = Defaults.default_snatchExtras();
             }
-            snatch_Populate_Extras();
+            PopulateExtras(liftType: LiftType.Snatch);
 
             bool_AutoVals = true;
             if (default_snatchJumps != null && default_snatchJumps.Count > 0)
@@ -651,7 +657,7 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 snatchJumps = Defaults.default_snatchJumps();
             }
-            snatch_Populate_Jumps();
+            PopulateJumps(liftType: LiftType.Snatch);
 
             bool_AutoVals = true;
             if (default_snatchTimes != null && default_snatchTimes.Count > 0)
@@ -663,9 +669,9 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 snatchTimes = Defaults.default_snatchTimes();
             }
-            snatch_Populate_Times();
+            PopulateTimes(liftType: LiftType.Snatch);
 
-            snatch_Populate_Steps(boolPreserveLifts: false);
+            PopulateSteps(liftType: LiftType.Snatch, preserveLifts: false);
 
             bool_AutoVals = true;
             if (default_cjExtras != null && default_cjExtras.Count > 0)
@@ -677,7 +683,7 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 cjExtras = Defaults.default_cjExtras();
             }
-            cj_Populate_Extras();
+            PopulateExtras(liftType: LiftType.CleanAndJerk);
 
             bool_AutoVals = true;
             if (default_cjJumps != null)
@@ -692,7 +698,7 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 cjJumps = Defaults.default_cjJumps();
             }
-            cj_Populate_Jumps();
+            PopulateJumps(liftType: LiftType.CleanAndJerk);
 
             bool_AutoVals = true;
             if (default_cjTimes != null)
@@ -707,13 +713,13 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 cjTimes = Defaults.default_cjTimes();
             }
-            cj_Populate_Times();
+            PopulateTimes(liftType: LiftType.CleanAndJerk);
 
-            cj_Populate_Steps(boolPreserveLifts: false);
+            PopulateSteps(liftType: LiftType.CleanAndJerk, preserveLifts: false);
 
             CheckCollections();
-            Snatch_Opener_Set();
-            CJ_Opener_Set();
+            ApplyOpener(liftType: LiftType.Snatch);
+            ApplyOpener(liftType: LiftType.CleanAndJerk);
 
             bool_Loading = _bool_Loading;
         }
@@ -888,8 +894,8 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
             if (int.TryParse(record.Substring(3, 6), out int id) &&
-                int.TryParse(record.Substring(9, 3), out int order) &&
-                int.TryParse(record.Substring(12, 5), out int length))
+                int.TryParse(record.Substring(9, 3), out int order) && order > -1 &&
+                int.TryParse(record.Substring(12, 5), out int length) && length > 0)
             {
                 string action = record.Substring(17);
                 extra = new(id, action, length, order);
@@ -907,7 +913,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 return false;
             }
             return int.TryParse(record.Substring(3, 3), out fromWeight) &&
-                   int.TryParse(record.Substring(6, 3), out step);
+                   int.TryParse(record.Substring(6, 3), out step) && step > 0;
         }
         private void Get_Settings_Defaults_Lists()
         {
@@ -936,12 +942,12 @@ namespace Weightlifting_Comp_Warmup.Main
 
             foreach (string s in savedSettings.ii_strings_snatch_Jumps)
             {
-                TryParseJumpTime(
+                if (TryParseJumpTime(
                     record: s,
                     profileId: out int profileId,
                     fromWeight: out int fromWeight,
-                    step: out int step);
-                if (profileId == int_ProfileId)
+                    step: out int step) &&
+                    profileId == int_ProfileId)
                 {
                     default_snatchJumps[fromWeight] = step;
                 }
@@ -953,12 +959,12 @@ namespace Weightlifting_Comp_Warmup.Main
 
             foreach (string s in savedSettings.ii_strings_snatch_Times)
             {
-                TryParseJumpTime(
+                if (TryParseJumpTime(
                     record: s,
                     profileId: out int profileId,
                     fromWeight: out int fromWeight,
-                    step: out int step);
-                if (profileId == int_ProfileId)
+                    step: out int step) &&
+                    profileId == int_ProfileId)
                 {
                     default_snatchTimes[fromWeight] = step;
                 }
@@ -987,12 +993,12 @@ namespace Weightlifting_Comp_Warmup.Main
 
             foreach (string s in savedSettings.ii_strings_cj_Jumps)
             {
-                TryParseJumpTime(
+                if (TryParseJumpTime(
                     record: s,
                     profileId: out int profileId,
                     fromWeight: out int fromWeight,
-                    step: out int step);
-                if (profileId == int_ProfileId)
+                    step: out int step) &&
+                    profileId == int_ProfileId)
                 {
                     default_cjJumps[fromWeight] = step;
                 }
@@ -1004,12 +1010,12 @@ namespace Weightlifting_Comp_Warmup.Main
 
             foreach (string s in savedSettings.ii_strings_cj_Times)
             {
-                TryParseJumpTime(
+                if (TryParseJumpTime(
                     record: s,
                     profileId: out int profileId,
                     fromWeight: out int fromWeight,
-                    step: out int step);
-                if (profileId == int_ProfileId)
+                    step: out int step) &&
+                    profileId == int_ProfileId)
                 {
                     default_cjTimes[fromWeight] = step;
                 }
@@ -1271,12 +1277,12 @@ namespace Weightlifting_Comp_Warmup.Main
                             for (int i = 0; i < savedSettings.ii_strings_snatch_Jumps.Count; i++)
                             {
                                 string s = savedSettings.ii_strings_snatch_Jumps[i];
-                                TryParseJumpTime(
+                                                                if (TryParseJumpTime(
                                     record: s,
                                     profileId: out int __int_ProfileId,
                                     fromWeight: out _,
-                                    step: out _);
-                                if (__int_ProfileId == _int_ProfileId)
+                                    step: out _) &&
+                                    __int_ProfileId == _int_ProfileId)
                                 {
                                     savedSettings.ii_strings_snatch_Jumps.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
                                 }
@@ -1284,14 +1290,14 @@ namespace Weightlifting_Comp_Warmup.Main
                             for (int i = 0; i < savedSettings.ii_strings_snatch_Times.Count; i++)
                             {
                                 string s = savedSettings.ii_strings_snatch_Times[i];
-                                TryParseJumpTime(
+                                if (TryParseJumpTime(
                                     record: s,
                                     profileId: out int __int_ProfileId,
                                     fromWeight: out _,
-                                    step: out _);
-                                if (__int_ProfileId == _int_ProfileId)
+                                    step: out _) &&
+                                    __int_ProfileId == _int_ProfileId)
                                 {
-                                    savedSettings.ii_strings_snatch_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
+                                                                        savedSettings.ii_strings_snatch_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
                                 }
                             }
 
@@ -1317,12 +1323,12 @@ namespace Weightlifting_Comp_Warmup.Main
                             for (int i = 0; i < savedSettings.ii_strings_cj_Jumps.Count; i++)
                             {
                                 string s = savedSettings.ii_strings_cj_Jumps[i];
-                                TryParseJumpTime(
+                                if (TryParseJumpTime(
                                     record: s,
                                     profileId: out int __int_ProfileId,
                                     fromWeight: out _,
-                                    step: out _);
-                                if (__int_ProfileId == _int_ProfileId)
+                                    step: out _) &&
+                                    __int_ProfileId == _int_ProfileId)
                                 {
                                     savedSettings.ii_strings_cj_Jumps.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
                                 }
@@ -1330,14 +1336,14 @@ namespace Weightlifting_Comp_Warmup.Main
                             for (int i = 0; i < savedSettings.ii_strings_cj_Times.Count; i++)
                             {
                                 string s = savedSettings.ii_strings_cj_Times[i];
-                                TryParseJumpTime(
+                                if (TryParseJumpTime(
                                     record: s,
                                     profileId: out int __int_ProfileId,
                                     fromWeight: out _,
-                                    step: out _);
-                                if (__int_ProfileId == _int_ProfileId)
+                                    step: out _) &&
+                                    __int_ProfileId == _int_ProfileId)
                                 {
-                                    savedSettings.ii_strings_cj_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
+                                        savedSettings.ii_strings_cj_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
                                 }
                             }
 
