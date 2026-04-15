@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace Weightlifting_Comp_Warmup.Main
 {
@@ -28,7 +29,7 @@ namespace Weightlifting_Comp_Warmup.Main
             Length = length;
             Order = order;
         }
-        public override string ToString() => $"{id:000000}{Order:000}{Length:00000}{Action}";
+        public override readonly string ToString() => $"{id:000000}{Order:000}{Length:00000}{Action}";
     }
     public class LiveStepControls
     {
@@ -49,18 +50,31 @@ namespace Weightlifting_Comp_Warmup.Main
         public int Order { get; set; }
         public bool PreStep { get; set; }
         public bool Override { get; set; }
-        public LiveStepControls? Controls { get; set; }
+        public LiveStepControls Controls { get; set; }
 
-        public Step(string action, int length, int totalLength, int totalLengthReverse, int order, bool @override)
+        public Step(string action, int weight, int length, int totalLength, int order, bool preStep, bool @override)
+        { // extras
+            Action = action;
+            Weight = weight;
+            Length = length;
+            TotalLength = totalLength;
+            Order = order;
+            PreStep = preStep;
+            Override = @override;
+            Controls = new();
+        }
+
+        public Step(string action, int length, int totalLength, /*int totalLengthReverse, */int order, bool @override)
         { // non-lift
             Action = action;
             Weight = null;
             Length = length;
             TotalLength = totalLength;
-            TotalLengthReverse = totalLengthReverse;
+            //TotalLengthReverse = totalLengthReverse;
             Order = order;
             PreStep = true;
             Override = @override;
+            Controls = new();
         }
         public Step(string action, int weight, bool @override) // add step phase
         { // is lift
@@ -68,6 +82,7 @@ namespace Weightlifting_Comp_Warmup.Main
             Weight = weight;
             PreStep = false;
             Override = @override;
+            Controls = new();
         }
         public Step(string action, int? weight, int length, int totalLength, int totalLengthReverse, int order, bool preStep, bool @override)
         {
@@ -79,38 +94,23 @@ namespace Weightlifting_Comp_Warmup.Main
             Order = order;
             PreStep = preStep;
             Override = @override;
+            Controls = new();
         }
         public Step Clone()
         {
             return (Step)this.MemberwiseClone();
         }
     }
-    //public class Jump
-    //{
-    //    private static int _nextId = 1;
-    //    public int id { get; private set; }
-    //    public int FromWeight { get; set; }
-    //    public int JumpValue { get; set; }
-    //    public Jump(int fromWeight, int jumpValue)
-    //    {
-    //        this.id = _nextId;
-    //        _nextId++;
-    //        FromWeight = fromWeight;
-    //        JumpValue = jumpValue;
-    //    }
-    //}
-    //public class Time
-    //{
-    //    private static int _nextId = 1;
-    //    public int id { get; private set; }
-    //    public int FromWeight { get; set; }
-    //    public int Length { get; set; }
-    //    public Time(int fromWeight, int length)
-    //    {
-    //        this.id = _nextId;
-    //        _nextId++;
-    //        FromWeight = fromWeight;
-    //        Length = length;
-    //    }
-    //}
+    public struct PlateParameter(int width, int height, SolidBrush brush)
+    {
+        public int Width { get; set; } = width;
+        public int Height { get; set; } = height;
+        public SolidBrush Brush { get; set; } = brush;
+    }
+    public enum LiftType
+    {
+        Snatch,
+        CleanAndJerk
+    }
+
 }

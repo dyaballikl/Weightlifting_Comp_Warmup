@@ -13,7 +13,7 @@ namespace Weightlifting_Comp_Warmup
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new form_Main());
+            Application.Run(new Weightlifting_Comp_Warmup.Main.form_Main());
         }
     }
 }

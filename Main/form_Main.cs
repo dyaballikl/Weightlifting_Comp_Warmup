@@ -17,7 +17,6 @@ namespace Weightlifting_Comp_Warmup.Main
             //defaults.Reset();
             //Settings_Changes_Save();
             Clean_Settings();
-            Print_All_Settings();
             //defaults.Reset();
             //Settings_Changes_Save();
 
@@ -46,283 +45,6 @@ namespace Weightlifting_Comp_Warmup.Main
 
             InitializeComponent();
         }
-        private void ProfileId_Select(int _int_ProfileId)
-        {
-            Clean_Settings();
-            int_ProfileId = _int_ProfileId;
-            int _int_Barbell = int_default_Barbell;
-            TimeSpan _timeSpan_Start = new(12, 0, 0);
-            int _int_snatch_Sec_Stage = int_default_snatch_Sec_Stage;
-            int _int_snatch_Wgt_Opener = int_default_snatch_Wgt_Opener;
-            int _int_snatch_Sec_End = int_default_snatch_Sec_End;
-            int _int_snatch_Lifts_Out = int_default_snatch_Lifts_Out;
-            int _int_cj_Sec_Stage = int_default_cj_Sec_Stage;
-            int _int_cj_Sec_Break = int_default_cj_Sec_Break;
-            int _int_cj_Wgt_Opener = int_default_cj_Wgt_Opener;
-            int _int_cj_Sec_End = int_default_cj_Sec_End;
-            int _int_cj_Lifts_Out = int_default_cj_Lifts_Out;
-            int _int_cj_snLifts_Out = int_default_cj_snLifts_Out;
-            bool _bool_snatch_OpenerWarmup = bool_default_snatch_OpenerWarmup;
-            bool _bool_cj_OpenerWarmup = bool_default_cj_OpenerWarmup;
-            bool _bool_Beep = bool_default_Beep;
-
-            Get_Settings_Defaults_Lists();
-
-            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-            if (_int_Sequence > -1)
-            {
-                int.TryParse(s: savedSettings.ii_int_Barbell[_int_Sequence], out _int_Barbell);
-                string _str_Start = savedSettings.ii_HHmm_StartTimes[_int_Sequence];
-                if (!string.IsNullOrEmpty(_str_Start) && _str_Start.Length == 4)
-                {
-                    try
-                    {
-                        _timeSpan_Start = new(int.Parse(s: _str_Start.Substring(0, 2)), int.Parse(s: _str_Start.Substring(2)), 0);
-                    }
-                    catch { }
-                }
-                int.TryParse(s: savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence], out _int_snatch_Sec_Stage);
-                int.TryParse(s: savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence], out _int_snatch_Wgt_Opener);
-                bool.TryParse(value: savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence], out _bool_snatch_OpenerWarmup);
-                int.TryParse(s: savedSettings.ii_int_snatch_Sec_End[_int_Sequence], out _int_snatch_Sec_End);
-                int.TryParse(s: savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence], out _int_snatch_Lifts_Out);
-
-                int.TryParse(s: savedSettings.ii_int_cj_Sec_Stage[_int_Sequence], out _int_cj_Sec_Stage);
-                int.TryParse(s: savedSettings.ii_int_cj_Sec_Break[_int_Sequence], out _int_cj_Sec_Break);
-                int.TryParse(s: savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence], out _int_cj_Wgt_Opener);
-                bool.TryParse(value: savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence], out _bool_cj_OpenerWarmup);
-                int.TryParse(s: savedSettings.ii_int_cj_Sec_End[_int_Sequence], out _int_cj_Sec_End);
-                int.TryParse(s: savedSettings.ii_int_cj_Lifts_Out[_int_Sequence], out _int_cj_Lifts_Out);
-                int.TryParse(s: savedSettings.ii_int_cj_snLifts_Out[_int_Sequence], out _int_cj_snLifts_Out);
-
-                bool.TryParse(value: savedSettings.ii_bool_Beep[_int_Sequence], out _bool_Beep);
-            }
-
-            int_Barbell = _int_Barbell;
-            timeSpan_Start = _timeSpan_Start;
-            int_snatch_Sec_Stage = _int_snatch_Sec_Stage;
-            int_snatch_Wgt_Opener = _int_snatch_Wgt_Opener;
-            int_snatch_Sec_End = _int_snatch_Sec_End;
-            int_snatch_Lifts_Out = _int_snatch_Lifts_Out;
-            int_cj_Sec_Stage = _int_cj_Sec_Stage;
-            int_cj_Sec_Break = _int_cj_Sec_Break;
-            int_cj_Wgt_Opener = _int_cj_Wgt_Opener;
-            int_cj_Sec_End = _int_cj_Sec_End;
-            int_cj_Lifts_Out = _int_cj_Lifts_Out;
-            int_cj_snLifts_Out = _int_cj_snLifts_Out;
-            bool_snatch_OpenerWarmup = _bool_snatch_OpenerWarmup;
-            bool_cj_OpenerWarmup = _bool_cj_OpenerWarmup;
-            bool_Beep = _bool_Beep;
-        }
-        private void Load_Profile_Values_To_Controls()
-        {
-            bool _bool_Loading = bool_Loading;
-            bool_Loading = true;
-
-            snatch_Stop_Live();
-            cj_Stop_Live();
-
-            color_snatch_Live_BG = splitContainer_snatch.Panel2.BackColor;
-            color_cj_Live_BG = splitContainer_cj.Panel2.BackColor;
-
-            if (int_Barbell < numericUpDown_snatch_weight_barbell.Minimum)
-            {
-                int_Barbell = 20;
-            }
-            numericUpDown_snatch_weight_barbell.Value = int_Barbell;
-
-            DateTime dateTime = DateTime.Today.Add(timeSpan_Start);
-            if (dateTime < DateTime.Now)
-            {
-                dateTime = dateTime.AddDays(1);
-            }
-            dateTimePicker_snatch_Start.Value = dateTime;
-
-            if (int_snatch_Sec_Stage < numericUpDown_snatch_time_stage.Minimum)
-            {
-                int_snatch_Sec_Stage = 55;
-            }
-            numericUpDown_snatch_time_stage.Value = int_snatch_Sec_Stage;
-
-            if (int_snatch_Wgt_Opener < int_Barbell)
-            {
-                int_snatch_Wgt_Opener = 85;
-            }
-            numericUpDown_snatch_weight_opener.Value = int_snatch_Wgt_Opener;
-
-            if (int_snatch_Sec_End < numericUpDown_snatch_time_PostWarmup.Minimum)
-            {
-                int_snatch_Sec_End = 60;
-            }
-            numericUpDown_snatch_time_PostWarmup.Value = int_snatch_Sec_End;
-
-            if (int_snatch_Lifts_Out < 0)
-            {
-                int_snatch_Lifts_Out = 3;
-            }
-            else if (int_snatch_Lifts_Out > 99)
-            {
-                int_snatch_Lifts_Out = 99;
-            }
-            label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
-            label_snatch_Live_LiftsPassed.Text = string.Empty;
-            snatch_Stop_Live();
-
-
-            if (int_cj_Sec_Stage < numericUpDown_cj_time_stage.Minimum)
-            {
-                int_cj_Sec_Stage = 62;
-            }
-            numericUpDown_cj_time_stage.Value = int_cj_Sec_Stage;
-
-            if (int_cj_Sec_Break < (numericUpDown_cj_Live_Break.Minimum * 60))
-            {
-                int_cj_Sec_Break = 10 * 60;
-            }
-            numericUpDown_cj_Live_Break.Value = (int)((double)int_cj_Sec_Break / 60);
-
-            if (int_cj_Wgt_Opener < int_Barbell)
-            {
-                int_cj_Wgt_Opener = 108;
-            }
-            numericUpDown_cj_weight_opener.Value = int_cj_Wgt_Opener;
-
-            if (int_cj_Sec_End < numericUpDown_cj_time_PostWarmup.Minimum)
-            {
-                int_cj_Sec_End = 75;
-            }
-            numericUpDown_cj_time_PostWarmup.Value = int_cj_Sec_End;
-
-            if (int_cj_Lifts_Out < 0)
-            {
-                int_cj_Lifts_Out = 3;
-            }
-            else if (int_cj_Lifts_Out > 99)
-            {
-                int_cj_Lifts_Out = 99;
-            }
-            label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
-            label_cj_Live_LiftsPassed.Text = string.Empty;
-
-            if (int_cj_snLifts_Out < 0)
-            {
-                int_cj_snLifts_Out = 0;
-            }
-            label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
-
-            checkBox_snatch_Param_OpenerWarmup.Checked = bool_snatch_OpenerWarmup;
-            checkBox_cj_Param_OpenerWarmup.Checked = bool_cj_OpenerWarmup;
-
-            cj_Stop_Live();
-
-
-            checkBox_snatch_Live_Beep.Checked = bool_Beep;
-            checkBox_cj_Live_Beep.Checked = bool_Beep;
-
-
-            InitialiseCollections();
-
-            bool bool_AutoVals;
-
-            bool_AutoVals = true;
-            if (default_snatchExtras != null && default_snatchExtras.Count > 0)
-            {
-                snatchExtras = default_snatchExtras.ToList();
-                bool_AutoVals = false;
-            }
-            if (bool_AutoVals)
-            {
-                snatchExtras = Defaults.default_snatchExtras();
-            }
-            snatch_Populate_Extras();
-
-            bool_AutoVals = true;
-            if (default_snatchJumps != null && default_snatchJumps.Count > 0)
-            {
-                snatchJumps = new(default_snatchJumps);
-                bool_AutoVals = false;
-            }
-            if (bool_AutoVals)
-            {
-                snatchJumps = Defaults.default_snatchJumps();
-            }
-            snatch_Populate_Jumps();
-
-            bool_AutoVals = true;
-            if (default_snatchTimes != null && default_snatchTimes.Count > 0)
-            {
-                snatchTimes = new(default_snatchTimes);
-                bool_AutoVals = false;
-            }
-            if (bool_AutoVals)
-            {
-                snatchTimes = Defaults.default_snatchTimes();
-            }
-            snatch_Populate_Times();
-
-            snatch_Populate_Steps(boolPreserveLifts: false);
-
-            bool_AutoVals = true;
-            if (default_cjExtras != null && default_cjExtras.Count > 0)
-            {
-                cjExtras = default_cjExtras.ToList();
-                bool_AutoVals = false;
-            }
-            if (bool_AutoVals)
-            {
-                cjExtras = Defaults.default_cjExtras();
-            }
-            cj_Populate_Extras();
-
-            bool_AutoVals = true;
-            if (default_cjJumps != null)
-            {
-                if (default_cjJumps.Count > 0)
-                {
-                    cjJumps = new(default_cjJumps);
-                    bool_AutoVals = false;
-                }
-            }
-            if (bool_AutoVals)
-            {
-                cjJumps = Defaults.default_cjJumps();
-            }
-            cj_Populate_Jumps();
-
-            bool_AutoVals = true;
-            if (default_cjTimes != null)
-            {
-                if (default_cjTimes.Count > 0)
-                {
-                    cjTimes = new(default_cjTimes);
-                    bool_AutoVals = false;
-                }
-            }
-            if (bool_AutoVals)
-            {
-                cjTimes = Defaults.default_cjTimes();
-            }
-            cj_Populate_Times();
-
-            cj_Populate_Steps(boolPreserveLifts: false);
-
-            CheckCollections();
-            Snatch_Opener_Set();
-            CJ_Opener_Set();
-
-            bool_Loading = _bool_Loading;
-        }
-        private int int_Profile_Sequence(int _int_ProfileId)
-        {
-            if (_int_ProfileId > -1 && savedSettings.ii_int_ProfileIds != null)
-            {
-                if (savedSettings.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
-                {
-                    return savedSettings.ii_int_ProfileIds.IndexOf(_int_ProfileId.ToString());
-                }
-            }
-            return -1;
-        }
         private void buttonClose_Click(object sender, EventArgs e)
         {
             Close();
@@ -349,631 +71,10 @@ namespace Weightlifting_Comp_Warmup.Main
             buttonClose.BringToFront();
             bool_Loading = false;
         }
-        private void Clean_Settings()
-        {
-            Print_All_Settings();
-            // ensures the string lists have the same number of entries as the profile id list
-            int _int_Profile_Count = 0;
-            if (savedSettings.ii_int_ProfileIds != null)
-            {
-                _int_Profile_Count = savedSettings.ii_int_ProfileIds.Count;
-            }
-            if (_int_Profile_Count == 0)
-            {
-                savedSettings.ii_int_ProfileIds = [];
-                savedSettings.ii_string_ProfileName = [];
-                savedSettings.ii_int_Barbell = [];
-                savedSettings.ii_HHmm_StartTimes = [];
-                savedSettings.ii_int_snatch_Sec_Stage = [];
-                savedSettings.ii_int_snatch_Wgt_Opener = [];
-                savedSettings.ii_bool_snatch_OpenerWarmup = [];
-                savedSettings.ii_int_snatch_Sec_End = [];
-                savedSettings.ii_int_snatch_Lifts_Out = [];
-                savedSettings.ii_int_cj_Sec_Stage = [];
-                savedSettings.ii_int_cj_Sec_Break = [];
-                savedSettings.ii_int_cj_Wgt_Opener = [];
-                savedSettings.ii_bool_cj_OpenerWarmup = [];
-                savedSettings.ii_int_cj_Sec_End = [];
-                savedSettings.ii_int_cj_Lifts_Out = [];
-                savedSettings.ii_int_cj_snLifts_Out = [];
-                savedSettings.ii_bool_Beep = [];
-                savedSettings.ii_strings_snatch_Extras = [];
-                savedSettings.ii_strings_snatch_Jumps = [];
-                savedSettings.ii_strings_snatch_Times = [];
-                savedSettings.ii_strings_cj_Extras = [];
-                savedSettings.ii_strings_cj_Jumps = [];
-                savedSettings.ii_strings_cj_Times = [];
-            }
-            else
-            {
-                List<string> _strings = [];
-                if (savedSettings.ii_string_ProfileName != null)
-                {
-                    _strings = savedSettings.ii_string_ProfileName;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add("DefaultName" + i.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_string_ProfileName = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_Barbell != null)
-                {
-                    _strings = savedSettings.ii_int_Barbell;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_Barbell.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_Barbell = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_HHmm_StartTimes != null)
-                {
-                    _strings = savedSettings.ii_HHmm_StartTimes;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add("1200");
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_HHmm_StartTimes = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_snatch_Sec_Stage != null)
-                {
-                    _strings = savedSettings.ii_int_snatch_Sec_Stage;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_snatch_Sec_Stage.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_snatch_Sec_Stage = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_snatch_Wgt_Opener != null)
-                {
-                    _strings = savedSettings.ii_int_snatch_Wgt_Opener;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_snatch_Wgt_Opener.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_snatch_Wgt_Opener = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_bool_snatch_OpenerWarmup != null)
-                {
-                    _strings = savedSettings.ii_bool_snatch_OpenerWarmup;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(bool_default_snatch_OpenerWarmup.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_bool_snatch_OpenerWarmup = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_snatch_Sec_End != null)
-                {
-                    _strings = savedSettings.ii_int_snatch_Sec_End;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_snatch_Sec_End.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_snatch_Sec_End = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_snatch_Lifts_Out != null)
-                {
-                    _strings = savedSettings.ii_int_snatch_Lifts_Out;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_snatch_Lifts_Out.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_snatch_Lifts_Out = _strings;
-                }
-
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Sec_Stage != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Sec_Stage;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Sec_Stage.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Sec_Stage = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Sec_Break != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Sec_Break;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Sec_Break.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Sec_Break = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Wgt_Opener != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Wgt_Opener;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Wgt_Opener.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Wgt_Opener = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_bool_cj_OpenerWarmup != null)
-                {
-                    _strings = savedSettings.ii_bool_cj_OpenerWarmup;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(bool_default_cj_OpenerWarmup.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_bool_cj_OpenerWarmup = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Sec_End != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Sec_End;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Sec_End.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Sec_End = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Lifts_Out != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Lifts_Out;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Lifts_Out.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Lifts_Out = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_snLifts_Out != null)
-                {
-                    _strings = savedSettings.ii_int_cj_snLifts_Out;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_snLifts_Out.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_snLifts_Out = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_bool_Beep != null)
-                {
-                    _strings = savedSettings.ii_bool_Beep;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(bool_default_Beep.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_bool_Beep = _strings;
-                }
-            }
-            Print_All_Settings();
-        }
         private void Form_WL_Comp_Warmup_FormClosing(object sender, FormClosingEventArgs e)
         {
             Update_Settings();
             Settings_Changes_Save();
-        }
-        private int Add_Profile(string _str_ProfileName)
-        {
-            Clean_Settings();
-            int _int_ProfileId = 1;
-            foreach (string s in savedSettings.ii_int_ProfileIds)
-            {
-                if (int.TryParse(s: s, result: out int _i) &&
-                    _i >= _int_ProfileId)
-                {
-                    _int_ProfileId = _i + 1;
-                }
-            }
-            savedSettings.ii_int_ProfileIds.Add(_int_ProfileId.ToString());
-            savedSettings.ii_string_ProfileName.Add(_str_ProfileName);
-            Print_All_Settings();
-            Clean_Settings();
-            Print_All_Settings();
-            Settings_Changes_Save();
-            Print_All_Settings();
-
-            return _int_ProfileId;
-        }
-        private void Delete_Profile(int _int_ProfileId)
-        {
-            Clean_Settings();
-            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-            if (_int_Sequence >= 0)
-            {
-                savedSettings.ii_int_ProfileIds.RemoveAt(_int_Sequence);
-                savedSettings.ii_string_ProfileName.RemoveAt(_int_Sequence);
-
-                savedSettings.ii_int_Barbell.RemoveAt(_int_Sequence);
-                savedSettings.ii_HHmm_StartTimes.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_snatch_Sec_Stage.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_snatch_Wgt_Opener.RemoveAt(_int_Sequence);
-                savedSettings.ii_bool_snatch_OpenerWarmup.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_snatch_Sec_End.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_snatch_Lifts_Out.RemoveAt(_int_Sequence);
-
-                savedSettings.ii_int_cj_Sec_Stage.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_Wgt_Opener.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_Sec_Break.RemoveAt(_int_Sequence);
-                savedSettings.ii_bool_cj_OpenerWarmup.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_Sec_End.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_Lifts_Out.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_snLifts_Out.RemoveAt(_int_Sequence);
-
-                savedSettings.ii_strings_snatch_Extras.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_snatch_Jumps.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_snatch_Times.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_cj_Extras.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_cj_Jumps.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_cj_Times.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-            }
-            if (savedSettings.int_ProfileId == _int_ProfileId)
-            {
-                savedSettings.int_ProfileId = -1;
-            }
-        }
-        private string string_Profile_Name_From_Id(int _int_ProfileId)
-        {
-            if (savedSettings.ii_string_ProfileName != null &&
-                savedSettings.ii_string_ProfileName.Count > 0)
-            {
-                int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-                return savedSettings.ii_string_ProfileName[_int_Sequence];
-            }
-            return "default";
-        }
-        private void Settings_Changes_Save()
-        {
-            savedSettings.Save();
-            Print_All_Settings();
-        }
-        private void Update_Settings()
-        {
-            Print_All_Settings();
-            savedSettings.int_ProfileId = int_ProfileId;
-            Clean_Settings();
-            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: int_ProfileId);
-            if (_int_Sequence < 0)
-            {
-                if (savedSettings.ii_int_ProfileIds == null)
-                {
-                    savedSettings.ii_int_ProfileIds =
-                    [
-                        int_ProfileId.ToString()
-                    ];
-                }
-                else
-                {
-                    savedSettings.ii_int_ProfileIds.Add(int_ProfileId.ToString());
-                }
-                Clean_Settings();
-            }
-            savedSettings.ii_int_Barbell[_int_Sequence] = int_Barbell.ToString();
-            savedSettings.ii_HHmm_StartTimes[_int_Sequence] = dateTimePicker_snatch_Start.Value.ToString("HHmm");
-            savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence] = int_snatch_Sec_Stage.ToString();
-            savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence] = int_snatch_Wgt_Opener.ToString();
-            savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence] = bool_snatch_OpenerWarmup.ToString();
-            savedSettings.ii_int_snatch_Sec_End[_int_Sequence] = int_snatch_Sec_End.ToString();
-            savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence] = int_snatch_Lifts_Out.ToString();
-
-            savedSettings.ii_int_cj_Sec_Stage[_int_Sequence] = int_cj_Sec_Stage.ToString();
-            savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence] = int_cj_Wgt_Opener.ToString();
-            savedSettings.ii_int_cj_Sec_Break[_int_Sequence] = int_cj_Sec_Break.ToString();
-            savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence] = bool_cj_OpenerWarmup.ToString();
-            savedSettings.ii_int_cj_Sec_End[_int_Sequence] = int_cj_Sec_End.ToString();
-            savedSettings.ii_int_cj_Lifts_Out[_int_Sequence] = int_cj_Lifts_Out.ToString();
-            savedSettings.ii_int_cj_snLifts_Out[_int_Sequence] = int_cj_snLifts_Out.ToString();
-
-            savedSettings.ii_bool_Beep[_int_Sequence] = bool_Beep.ToString();
-
-            savedSettings.ii_strings_snatch_Extras.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_snatch_Jumps.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_snatch_Times.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_cj_Extras.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_cj_Jumps.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_cj_Times.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-
-            savedSettings.ii_strings_snatch_Extras.AddRange(snatchExtras.OrderBy(r => r.id).Select(r => $"{int_ProfileId:000}{r}"));
-            savedSettings.ii_strings_snatch_Jumps.AddRange(snatchJumps.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
-            savedSettings.ii_strings_snatch_Times.AddRange(snatchTimes.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
-            savedSettings.ii_strings_cj_Extras.AddRange(cjExtras.OrderBy(r => r.id).Select(r => $"{int_ProfileId:000}{r}"));
-            savedSettings.ii_strings_cj_Jumps.AddRange(cjJumps.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
-            savedSettings.ii_strings_cj_Times.AddRange(cjTimes.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
-
-            Print_All_Settings();
-        }
-        private int int_ParseOutProfileId(string record)
-        {
-            if (string.IsNullOrEmpty(record) ||
-                !int.TryParse(record.Substring(0, Math.Min(record.Length, 3)), out int i))
-            {
-                return default;
-            }
-            else
-            {
-                return i;
-            }
-        }
-        private bool TryParseExtras(
-            string record,
-            out int profileId,
-            out Extra extra)
-        {
-            //  at character:
-            //  0   3 digit profile id
-            //  3   6 digit id
-            //  9   3 digit order
-            //  12  5 digit length
-            //  17  variable length string (action name)
-            profileId = int_ParseOutProfileId(record: record);
-            extra = default;
-            if (record?.Length < 17)
-            {
-                return false;
-            }
-
-            if (int.TryParse(record.Substring(3, 6), out int id) &&
-                int.TryParse(record.Substring(9, 3), out int order) &&
-                int.TryParse(record.Substring(12, 5), out int length))
-            {
-                string action = record.Substring(17);
-                extra = new(id, action, length, order);
-                return true;
-            }
-            return false;
-        }
-        private bool TryParseJumpTime(string record, out int profileId, out int fromWeight, out int step)
-        {
-            profileId = int_ParseOutProfileId(record: record);
-            fromWeight = 0;
-            step = 0;
-            if (record?.Length != 9)
-            {
-                return false;
-            }
-            return int.TryParse(record.Substring(3, 3), out fromWeight) &&
-                   int.TryParse(record.Substring(6, 3), out step);
         }
         private void InitialiseCollections()
         {
@@ -1008,116 +109,6 @@ namespace Weightlifting_Comp_Warmup.Main
             if (!cjTimes.TryGetValue(1, out _))
             {
                 cjTimes[1] = 1;
-            }
-        }
-        private void Get_Settings_Defaults_Lists()
-        {
-            default_snatchExtras = [];
-            default_snatchJumps = [];
-            default_snatchTimes = [];
-            default_cjExtras = [];
-            default_cjJumps = [];
-            default_cjTimes = [];
-            Clean_Settings();
-            foreach (string s in savedSettings.ii_strings_snatch_Extras)
-            {
-                TryParseExtras(
-                    record: s,
-                    profileId: out int profileId,
-                    extra: out Extra _extra);
-                if (profileId == int_ProfileId)
-                {
-                    default_snatchExtras.Add(_extra);
-                }
-            }
-            if (default_snatchExtras.Count == 0)
-            {
-                default_snatchExtras = Defaults.default_snatchExtras();
-            }
-
-            foreach (string s in savedSettings.ii_strings_snatch_Jumps)
-            {
-                TryParseJumpTime(
-                    record: s,
-                    profileId: out int profileId,
-                    fromWeight: out int fromWeight,
-                    step: out int step);
-                if (profileId == int_ProfileId)
-                {
-                    default_snatchJumps[fromWeight] = step;
-                }
-            }
-            if (default_snatchJumps.Count == 0)
-            {
-                default_snatchJumps = Defaults.default_snatchJumps();
-            }
-
-            foreach (string s in savedSettings.ii_strings_snatch_Times)
-            {
-                TryParseJumpTime(
-                    record: s,
-                    profileId: out int profileId,
-                    fromWeight: out int fromWeight,
-                    step: out int step);
-                if (profileId == int_ProfileId)
-                {
-                    default_snatchTimes[fromWeight] = step;
-                }
-            }
-            if (default_snatchTimes.Count == 0)
-            {
-                default_snatchTimes = Defaults.default_snatchTimes();
-            }
-
-
-            foreach (string s in savedSettings.ii_strings_cj_Extras)
-            {
-                TryParseExtras(
-                    record: s,
-                    profileId: out int profileId,
-                    extra: out Extra _extra);
-                if (profileId == int_ProfileId)
-                {
-                    default_cjExtras.Add(_extra);
-                }
-            }
-            if (default_cjExtras.Count == 0)
-            {
-                default_cjExtras = Defaults.default_cjExtras();
-            }
-
-            foreach (string s in savedSettings.ii_strings_cj_Jumps)
-            {
-                TryParseJumpTime(
-                    record: s,
-                    profileId: out int profileId,
-                    fromWeight: out int fromWeight,
-                    step: out int step);
-                if (profileId == int_ProfileId)
-                {
-                    default_cjJumps[fromWeight] = step;
-                }
-            }
-            if (default_cjJumps.Count == 0)
-            {
-                default_cjJumps = Defaults.default_cjJumps();
-            }
-
-            foreach (string s in savedSettings.ii_strings_cj_Times)
-            {
-                TryParseJumpTime(
-                    record: s,
-                    profileId: out int profileId,
-                    fromWeight: out int fromWeight,
-                    step: out int step);
-                if (profileId == int_ProfileId)
-                {
-                    default_cjTimes[fromWeight] = step;
-                }
-            }
-            if (default_cjTimes.Count == 0)
-            {
-                default_cjTimes = Defaults.default_cjTimes();
             }
         }
         private void numericUpDown_snatch_weight_barbell_ValueChanged(object sender, EventArgs e)
@@ -1155,347 +146,14 @@ namespace Weightlifting_Comp_Warmup.Main
             snatch_Stop_Live();
             cj_Stop_Live();
         }
-        private void button_snatch_ClearSettings_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show(@"This will erase all profiles and restore all defaults." +
-                Environment.NewLine + Environment.NewLine + "Continue?",
-                "Reset settings?",
-                buttons: MessageBoxButtons.OKCancel) == DialogResult.OK)
-            {
-                savedSettings.Reset();
-                Settings_Changes_Save();
-                int_ProfileId = Add_Profile(_str_ProfileName: "default");
-                Initialise_Form();
-            }
-        }
-        private void Print_All_Settings()
-        {
-            void PrintCollection<T>(string name, IEnumerable<T>? collection)
-            {
-                string value = collection == null ? "null" : string.Join("|", collection);
-                Console.WriteLine($"{name} = {value}");
-            }
-
-            Console.WriteLine("+++++++++++++++++++++++++++++++++++++++");
-
-            // Main profile settings
-            Console.WriteLine($"int_ProfileId = {savedSettings.int_ProfileId}");
-            PrintCollection(nameof(savedSettings.ii_int_ProfileIds), savedSettings.ii_int_ProfileIds);
-            PrintCollection(nameof(savedSettings.ii_string_ProfileName), savedSettings.ii_string_ProfileName);
-            PrintCollection(nameof(savedSettings.ii_int_Barbell), savedSettings.ii_int_Barbell);
-            PrintCollection(nameof(savedSettings.ii_HHmm_StartTimes), savedSettings.ii_HHmm_StartTimes);
-
-            // Snatch settings
-            PrintCollection(nameof(savedSettings.ii_int_snatch_Sec_Stage), savedSettings.ii_int_snatch_Sec_Stage);
-            PrintCollection(nameof(savedSettings.ii_int_snatch_Wgt_Opener), savedSettings.ii_int_snatch_Wgt_Opener);
-            PrintCollection(nameof(savedSettings.ii_int_snatch_Sec_End), savedSettings.ii_int_snatch_Sec_End);
-            PrintCollection(nameof(savedSettings.ii_int_snatch_Lifts_Out), savedSettings.ii_int_snatch_Lifts_Out);
-            PrintCollection(nameof(savedSettings.ii_bool_snatch_OpenerWarmup), savedSettings.ii_bool_snatch_OpenerWarmup);
-            PrintCollection(nameof(savedSettings.ii_strings_snatch_Extras), savedSettings.ii_strings_snatch_Extras);
-            PrintCollection(nameof(savedSettings.ii_strings_snatch_Jumps), savedSettings.ii_strings_snatch_Jumps);
-            PrintCollection(nameof(savedSettings.ii_strings_snatch_Times), savedSettings.ii_strings_snatch_Times);
-
-            // Clean & Jerk settings
-            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_Stage), savedSettings.ii_int_cj_Sec_Stage);
-            PrintCollection(nameof(savedSettings.ii_int_cj_Wgt_Opener), savedSettings.ii_int_cj_Wgt_Opener);
-            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_End), savedSettings.ii_int_cj_Sec_End);
-            PrintCollection(nameof(savedSettings.ii_int_cj_Lifts_Out), savedSettings.ii_int_cj_Lifts_Out);
-            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_Break), savedSettings.ii_int_cj_Sec_Break);
-            PrintCollection(nameof(savedSettings.ii_int_cj_snLifts_Out), savedSettings.ii_int_cj_snLifts_Out);
-            PrintCollection(nameof(savedSettings.ii_bool_cj_OpenerWarmup), savedSettings.ii_bool_cj_OpenerWarmup);
-            PrintCollection(nameof(savedSettings.ii_strings_cj_Extras), savedSettings.ii_strings_cj_Extras);
-            PrintCollection(nameof(savedSettings.ii_strings_cj_Jumps), savedSettings.ii_strings_cj_Jumps);
-            PrintCollection(nameof(savedSettings.ii_strings_cj_Times), savedSettings.ii_strings_cj_Times);
-
-            // Miscellaneous settings
-            PrintCollection(nameof(savedSettings.ii_bool_Beep), savedSettings.ii_bool_Beep);
-
-            Console.WriteLine("---------------------------------------");
-        }
-        private void Populate_MenuStrip()
-        {
-            menuStrip_Profile.Items.Clear();
-            ToolStripLabel toolStripLabel = new()
-            {
-                Text = "v" + strVersion + "     ",
-                Margin = new(0, 0, 10, 0),
-                Font = new("Gadugi", 10F, FontStyle.Italic, GraphicsUnit.Point, 0)
-            };
-            menuStrip_Profile.Items.Add(toolStripLabel);
-            for (int i = 0; i < savedSettings.ii_int_ProfileIds.Count; i++)
-            {
-                if (int.TryParse(s: savedSettings.ii_int_ProfileIds[i], result: out int _int_ProfileId) &&
-                    _int_ProfileId > 0)
-                {
-                    string _str_ProfileName = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
-                    ToolStripMenuItem toolStripMenuItem = new()
-                    {
-                        Text = _str_ProfileName,
-                        Tag = _int_ProfileId.ToString()
-                    };
-                    ToolStripButton toolStripButton;
-                    if (_int_ProfileId == int_ProfileId)
-                    {
-                        toolStripMenuItem.BackColor = Color.Red;
-                    }
-                    else
-                    {
-                        toolStripButton = new()
-                        {
-                            Text = "load",
-                            Tag = _int_ProfileId.ToString(),
-                        };
-                        toolStripButton.Click += ToolStripMenu_Load_Profile;
-                        toolStripMenuItem.DropDownItems.Add(toolStripButton);
-                    }
-                    toolStripButton = new()
-                    {
-                        Text = "delete",
-                        Tag = _int_ProfileId.ToString(),
-                    };
-                    toolStripButton.Click += ToolStripMenu_Delete_Profile;
-                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
-                    menuStrip_Profile.Items.Add(toolStripMenuItem);
-                    toolStripButton = new()
-                    {
-                        Text = "duplicate",
-                        Tag = _int_ProfileId.ToString(),
-                    };
-                    toolStripButton.Click += ToolStripMenu_Duplicate_Profile;
-                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
-                    menuStrip_Profile.Items.Add(toolStripMenuItem);
-                    toolStripButton = new()
-                    {
-                        Text = "rename",
-                        Tag = _int_ProfileId.ToString(),
-                    };
-                    toolStripButton.Click += ToolStripMenu_Rename_Profile;
-                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
-                    menuStrip_Profile.Items.Add(toolStripMenuItem);
-                }
-            }
-            {
-                ToolStripMenuItem toolStripMenuItem = new()
-                {
-                    Text = "Add new profile",
-                    Font = new("Gadugi", 9F, FontStyle.Italic, GraphicsUnit.Point, 0)
-                };
-                toolStripMenuItem.Click += ToolStripMenu_AddNew_Profile;
-                menuStrip_Profile.Items.Add(toolStripMenuItem);
-            }
-        }
-        private void ToolStripMenu_Load_Profile(object sender, EventArgs e)
-        {
-            Update_Settings();
-            Settings_Changes_Save();
-            Print_All_Settings();
-            ToolStripButton toolStripButton = (ToolStripButton)sender;
-            string _string_Tag = toolStripButton.Tag.ToString();
-            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
-            {
-                ProfileId_Select(_int_ProfileId: _int_ProfileId);
-                Populate_MenuStrip();
-                Load_Profile_Values_To_Controls();
-            }
-        }
-        private void ToolStripMenu_Delete_Profile(object sender, EventArgs e)
-        {
-            ToolStripButton toolStripButton = (ToolStripButton)sender;
-            string _string_Tag = toolStripButton.Tag.ToString();
-            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
-            {
-                if (MessageBox.Show(
-                    text: "Are you sure you want to delete this profile? This action is permanent.",
-                    caption: "Delete",
-                    buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    Delete_Profile(_int_ProfileId: _int_ProfileId);
-                    if (_int_ProfileId == int_ProfileId)
-                    {
-                        int _int_NewProfileId = -1;
-                        foreach (string s in savedSettings.ii_int_ProfileIds)
-                        {
-                            _int_NewProfileId = int.Parse(s: s);
-                            break;
-                        }
-                        if (_int_NewProfileId < 1)
-                        {
-                            // could not find a current profile
-                            _int_ProfileId = Add_Profile(_str_ProfileName: "default");
-                        }
-                        ProfileId_Select(_int_ProfileId: _int_ProfileId);
-                        Populate_MenuStrip();
-                        Load_Profile_Values_To_Controls();
-                    }
-                    else
-                    {
-                        Populate_MenuStrip();
-                    }
-                }
-            }
-        }
-        private void ToolStripMenu_AddNew_Profile(object sender, EventArgs e)
-        {
-            string _str_Name = Interaction.InputBox("Enter a new name:");
-            if (!string.IsNullOrEmpty(_str_Name))
-            {
-                Add_Profile(_str_ProfileName: _str_Name);
-                Populate_MenuStrip();
-            }
-        }
-        private void ToolStripMenu_Rename_Profile(object sender, EventArgs e)
-        {
-            ToolStripButton toolStripButton = (ToolStripButton)sender;
-            string _string_Tag = toolStripButton.Tag.ToString();
-            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
-            {
-                string _str_Name = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
-                _str_Name = Interaction.InputBox(Prompt: "Enter a new name:", DefaultResponse: _str_Name);
-                if (!string.IsNullOrEmpty(_str_Name))
-                {
-                    Clean_Settings();
-                    int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-                    if (_int_Sequence >= 0)
-                    {
-                        savedSettings.ii_string_ProfileName[_int_Sequence] = _str_Name;
-                        Settings_Changes_Save();
-                        Populate_MenuStrip();
-                    }
-                }
-            }
-        }
-        private void ToolStripMenu_Duplicate_Profile(object sender, EventArgs e)
-        {
-            ToolStripButton toolStripButton = (ToolStripButton)sender;
-            string _string_Tag = toolStripButton.Tag.ToString();
-            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
-            {
-                Update_Settings();
-                Settings_Changes_Save();
-                Clean_Settings();
-                string _str_Name = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
-                _str_Name = Interaction.InputBox(Prompt: "Enter a new name:", DefaultResponse: _str_Name);
-                if (!string.IsNullOrEmpty(_str_Name))
-                {
-                    int _int_New_ProfileId = Add_Profile(_str_ProfileName: _str_Name);
-                    if (_int_New_ProfileId > 0)
-                    {
-                        int _int_New_Sequence = int_Profile_Sequence(_int_ProfileId: _int_New_ProfileId);
-                        int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-                        if (_int_Sequence >= 0 && _int_New_Sequence >= 0)
-                        {
-                            savedSettings.ii_int_Barbell[_int_New_Sequence] = savedSettings.ii_int_Barbell[_int_Sequence];
-                            savedSettings.ii_HHmm_StartTimes[_int_New_Sequence] = savedSettings.ii_HHmm_StartTimes[_int_Sequence];
-
-                            savedSettings.ii_int_snatch_Sec_Stage[_int_New_Sequence] = savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence];
-                            savedSettings.ii_int_snatch_Wgt_Opener[_int_New_Sequence] = savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence];
-                            savedSettings.ii_int_snatch_Sec_End[_int_New_Sequence] = savedSettings.ii_int_snatch_Sec_End[_int_Sequence];
-                            savedSettings.ii_int_snatch_Lifts_Out[_int_New_Sequence] = savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence];
-                            savedSettings.ii_bool_snatch_OpenerWarmup[_int_New_Sequence] = savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence];
-                            for (int i = 0; i < savedSettings.ii_strings_snatch_Extras.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_snatch_Extras[i];
-                                TryParseExtras(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    extra: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_snatch_Extras.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-                            for (int i = 0; i < savedSettings.ii_strings_snatch_Jumps.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_snatch_Jumps[i];
-                                TryParseJumpTime(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    fromWeight: out _,
-                                    step: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_snatch_Jumps.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-                            for (int i = 0; i < savedSettings.ii_strings_snatch_Times.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_snatch_Times[i];
-                                TryParseJumpTime(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    fromWeight: out _,
-                                    step: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_snatch_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-
-                            savedSettings.ii_int_cj_Sec_Stage[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_Stage[_int_Sequence];
-                            savedSettings.ii_int_cj_Wgt_Opener[_int_New_Sequence] = savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence];
-                            savedSettings.ii_int_cj_Sec_End[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_End[_int_Sequence];
-                            savedSettings.ii_int_cj_Lifts_Out[_int_New_Sequence] = savedSettings.ii_int_cj_Lifts_Out[_int_Sequence];
-                            savedSettings.ii_int_cj_Sec_Break[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_Break[_int_Sequence];
-                            savedSettings.ii_int_cj_snLifts_Out[_int_New_Sequence] = savedSettings.ii_int_cj_snLifts_Out[_int_Sequence];
-                            savedSettings.ii_bool_cj_OpenerWarmup[_int_New_Sequence] = savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence];
-                            for (int i = 0; i < savedSettings.ii_strings_cj_Extras.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_cj_Extras[i];
-                                TryParseExtras(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    extra: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_cj_Extras.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-                            for (int i = 0; i < savedSettings.ii_strings_cj_Jumps.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_cj_Jumps[i];
-                                TryParseJumpTime(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    fromWeight: out _,
-                                    step: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_cj_Jumps.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-                            for (int i = 0; i < savedSettings.ii_strings_cj_Times.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_cj_Times[i];
-                                TryParseJumpTime(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    fromWeight: out _,
-                                    step: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_cj_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-
-                            savedSettings.ii_bool_Beep[_int_New_Sequence] = savedSettings.ii_bool_Beep[_int_Sequence];
-
-                            Settings_Changes_Save();
-                        }
-                    }
-                }
-            }
-            Populate_MenuStrip();
-        }
         private void PreventMonitorPowerdown()
         {
             SetThreadExecutionState(EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
         }
-
         private void AllowMonitorPowerdown()
         {
             SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         }
-
         #endregion
 
         #region snatch_Setup_Controls
@@ -1583,7 +241,6 @@ namespace Weightlifting_Comp_Warmup.Main
 
             snatch_Populate_Steps(boolPreserveLifts: true);
         }
-
         #endregion
 
         #region snatch extras
@@ -1776,6 +433,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_snatch_extra_commit_click(object sender, EventArgs e)
         {
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
             string strAction = string.Empty;
             int intLength = -1;
 
@@ -1797,22 +455,9 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
                 else if (ctrl.GetType() == typeof(NumericUpDown))
                 {
-                    if ((int)(((NumericUpDown)ctrl).Tag) == -1)
+                    if ((int)(_numericUpDown.Tag) == -1)
                     {
-                        try
-                        {
-                            intLength = (int)(((NumericUpDown)ctrl).Value);
-                            if (intLength < 1)
-                            {
-                                MessageBox.Show("Length cannot be < 1");
-                                return;
-                            }
-                        }
-                        catch
-                        {
-                            MessageBox.Show("Failed to parse seconds length");
-                            return;
-                        }
+                        intLength = (int)(_numericUpDown.Value);
                     }
                 }
             }
@@ -1918,7 +563,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void snatchExtras_Reassign_Order()
         {
-            snatchExtras = snatchExtras.OrderBy(r => r.Order).ToList();
+            snatchExtras = [.. snatchExtras.OrderBy(r => r.Order)];
             int _order = 0;
             for (int i = 0; i < snatchExtras.Count; i++)
             {
@@ -1943,10 +588,10 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
             void snatch_Add_Jump_IndividualControls(
-            int intY,
-            int intFromWeight,
-            int intJump,
-            bool bool_Add_Blank)
+                int intY,
+                int intFromWeight,
+                int intJump,
+                bool bool_Add_Blank)
             {
                 NumericUpDown nmud1 = new()
                 {
@@ -1970,8 +615,8 @@ namespace Weightlifting_Comp_Warmup.Main
                     Tag = intFromWeight,
                     BackColor = Color.White
                 };
-                nmud1.ValueChanged += button_snatch_jump_FromWeight_ValueChanged;
-                nmud2.ValueChanged += button_snatch_jump_Jump_ValueChanged;
+                nmud1.ValueChanged += numericUpDown_snatch_jump_FromWeight_ValueChanged;
+                nmud2.ValueChanged += numericUpDown_snatch_jump_Jump_ValueChanged;
                 panel_snatch_jump.Controls.AddRange([nmud1, nmud2]);
 
                 if (bool_Add_Blank)
@@ -2030,7 +675,7 @@ namespace Weightlifting_Comp_Warmup.Main
         private void button_snatch_jump_delete_click(object sender, EventArgs e)
         {
             int _id = (int)(((Button)(sender)).Tag);
-            if (snatchJumps.TryGetValue(_id, out int _step))
+            if (snatchJumps.TryGetValue(_id, out _))
             {
                 snatchJumps.Remove(_id);
             }
@@ -2040,6 +685,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_snatch_jump_commit_click(object sender, EventArgs e)
         {
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
             int intFromWeight = -1;
             int intJump = -1;
 
@@ -2049,41 +695,15 @@ namespace Weightlifting_Comp_Warmup.Main
                 { break; }
                 if (ctrl.GetType() == typeof(NumericUpDown))
                 {
-                    if ((int)(((NumericUpDown)ctrl).Tag) == -1)
+                    if ((int)(_numericUpDown.Tag) == -1)
                     {
-                        if (((NumericUpDown)ctrl).Left < 10)
+                        if (_numericUpDown.Left < 10)
                         {
-                            try
-                            {
-                                intFromWeight = (int)(((NumericUpDown)ctrl).Value);
-                                if (intFromWeight < 1)
-                                {
-                                    MessageBox.Show("From Weight cannot be < 1");
-                                    return;
-                                }
-                            }
-                            catch
-                            {
-                                MessageBox.Show("Failed to parse From Weight");
-                                return;
-                            }
+                            intFromWeight = (int)_numericUpDown.Value;
                         }
                         else
                         {
-                            try
-                            {
-                                intJump = (int)(((NumericUpDown)ctrl).Value);
-                                if (intJump < 1)
-                                {
-                                    MessageBox.Show("Jump Weight cannot be < 1");
-                                    return;
-                                }
-                            }
-                            catch
-                            {
-                                MessageBox.Show("Failed to parse Jump Weight");
-                                return;
-                            }
+                            intJump = (int)(_numericUpDown.Value);
                         }
                     }
                 }
@@ -2109,68 +729,34 @@ namespace Weightlifting_Comp_Warmup.Main
                 snatch_Populate_Steps(boolPreserveLifts: false);
             }
         }
-        private void button_snatch_jump_FromWeight_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_snatch_jump_FromWeight_ValueChanged(object sender, EventArgs e)
         {
-            int _id = (int)(((NumericUpDown)(sender)).Tag);
-
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
+            int _id = (int)_numericUpDown.Tag;
             if (_id < 1) { return; }
-
-            int intFromWeight;
-            try
-            {
-                intFromWeight = (int)(((NumericUpDown)sender).Value);
-            }
-            catch
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-
-            if (intFromWeight < 1)
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            ((NumericUpDown)sender).BackColor = Color.White;
+            int intFromWeight = (int)_numericUpDown.Value;
+            _numericUpDown.BackColor = Color.White;
             if (_id == intFromWeight)
             {
                 return;
             }
-
-            snatchJumps.TryGetValue(_id, out int _step);
-            snatchJumps.Remove(_id);
-            snatchJumps[intFromWeight] = _step;
-
+            if (snatchJumps.TryGetValue(_id, out int _step))
+            {
+                snatchJumps.Remove(_id);
+                snatchJumps[intFromWeight] = _step;
+            }
             snatch_Populate_Steps(boolPreserveLifts: false);
         }
-        private void button_snatch_jump_Jump_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_snatch_jump_Jump_ValueChanged(object sender, EventArgs e)
         {
-            int _id = (int)(((NumericUpDown)(sender)).Tag);
-
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
+            int _id = (int)_numericUpDown.Tag;
             if (_id < 1) { return; }
-
-            int intJump;
-            try
-            {
-                intJump = (int)(((NumericUpDown)sender).Value);
-            }
-            catch
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-
-            if (intJump < 1)
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            ((NumericUpDown)sender).BackColor = Color.White;
+            int intJump = (int)_numericUpDown.Value;
+            _numericUpDown.BackColor = Color.White;
             snatchJumps[_id] = intJump;
-
             snatch_Populate_Steps(boolPreserveLifts: false);
         }
-
         #endregion
 
         #region snatch times
@@ -2184,6 +770,74 @@ namespace Weightlifting_Comp_Warmup.Main
             if (snatchTimes.Count == 0)
             {
                 snatchTimes = Defaults.default_snatchTimes();
+            }
+
+            void snatch_Add_Time_IndividualControls(
+                int intY,
+                int intFromWeight,
+                int intTime,
+                bool bool_Add_Blank)
+            {
+                NumericUpDown nmud1 = new()
+                {
+                    Location = new Point(6, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intFromWeight, 0, 0, 0]),
+                    Tag = intFromWeight,
+                    BackColor = Color.White
+                };
+                NumericUpDown nmud2 = new()
+                {
+                    Location = new Point(100, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intTime, 0, 0, 0]),
+                    Tag = intFromWeight,
+                    BackColor = Color.White
+                };
+                nmud1.ValueChanged += numericUpDown_snatch_time_FromWeight_ValueChanged;
+                nmud2.ValueChanged += numericUpDown_snatch_time_Time_ValueChanged;
+                panel_snatch_time.Controls.AddRange([nmud1, nmud2]);
+
+                if (bool_Add_Blank)
+                {
+                    Button btn4 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(200, intY),
+                        Size = new Size(90, 25),
+                        Text = str_buttontext_commit,
+                        UseVisualStyleBackColor = true
+                    };
+                    btn4.Click += button_snatch_time_commit_click;
+                    panel_snatch_time.Controls.Add(btn4);
+
+                    nmud1.Select();
+                }
+                else
+                {
+                    if (intFromWeight > 1)
+                    {
+                        Button btn1 = new()
+                        {
+                            FlatStyle = FlatStyle.Flat,
+                            Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                            Location = new Point(200, intY),
+                            Size = new Size(36, 25),
+                            Text = str_buttontext_delete,
+                            UseVisualStyleBackColor = true,
+                            Tag = intFromWeight
+                        };
+                        btn1.Click += button_snatch_time_delete_click;
+                        panel_snatch_time.Controls.Add(btn1);
+                    }
+                }
             }
 
             foreach (KeyValuePair<int, int> _time in snatchTimes.OrderBy(r => r.Key))
@@ -2203,77 +857,10 @@ namespace Weightlifting_Comp_Warmup.Main
                 intTime,
                 bool_Add_Blank: true);
         }
-        private void snatch_Add_Time_IndividualControls(
-            int intY,
-            int intFromWeight,
-            int intTime,
-            bool bool_Add_Blank)
-        {
-            NumericUpDown nmud1 = new()
-            {
-                Location = new Point(6, intY),
-                Maximum = new decimal([9999, 0, 0, 0]),
-                Minimum = new decimal([1, 0, 0, 0]),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal([intFromWeight, 0, 0, 0]),
-                Tag = intFromWeight,
-                BackColor = Color.White
-            };
-            NumericUpDown nmud2 = new()
-            {
-                Location = new Point(100, intY),
-                Maximum = new decimal([9999, 0, 0, 0]),
-                Minimum = new decimal([1, 0, 0, 0]),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal([intTime, 0, 0, 0]),
-                Tag = intFromWeight,
-                BackColor = Color.White
-            };
-            nmud1.ValueChanged += button_snatch_time_FromWeight_ValueChanged;
-            nmud2.ValueChanged += button_snatch_time_Time_ValueChanged;
-            panel_snatch_time.Controls.AddRange([nmud1, nmud2]);
-
-            if (bool_Add_Blank)
-            {
-                Button btn4 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(200, intY),
-                    Size = new Size(90, 25),
-                    Text = str_buttontext_commit,
-                    UseVisualStyleBackColor = true
-                };
-                btn4.Click += button_snatch_time_commit_click;
-                panel_snatch_time.Controls.Add(btn4);
-
-                nmud1.Select();
-            }
-            else
-            {
-                if (intFromWeight > 1)
-                {
-                    Button btn1 = new()
-                    {
-                        FlatStyle = FlatStyle.Flat,
-                        Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                        Location = new Point(200, intY),
-                        Size = new Size(36, 25),
-                        Text = str_buttontext_delete,
-                        UseVisualStyleBackColor = true,
-                        Tag = intFromWeight
-                    };
-                    btn1.Click += button_snatch_time_delete_click;
-                    panel_snatch_time.Controls.Add(btn1);
-                }
-            }
-        }
         private void button_snatch_time_delete_click(object sender, EventArgs e)
         {
             int _id = (int)(((Button)(sender)).Tag);
-            if (snatchTimes.TryGetValue(_id, out int _step))
+            if (snatchTimes.TryGetValue(_id, out _))
             {
                 snatchTimes.Remove(_id);
             }
@@ -2283,6 +870,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_snatch_time_commit_click(object sender, EventArgs e)
         {
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
             int intFromWeight = -1;
             int intTime = -1;
 
@@ -2292,41 +880,15 @@ namespace Weightlifting_Comp_Warmup.Main
                 { break; }
                 if (ctrl.GetType() == typeof(NumericUpDown))
                 {
-                    if ((int)(((NumericUpDown)ctrl).Tag) == -1)
+                    if ((int)(_numericUpDown.Tag) == -1)
                     {
-                        if (((NumericUpDown)ctrl).Left < 10)
+                        if (_numericUpDown.Left < 10)
                         {
-                            try
-                            {
-                                intFromWeight = (int)(((NumericUpDown)ctrl).Value);
-                                if (intFromWeight < 1)
-                                {
-                                    MessageBox.Show("From Weight cannot be < 1");
-                                    return;
-                                }
-                            }
-                            catch
-                            {
-                                MessageBox.Show("Failed to parse From Weight");
-                                return;
-                            }
+                            intFromWeight = (int)_numericUpDown.Value;
                         }
                         else
                         {
-                            try
-                            {
-                                intTime = (int)(((NumericUpDown)ctrl).Value);
-                                if (intTime < 1)
-                                {
-                                    MessageBox.Show("Time Weight cannot be < 1");
-                                    return;
-                                }
-                            }
-                            catch
-                            {
-                                MessageBox.Show("Failed to parse Time Weight");
-                                return;
-                            }
+                            intTime = (int)(_numericUpDown.Value);
                         }
                     }
                 }
@@ -2352,68 +914,34 @@ namespace Weightlifting_Comp_Warmup.Main
                 snatch_Populate_Steps(boolPreserveLifts: false);
             }
         }
-        private void button_snatch_time_FromWeight_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_snatch_time_FromWeight_ValueChanged(object sender, EventArgs e)
         {
-            int _id = (int)(((NumericUpDown)(sender)).Tag);
-
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
+            int _id = (int)_numericUpDown.Tag;
             if (_id < 1) { return; }
-
-            int intFromWeight;
-            try
-            {
-                intFromWeight = (int)(((NumericUpDown)sender).Value);
-            }
-            catch
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            if (intFromWeight < 1)
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            ((NumericUpDown)sender).BackColor = Color.White;
+            int intFromWeight = (int)_numericUpDown.Value;
+            _numericUpDown.BackColor = Color.White;
             if (_id == intFromWeight)
             {
                 return;
             }
-
-            snatchTimes.TryGetValue(_id, out int _step);
-            snatchTimes.Remove(_id);
-            snatchTimes[intFromWeight] = _step;
-
+            if (snatchTimes.TryGetValue(_id, out int _step))
+            {
+                snatchTimes.Remove(_id);
+                snatchTimes[intFromWeight] = _step;
+            }
             snatch_Populate_Steps(boolPreserveLifts: true);
         }
-        private void button_snatch_time_Time_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_snatch_time_Time_ValueChanged(object sender, EventArgs e)
         {
-            int _id = (int)(((NumericUpDown)(sender)).Tag);
-
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
+            int _id = (int)_numericUpDown.Tag;
             if (_id < 1) { return; }
-
-            int intTime;
-            try
-            {
-                intTime = (int)(((NumericUpDown)sender).Value);
-            }
-            catch
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-
-            if (intTime < 1)
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            ((NumericUpDown)sender).BackColor = Color.White;
-
+            int intTime = (int)_numericUpDown.Value;
+            _numericUpDown.BackColor = Color.White;
             snatchTimes[_id] = intTime;
-
             snatch_Populate_Steps(boolPreserveLifts: true);
         }
-
         #endregion
 
         #region snatch Steps
@@ -2429,6 +957,61 @@ namespace Weightlifting_Comp_Warmup.Main
                 _stepsIn: snatchStepsPLAN);
 
             if (snatchStepsPLAN == null) { return; }
+
+            void snatch_Add_Step_IndividualControls(int intY, Step _step)
+            {
+                Label lbl1 = new()
+                {
+                    Location = new Point(6, intY),
+                    AutoSize = false,
+                    Size = new Size(150, 28),
+                    Text = _step.Action,
+                    Tag = _step.Weight
+                };
+                Label lbl3 = new()
+                {
+                    Location = new Point(226, intY),
+                    AutoSize = false,
+                    Size = new Size(90, 28),
+                    Text = Seconds_To_String(_step.Length),
+                    Tag = _step.Weight
+                };
+                Label lbl4 = new()
+                {
+                    Location = new Point(317, intY),
+                    AutoSize = false,
+                    Size = new Size(90, 28),
+                    Text = Seconds_To_String(_step.TotalLength),
+                    Tag = _step.Weight
+                };
+                panel_snatch_steps.Controls.AddRange([lbl1, lbl3, lbl4]);
+
+                if (_step.Weight > 0)
+                {
+                    lbl1.Click += snatch_Weight_Override_Click;
+                    lbl3.Click += snatch_Weight_Override_Click;
+                    lbl4.Click += snatch_Weight_Override_Click;
+                    Label lbl2 = new()
+                    {
+                        Location = new Point(152, intY),
+                        AutoSize = false,
+                        Size = new Size(50, 28),
+                        Text = _step.Weight.ToString(),
+                        Tag = _step.Weight
+                    };
+                    lbl2.Click += snatch_Weight_Override_Click;
+                    if (_step.Override)
+                    {
+                        Font fontx = new("Gadugi", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+                        lbl1.Font = fontx;
+                        lbl2.Font = fontx;
+                        lbl3.Font = fontx;
+                        lbl4.Font = fontx;
+                    }
+                    panel_snatch_steps.Controls.Add(lbl2);
+                }
+            }
+
             foreach (Step _step in snatchStepsPLAN.OrderBy(r => r.Order))
             {
                 if (!boolHasOverrides)
@@ -2465,60 +1048,6 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             label_snatch_Setup_StepCount.Text = (snatchStepsPLAN.Count - 1).ToString() + " steps";
         }
-        private void snatch_Add_Step_IndividualControls(int intY, Step _step)
-        {
-            Label lbl1 = new()
-            {
-                Location = new Point(6, intY),
-                AutoSize = false,
-                Size = new Size(150, 28),
-                Text = _step.Action,
-                Tag = _step.Weight
-            };
-            Label lbl3 = new()
-            {
-                Location = new Point(226, intY),
-                AutoSize = false,
-                Size = new Size(90, 28),
-                Text = Seconds_To_String(_step.Length),
-                Tag = _step.Weight
-            };
-            Label lbl4 = new()
-            {
-                Location = new Point(317, intY),
-                AutoSize = false,
-                Size = new Size(90, 28),
-                Text = Seconds_To_String(_step.TotalLength),
-                Tag = _step.Weight
-            };
-            panel_snatch_steps.Controls.AddRange([lbl1, lbl3, lbl4]);
-
-            if (_step.Weight > 0)
-            {
-                lbl1.Click += snatch_Weight_Override_Click;
-                lbl3.Click += snatch_Weight_Override_Click;
-                lbl4.Click += snatch_Weight_Override_Click;
-                Label lbl2 = new()
-                {
-                    Location = new Point(152, intY),
-                    AutoSize = false,
-                    Size = new Size(50, 28),
-                    Text = _step.Weight.ToString(),
-                    Tag = _step.Weight
-                };
-                lbl2.Click += snatch_Weight_Override_Click;
-                if (_step.Override)
-                {
-                    Font fontx = new("Gadugi", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-                    lbl1.Font = fontx;
-                    lbl2.Font = fontx;
-                    lbl3.Font = fontx;
-                    lbl4.Font = fontx;
-                }
-                panel_snatch_steps.Controls.Add(lbl2);
-            }
-        }
-
         private List<Step> snatchSteps(
             bool _bool_PreserveLifts,
             List<Step> _stepsIn = null
@@ -2706,7 +1235,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 this.Close();
                 return;
             }
-            snatchStepsLIVE = snatchStepsPLAN.Select(r => r.Clone()).ToList();
+            snatchStepsLIVE = [.. snatchStepsPLAN.Select(r => r.Clone())];
 
             int intY = 1;
             int _int_panel_Live_Step_Width = panel_snatch_Live_Steps.Width - 4;
@@ -3024,7 +1553,6 @@ namespace Weightlifting_Comp_Warmup.Main
 
             if (_intStep > -1)
             {
-                Panel panel_Live_Step = null;
                 Label label_Action;
                 ProgressBar progressBar_Step;
                 Label label_Progress_Time;
@@ -3048,6 +1576,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 foreach (Step _step in snatchStepsLIVE)
                 {
                     int _int_Order = _step.Order;
+                    Panel panel_Live_Step;
                     if (_int_Order == _intStep)
                     {
                         panel_Live_Step = _step.Controls.PanelLiveStep;
@@ -3236,7 +1765,6 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             splitContainer_snatch.SplitterDistance = 0;
         }
-
         #endregion
 
         #region cj_Setup_Controls
@@ -3325,7 +1853,6 @@ namespace Weightlifting_Comp_Warmup.Main
 
             cj_Populate_Steps(boolPreserveLifts: true);
         }
-
         #endregion
 
         #region cj extras
@@ -3518,6 +2045,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_extra_commit_click(object sender, EventArgs e)
         {
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
             string strAction = string.Empty;
             int intLength = -1;
 
@@ -3539,22 +2067,9 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
                 else if (ctrl.GetType() == typeof(NumericUpDown))
                 {
-                    if ((int)(((NumericUpDown)ctrl).Tag) == -1)
+                    if ((int)(_numericUpDown.Tag) == -1)
                     {
-                        try
-                        {
-                            intLength = (int)(((NumericUpDown)ctrl).Value);
-                            if (intLength < 1)
-                            {
-                                MessageBox.Show("Length cannot be < 1");
-                                return;
-                            }
-                        }
-                        catch
-                        {
-                            MessageBox.Show("Failed to parse seconds length");
-                            return;
-                        }
+                        intLength = (int)_numericUpDown.Value;
                     }
                 }
             }
@@ -3660,7 +2175,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void cjExtras_Reassign_Order()
         {
-            cjExtras = cjExtras.OrderBy(r => r.Order).ToList();
+            cjExtras = [.. cjExtras.OrderBy(r => r.Order)];
             int _order = 0;
             for (int i = 0; i < cjExtras.Count; i++)
             {
@@ -3713,8 +2228,8 @@ namespace Weightlifting_Comp_Warmup.Main
                     Tag = intFromWeight,
                     BackColor = Color.White
                 };
-                nmud1.ValueChanged += button_cj_jump_FromWeight_ValueChanged;
-                nmud2.ValueChanged += button_cj_jump_Jump_ValueChanged;
+                nmud1.ValueChanged += numericUpDown_cj_jump_FromWeight_ValueChanged;
+                nmud2.ValueChanged += numericUpDown_cj_jump_Jump_ValueChanged;
                 panel_cj_jump.Controls.AddRange([nmud1, nmud2]);
 
                 if (bool_Add_Blank)
@@ -3773,7 +2288,7 @@ namespace Weightlifting_Comp_Warmup.Main
         private void button_cj_jump_delete_click(object sender, EventArgs e)
         {
             int _id = (int)(((Button)(sender)).Tag);
-            if (snatchJumps.TryGetValue(_id, out int _step))
+            if (snatchJumps.TryGetValue(_id, out _))
             {
                 snatchJumps.Remove(_id);
             }
@@ -3783,6 +2298,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_jump_commit_click(object sender, EventArgs e)
         {
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
             int intFromWeight = -1;
             int intJump = -1;
 
@@ -3792,30 +2308,17 @@ namespace Weightlifting_Comp_Warmup.Main
                 { break; }
                 if (ctrl.GetType() == typeof(NumericUpDown))
                 {
-                    if ((int)(((NumericUpDown)ctrl).Tag) == -1)
+                    if ((int)(_numericUpDown.Tag) == -1)
                     {
-                        if (((NumericUpDown)ctrl).Left < 10)
+                        if (_numericUpDown.Left < 10)
                         {
-                            try
-                            {
-                                intFromWeight = (int)(((NumericUpDown)ctrl).Value);
-                                if (intFromWeight < 1)
-                                {
-                                    MessageBox.Show("From Weight cannot be < 1");
-                                    return;
-                                }
-                            }
-                            catch
-                            {
-                                MessageBox.Show("Failed to parse From Weight");
-                                return;
-                            }
+                            intFromWeight = (int)_numericUpDown.Value;
                         }
                         else
                         {
                             try
                             {
-                                intJump = (int)(((NumericUpDown)ctrl).Value);
+                                intJump = (int)(_numericUpDown.Value);
                                 if (intJump < 1)
                                 {
                                     MessageBox.Show("Jump Weight cannot be < 1");
@@ -3840,10 +2343,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
                 else
                 {
-                    DataRow dataRow = cjJumps.NewRow();
-                    dataRow[str_col_FromWeight] = intFromWeight;
-                    dataRow[str_col_Jump] = intJump;
-                    cjJumps.Rows.Add(dataRow);
+                    cjJumps[intFromWeight] = intJump;
                     cj_Populate_Jumps();
                     cj_Populate_Steps(boolPreserveLifts: false);
                 }
@@ -3855,76 +2355,34 @@ namespace Weightlifting_Comp_Warmup.Main
                 cj_Populate_Steps(boolPreserveLifts: false);
             }
         }
-        private void button_cj_jump_FromWeight_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_cj_jump_FromWeight_ValueChanged(object sender, EventArgs e)
         {
-            int _id = (int)(((NumericUpDown)(sender)).Tag);
-
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
+            int _id = (int)_numericUpDown.Tag;
             if (_id < 1) { return; }
-
-            int intFromWeight;
-            try
-            {
-                intFromWeight = (int)(((NumericUpDown)sender).Value);
-            }
-            catch
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-
-            if (intFromWeight < 1)
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            ((NumericUpDown)sender).BackColor = Color.White;
+            int intFromWeight = (int)_numericUpDown.Value;
+            _numericUpDown.BackColor = Color.White;
             if (_id == intFromWeight)
             {
                 return;
             }
-
-            cjJumps.TryGetValue(_id, out int _step);
-            cjJumps.Remove(_id);
-            cjJumps[intFromWeight] = _step;
-
+            if (cjJumps.TryGetValue(_id, out int _step))
+            {
+                cjJumps.Remove(_id);
+                cjJumps[intFromWeight] = _step;
+            }
             cj_Populate_Steps(boolPreserveLifts: false);
         }
-        private void button_cj_jump_Jump_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_cj_jump_Jump_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
-
-            if (intI < 1) { return; }
-
-            int intJump;
-            try
-            {
-                intJump = (int)(((NumericUpDown)sender).Value);
-            }
-            catch
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-
-            if (intJump < 1)
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            ((NumericUpDown)sender).BackColor = Color.White;
-
-            foreach (DataRow dataRow in cjJumps.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dataRow[str_col_Jump] = intJump;
-                    break;
-                }
-            }
-
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
+            int _id = (int)_numericUpDown.Tag;
+            if (_id < 1) { return; }
+            int intJump = (int)_numericUpDown.Value;
+            _numericUpDown.BackColor = Color.White;
+            cjJumps[_id] = intJump;
             cj_Populate_Steps(boolPreserveLifts: false);
         }
-
         #endregion
 
         #region cj times
@@ -3935,105 +2393,100 @@ namespace Weightlifting_Comp_Warmup.Main
             int intFromWeight = 0, intTime = 1;
             panel_cj_time.Controls.Clear();
 
-            if (cjTimes.Rows.Count == 0)
+            if (cjTimes.Count == 0)
             {
-                Insert_Default_cj_Times(cjTimes);
+                cjTimes = Defaults.default_cjTimes();
             }
 
-            cjTimes.DefaultView.Sort = str_col_FromWeight + " ASC";
-            foreach (DataRow dataRow in cjTimes.DefaultView.ToTable().Rows)
+            void cj_Add_Time_IndividualControls(
+                int intY,
+                int intFromWeight,
+                int intTime,
+                bool bool_Add_Blank)
             {
-                intFromWeight = dataRow.Field<int>(str_col_FromWeight);
-                intTime = dataRow.Field<int>(str_col_Length);
+                NumericUpDown nmud1 = new()
+                {
+                    Location = new Point(6, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intFromWeight, 0, 0, 0]),
+                    Tag = intFromWeight,
+                    BackColor = Color.White
+                };
+                NumericUpDown nmud2 = new()
+                {
+                    Location = new Point(100, intY),
+                    Maximum = new decimal([9999, 0, 0, 0]),
+                    Minimum = new decimal([1, 0, 0, 0]),
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = new decimal([intTime, 0, 0, 0]),
+                    Tag = intFromWeight,
+                    BackColor = Color.White
+                };
+                nmud1.ValueChanged += numericUpDown_cj_time_FromWeight_ValueChanged;
+                nmud2.ValueChanged += numericUpDown_cj_time_Time_ValueChanged;
+                panel_cj_time.Controls.AddRange([nmud1, nmud2]);
+
+                if (bool_Add_Blank)
+                {
+                    Button btn4 = new()
+                    {
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                        Location = new Point(200, intY),
+                        Size = new Size(90, 25),
+                        Text = str_buttontext_commit,
+                        UseVisualStyleBackColor = true
+                    };
+                    btn4.Click += button_cj_time_commit_click;
+                    panel_cj_time.Controls.Add(btn4);
+
+                    nmud1.Select();
+                }
+                else
+                {
+                    if (intFromWeight > 1)
+                    {
+                        Button btn1 = new()
+                        {
+                            FlatStyle = FlatStyle.Flat,
+                            Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                            Location = new Point(200, intY),
+                            Size = new Size(36, 25),
+                            Text = str_buttontext_delete,
+                            UseVisualStyleBackColor = true,
+                            Tag = intFromWeight
+                        };
+                        btn1.Click += button_cj_time_delete_click;
+                        panel_cj_time.Controls.Add(btn1);
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<int, int> _time in cjTimes.OrderBy(r => r.Key))
+            {
+                intFromWeight = _time.Key;
+                intTime = _time.Value;
                 cj_Add_Time_IndividualControls(
                     intY,
- dataRow.Field<int>(str_col_Id),
- intFromWeight,
- intTime,
- false
-                    );
+                    intFromWeight,
+                    intTime,
+                    bool_Add_Blank: false);
                 intY += 30;
             }
             cj_Add_Time_IndividualControls(
                 intY,
- -1,
- intFromWeight + 1,
- intTime,
- true
-                );
-        }
-        private void cj_Add_Time_IndividualControls(
-            int intY,
-            int intId,
-            int intFromWeight,
-            int intTime,
-            bool bool_Add_Blank)
-        {
-            NumericUpDown nmud1 = new()
-            {
-                Location = new Point(6, intY),
-                Maximum = new decimal([9999, 0, 0, 0]),
-                Minimum = new decimal([1, 0, 0, 0]),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal([intFromWeight, 0, 0, 0]),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            NumericUpDown nmud2 = new()
-            {
-                Location = new Point(100, intY),
-                Maximum = new decimal([9999, 0, 0, 0]),
-                Minimum = new decimal([1, 0, 0, 0]),
-                Size = new Size(72, 25),
-                TextAlign = HorizontalAlignment.Center,
-                Value = new decimal([intTime, 0, 0, 0]),
-                Tag = intId,
-                BackColor = Color.White
-            };
-            nmud1.ValueChanged += button_cj_time_FromWeight_ValueChanged;
-            nmud2.ValueChanged += button_cj_time_Time_ValueChanged;
-            panel_cj_time.Controls.AddRange([nmud1, nmud2]);
-
-            if (bool_Add_Blank)
-            {
-                Button btn4 = new()
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Gadugi", 10F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                    Location = new Point(200, intY),
-                    Size = new Size(90, 25),
-                    Text = str_buttontext_commit,
-                    UseVisualStyleBackColor = true
-                };
-                btn4.Click += button_cj_time_commit_click;
-                panel_cj_time.Controls.Add(btn4);
-
-                nmud1.Select();
-            }
-            else
-            {
-                if (intFromWeight > 1)
-                {
-                    Button btn1 = new()
-                    {
-                        FlatStyle = FlatStyle.Flat,
-                        Font = new Font("Gadugi", 9F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                        Location = new Point(200, intY),
-                        Size = new Size(36, 25),
-                        Text = str_buttontext_delete,
-                        UseVisualStyleBackColor = true,
-                        Tag = intId
-                    };
-                    btn1.Click += button_cj_time_delete_click;
-                    panel_cj_time.Controls.Add(btn1);
-                }
-            }
+                intFromWeight + 1,
+                intTime,
+                bool_Add_Blank: true);
         }
         private void button_cj_time_delete_click(object sender, EventArgs e)
         {
             int _id = (int)(((Button)(sender)).Tag);
-            if (cjTimes.TryGetValue(_id, out int _step))
+            if (cjTimes.TryGetValue(_id, out _))
             {
                 cjTimes.Remove(_id);
             }
@@ -4043,6 +2496,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_time_commit_click(object sender, EventArgs e)
         {
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
             int intFromWeight = -1;
             int intTime = -1;
 
@@ -4052,30 +2506,17 @@ namespace Weightlifting_Comp_Warmup.Main
                 { break; }
                 if (ctrl.GetType() == typeof(NumericUpDown))
                 {
-                    if ((int)(((NumericUpDown)ctrl).Tag) == -1)
+                    if ((int)(_numericUpDown.Tag) == -1)
                     {
-                        if (((NumericUpDown)ctrl).Left < 10)
+                        if (_numericUpDown.Left < 10)
                         {
-                            try
-                            {
-                                intFromWeight = (int)(((NumericUpDown)ctrl).Value);
-                                if (intFromWeight < 1)
-                                {
-                                    MessageBox.Show("From Weight cannot be < 1");
-                                    return;
-                                }
-                            }
-                            catch
-                            {
-                                MessageBox.Show("Failed to parse From Weight");
-                                return;
-                            }
+                            intFromWeight = (int)_numericUpDown.Value;
                         }
                         else
                         {
                             try
                             {
-                                intTime = (int)(((NumericUpDown)ctrl).Value);
+                                intTime = (int)(_numericUpDown.Value);
                                 if (intTime < 1)
                                 {
                                     MessageBox.Show("Time Weight cannot be < 1");
@@ -4093,17 +2534,14 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             if (intFromWeight > 0 & intTime > 0)
             {
-                if (cj_Time_Exists(intFromWeight, -1))
+                if (cjTimes.TryGetValue(intFromWeight, out _))
                 {
                     MessageBox.Show("From Weight - Time already exists");
                     return;
                 }
                 else
                 {
-                    DataRow dataRow = cjTimes.NewRow();
-                    dataRow[str_col_FromWeight] = intFromWeight;
-                    dataRow[str_col_Length] = intTime;
-                    cjTimes.Rows.Add(dataRow);
+                    cjTimes[intFromWeight] = intTime;
                     cj_Populate_Times();
                     cj_Populate_Steps(boolPreserveLifts: true);
                 }
@@ -4115,76 +2553,34 @@ namespace Weightlifting_Comp_Warmup.Main
                 cj_Populate_Steps(boolPreserveLifts: false);
             }
         }
-        private void button_cj_time_FromWeight_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_cj_time_FromWeight_ValueChanged(object sender, EventArgs e)
         {
-            int _id = (int)(((NumericUpDown)(sender)).Tag);
-
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
+            int _id = (int)_numericUpDown.Tag;
             if (_id < 1) { return; }
-
-            int intFromWeight;
-            try
-            {
-                intFromWeight = (int)(((NumericUpDown)sender).Value);
-            }
-            catch
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-
-            if (intFromWeight < 1)
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            ((NumericUpDown)sender).BackColor = Color.White;
+            int intFromWeight = (int)_numericUpDown.Value;
+            _numericUpDown.BackColor = Color.White;
             if (_id == intFromWeight)
             {
                 return;
             }
-
-            cjTimes.TryGetValue(_id, out int _step);
-            cjTimes.Remove(_id);
-            cjTimes[intFromWeight] = _step;
-
+            if (cjTimes.TryGetValue(_id, out int _step))
+            {
+                cjTimes.Remove(_id);
+                cjTimes[intFromWeight] = _step;
+            }
             cj_Populate_Steps(boolPreserveLifts: true);
         }
-        private void button_cj_time_Time_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_cj_time_Time_ValueChanged(object sender, EventArgs e)
         {
-            int intI = (int)(((NumericUpDown)(sender)).Tag);
-
-            if (intI < 1) { return; }
-
-            int intTime;
-            try
-            {
-                intTime = (int)(((NumericUpDown)sender).Value);
-            }
-            catch
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-
-            if (intTime < 1)
-            {
-                ((NumericUpDown)sender).BackColor = Color.Yellow;
-                return;
-            }
-            ((NumericUpDown)sender).BackColor = Color.White;
-
-            foreach (DataRow dataRow in cjTimes.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Id) == intI)
-                {
-                    dataRow[str_col_Length] = intTime;
-                    break;
-                }
-            }
-
+            NumericUpDown _numericUpDown = sender as NumericUpDown;
+            int _id = (int)_numericUpDown.Tag;
+            if (_id < 1) { return; }
+            int intTime = (int)_numericUpDown.Value;
+            _numericUpDown.BackColor = Color.White;
+            cjTimes[_id] = intTime;
             cj_Populate_Steps(boolPreserveLifts: true);
         }
-
         #endregion
 
         #region cj Steps
@@ -4195,15 +2591,74 @@ namespace Weightlifting_Comp_Warmup.Main
             bool boolHasOverrides = false;
             panel_cj_steps.Controls.Clear();
 
-            cjStepsPLAN = datatable_cj_Steps(
-                boolPreserveLifts: boolPreserveLifts,
-                datatableIn: cjStepsPLAN);
+            cjStepsPLAN = cjSteps(
+                _bool_PreserveLifts: boolPreserveLifts,
+                _stepsIn: cjStepsPLAN);
+
             if (cjStepsPLAN == null) { return; }
+
+            void cj_Add_Step_IndividualControls(int intY, Step _step)
+            {
+                Label lbl1 = new()
+                {
+                    Location = new Point(6, intY),
+                    AutoSize = false,
+                    Size = new Size(150, 28),
+                    Text = _step.Action,
+                    Tag = _step.Weight
+                };
+                Label lbl3 = new()
+                {
+                    Location = new Point(226, intY),
+                    AutoSize = false,
+                    Size = new Size(90, 28),
+                    Text = Seconds_To_String(_step.Length),
+                    Tag = _step.Weight
+                };
+                Label lbl4 = new()
+                {
+                    Location = new Point(317, intY),
+                    AutoSize = false,
+                    Size = new Size(90, 28),
+                    Text = Seconds_To_String(_step.TotalLength),
+                    Tag = _step.Weight
+                };
+                panel_cj_steps.Controls.AddRange([lbl1, lbl3, lbl4]);
+
+                if (_step.Weight > 0)
+                {
+                    lbl1.Click += cj_Weight_Override_Click;
+                    lbl3.Click += cj_Weight_Override_Click;
+                    lbl4.Click += cj_Weight_Override_Click;
+                    Label lbl2 = new()
+                    {
+                        Location = new Point(152, intY),
+                        AutoSize = false,
+                        Size = new Size(50, 28),
+                        Text = _step.Weight.ToString(),
+                        Tag = _step.Weight
+                    };
+                    lbl2.Click += cj_Weight_Override_Click;
+                    if (_step.Override)
+                    {
+                        Font fontx = new("Gadugi", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+                        lbl1.Font = fontx;
+                        lbl2.Font = fontx;
+                        lbl3.Font = fontx;
+                        lbl4.Font = fontx;
+                    }
+                    panel_cj_steps.Controls.Add(lbl2);
+                }
+            }
+
             foreach (Step _step in cjStepsPLAN.OrderBy(r => r.Order))
             {
-                if (!boolHasOverrides && _step.Override)
+                if (!boolHasOverrides)
                 {
-                    boolHasOverrides = true;
+                    if (_step.Override)
+                    {
+                        boolHasOverrides = true;
+                    }
                 }
                 if (!_step.PreStep)
                 {
@@ -4230,7 +2685,22 @@ namespace Weightlifting_Comp_Warmup.Main
                 btn2.Click += cj_Step_ResetOverrides;
                 panel_cj_steps.Controls.Add(btn2);
             }
-            label_cj_Setup_StepCount.Text = (cjStepsPLAN.Rows.Count - 1).ToString() + " steps";
+            label_cj_Setup_StepCount.Text = (cjStepsPLAN.Count - 1).ToString() + " steps";
+        }
+        private List<Step> cjSteps(
+            bool _bool_PreserveLifts,
+            List<Step> _stepsIn = null
+            )
+        {
+            return x_Steps(
+                _bool_PreserveLifts: _bool_PreserveLifts,
+                _extras: cjExtras,
+                _jumps: cjJumps,
+                _times: cjTimes,
+                _int_x_Sec_End: int_cj_Sec_End,
+                _int_x_Wgt_Opener: int_cj_Wgt_Opener,
+                _bool_Opener_in_Warmup: bool_cj_OpenerWarmup,
+                _stepsIn: _stepsIn);
         }
         private void cj_Add_Step_IndividualControls(int intY, Step _step)
         {
@@ -4284,20 +2754,6 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
                 panel_cj_steps.Controls.Add(lbl2);
             }
-        }
-        private DataTable datatable_cj_Steps(
-            bool boolPreserveLifts,
-            DataTable datatableIn = null)
-        {
-            return x_Steps(
-                boolPreserveLifts: boolPreserveLifts,
-                dt_x_extras: cjExtras,
-                dt_x_jumps: cjJumps,
-                dt_x_times: cjTimes,
-                int_x_Sec_End: int_cj_Sec_End,
-                int_x_Wgt_Opener: int_cj_Wgt_Opener,
-                bool_Opener_in_Warmup: bool_cj_OpenerWarmup,
-                datatableIn: datatableIn);
         }
         private void cj_Step_Add(object sender, EventArgs e)
         {
@@ -4482,7 +2938,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 this.Close();
                 return;
             }
-            cjStepsLIVE = cjStepsPLAN.Select(r => r.Clone()).ToList();
+            cjStepsLIVE = [.. cjStepsPLAN.Select(r => r.Clone())];
 
             int intY = 1;
             int _int_panel_Live_Step_Width = panel_cj_Live_Steps.Width - 4;
@@ -4502,10 +2958,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     _int_progressBar_Step_Width = _int_progressBar_Step_Width_NoScroll;
                 }
-                string strActionText;
-                bool boolIsLift = (_step.Weight > 0);
-                strActionText = (boolIsLift ? $"lift {_step.Weight}" : $"{_step.Action}") + $" ({Seconds_To_String(_step.Length)})" +
-                    $"{Environment.NewLine}from {Seconds_To_String(_step.TotalLengthReverse)} out";
+                string strActionText = ActionTextString(_step: _step, _isFuture: true);
                 Panel panel_Live_Step = new()
                 {
                     Size = new Size(_int_panel_Live_Step_Width, 80),
@@ -4526,7 +2979,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     Size = new Size(_int_progressBar_Step_Width, 65),
                     Location = _point_progressBar_Step_Location,
-                    Maximum = _step.Field<int>(str_col_Length),
+                    Maximum = _step.Length,
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 };
                 if (progressBar_Step.Maximum == 0)
@@ -4535,6 +2988,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     progressBar_Step.Value = 1;
                 }
                 Label label_Weight = null;
+                bool boolIsLift = ((_step.Weight ?? 0) > 0);
                 if (boolIsLift)
                 {
                     label_Weight = new Label
@@ -4551,7 +3005,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     };
                     label_Weight.Text = "lift " + _step.Weight.ToString();
 
-                    if (_step.Field<bool>(str_col_Override))
+                    if (_step.Override)
                     {
                         label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Italic);
                         label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold | FontStyle.Italic);
@@ -4600,7 +3054,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     {
                         boolOpener = false,
                         intWeightBar = int_Barbell,
-                        intWeight = _step.Weight,
+                        intWeight = _step.Weight ?? 0,
                         intShadowWidth = 1,
                         intPlateGap = -1,
                         Size = new Size(120, 65),
@@ -4860,21 +3314,18 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
             int _intStep = -1;
-            foreach (DataRow dataRow in cjStepsLIVE.Rows)
+            foreach (Step _step in cjStepsLIVE)
             {
-                if (_step.TotalLengthReverse >= intSecondsToOpen)
+                if (_step.TotalLengthReverse >= intSecondsToOpen && _step.Order > _intStep)
                 {
-                    if (_step.Order > _intStep)
-                    {
-                        _intStep = _step.Order;
-                    }
+                    _intStep = _step.Order;
                 }
             }
 
             if (_intStep == -1) // adjust wait time
             {
                 int intTLR = 0;
-                foreach (DataRow dataRow in cjStepsLIVE.Rows)
+                foreach (Step _step in cjStepsLIVE)
                 {
                     if (_step.Order == 1)
                     {
@@ -4885,26 +3336,26 @@ namespace Weightlifting_Comp_Warmup.Main
                 if (intTLR > 0 & intSecondsToOpen > intTLR)
                 {
                     int intSecToAdd = 0;
-                    foreach (DataRow dataRow in cjStepsLIVE.Rows)
+                    foreach (Step _step in cjStepsLIVE)
                     {
-                        if (dataRow.Field<bool>(str_col_PreStep))
+                        if (_step.PreStep)
                         {
-                            intSecToAdd = (intSecondsToOpen - intTLR) - dataRow.Field<int>(str_col_Length);
-                            dataRow[str_col_Length] = intSecondsToOpen - intTLR;
-                            dataRow.Field<ProgressBar>(str_col_ProgressBarStep).Maximum = intSecondsToOpen - intTLR;
-                            dataRow[str_col_TotalLength] = intSecondsToOpen - intTLR;
-                            dataRow[str_col_TotalLengthReverse] = intSecondsToOpen;
+                            intSecToAdd = (intSecondsToOpen - intTLR) - _step.Length;
+                            _step.Length = intSecondsToOpen - intTLR;
+                            _step.Controls.ProgressBarStep.Maximum = intSecondsToOpen - intTLR;
+                            _step.TotalLength = intSecondsToOpen - intTLR;
+                            _step.TotalLengthReverse = intSecondsToOpen;
                             _intStep = 0;
                             break;
                         }
                     }
                     if (_intStep == 0 & intSecToAdd != 0)
                     {
-                        foreach (DataRow dataRow in cjStepsLIVE.Rows)
+                        foreach (Step _step in cjStepsLIVE)
                         {
-                            if (!dataRow.Field<bool>(str_col_PreStep))
+                            if (!_step.PreStep)
                             {
-                                dataRow[str_col_TotalLength] = dataRow.Field<int>(str_col_TotalLength) + intSecToAdd;
+                                _step.TotalLength += intSecToAdd;
                             }
                         }
                     }
@@ -4913,16 +3364,15 @@ namespace Weightlifting_Comp_Warmup.Main
 
             if (_intStep > -1)
             {
-                Panel panel_Live_Step = null;
                 Label label_Action;
                 ProgressBar progressBar_Step;
                 Label label_Progress_Time;
                 bool boolUpdBGsFGs = (_intStep != int_cj_Warmup_Step);
 
-                foreach (DataRow dataRow in cjStepsLIVE.Rows)
+                foreach (Step _step in cjStepsLIVE)
                 {
                     int _int_Order = _step.Order;
-                    Label label_Time = dataRow.Field<Label>(str_col_LabelTime);
+                    Label label_Time = _step.Controls.LabelTime;
                     if (_int_Order > _intStep)
                     {
                         label_Time.Visible = true;
@@ -4934,33 +3384,25 @@ namespace Weightlifting_Comp_Warmup.Main
                     }
                 }
 
-                foreach (DataRow dataRow in cjStepsLIVE.Rows)
+                foreach (Step _step in cjStepsLIVE)
                 {
                     int _int_Order = _step.Order;
+                    Panel panel_Live_Step;
                     if (_int_Order == _intStep)
                     {
-                        panel_Live_Step = dataRow.Field<Panel>(str_col_PanelLiveStep);
-                        label_Progress_Time = dataRow.Field<Label>(str_col_LabelProgressTime);
-                        progressBar_Step = dataRow.Field<ProgressBar>(str_col_ProgressBarStep);
+                        panel_Live_Step = _step.Controls.PanelLiveStep;
+                        label_Progress_Time = _step.Controls.LabelProgressTime;
+                        progressBar_Step = _step.Controls.ProgressBarStep;
 
-                        int intStepLength = dataRow.Field<int>(str_col_Length);
+                        int intStepLength = _step.Length;
                         int intSecIntoStep = _step.TotalLengthReverse - intSecondsToOpen;
                         label_Progress_Time.Text = Seconds_To_String(_int_Seconds: intStepLength - intSecIntoStep, _bool_ShortString: true);
                         progressBar_Step.Value = intSecIntoStep;
 
                         if (boolUpdBGsFGs)
                         {
-                            string strActionText;
-                            bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
-                            if (boolIsLift)
-                            {
-                                strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString();
-                            }
-                            else
-                            {
-                                strActionText = dataRow.Field<string>(str_col_Action);
-                            }
-                            label_Action = dataRow.Field<Label>(str_col_LabelAction);
+                            string strActionText = ActionTextString(_step: _step, _isFuture: false);
+                            label_Action = _step.Controls.LabelAction;
                             label_Action.Text = strActionText;
                             label_Progress_Time.Visible = true;
                         }
@@ -4977,45 +3419,14 @@ namespace Weightlifting_Comp_Warmup.Main
                     }
                     else if (boolUpdBGsFGs)
                     {
-                        panel_Live_Step = dataRow.Field<Panel>(str_col_PanelLiveStep);
+                        panel_Live_Step = _step.Controls.PanelLiveStep;
                         panel_Live_Step.BackColor = color_cj_Live_BG;
                         panel_Live_Step.ForeColor = color_Live_Default_FG;
-                        label_Progress_Time = dataRow.Field<Label>(str_col_LabelProgressTime);
+                        label_Progress_Time = _step.Controls.LabelProgressTime;
                         label_Progress_Time.Visible = false;
-                        progressBar_Step = dataRow.Field<ProgressBar>(str_col_ProgressBarStep);
-                        label_Action = dataRow.Field<Label>(str_col_LabelAction);
-                        string strActionText;
-                        bool boolIsLift = (dataRow.Field<int>(str_col_Weight) > 0);
-
-                        if (_int_Order < _intStep)
-                        {
-                            progressBar_Step.Value = progressBar_Step.Maximum;
-                            if (boolIsLift)
-                            {
-                                strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString();
-                            }
-                            else
-                            {
-                                strActionText = dataRow.Field<string>(str_col_Action);
-                            }
-                        }
-                        else
-                        {
-                            progressBar_Step.Value = 0;
-                            if (boolIsLift)
-                            {
-                                strActionText = "lift " + dataRow.Field<int>(str_col_Weight).ToString() + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
-                                    Environment.NewLine +
-                                    "from " + Seconds_To_String(_step.TotalLengthReverse) + " out";
-                            }
-                            else
-                            {
-                                strActionText = dataRow.Field<string>(str_col_Action) + " (" + Seconds_To_String(dataRow.Field<int>(str_col_Length)) + ")" +
-                                    Environment.NewLine +
-                                    "from " + Seconds_To_String(_step.TotalLengthReverse) + " out";
-                            }
-                        }
-
+                        progressBar_Step = _step.Controls.ProgressBarStep;
+                        label_Action = _step.Controls.LabelAction;
+                        string strActionText = ActionTextString(_step: _step, _isFuture: !(_int_Order < _intStep));
                         label_Action.Text = strActionText;
                     }
                 }
@@ -5263,7 +3674,6 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             splitContainer_cj.SplitterDistance = 0;
         }
-
         #endregion
 
         #region utilities
@@ -5299,74 +3709,41 @@ namespace Weightlifting_Comp_Warmup.Main
                 return intHrs.ToString() + "h" + intMns.ToString() + "m" + _int_Seconds.ToString() + "s";
             }
         }
-        private void Smooth_Last_Jumps(ref DataTable dataTable, int intOpener)
+        private void Smooth_Last_Jumps(List<Step> _steps, int intOpener)
         {
-            int intLastWarmup = 0, intSecondToLastWarmup = 0, intThirdToLastWarmup = 0;
-
-            foreach (DataRow dataRow in dataTable.Rows)
-            {
-                if (dataRow.Field<int>(str_col_Weight) > 0)
-                {
-                    if (dataRow.Field<int>(str_col_Weight) > intLastWarmup)
-                    {
-                        intThirdToLastWarmup = intSecondToLastWarmup;
-                        intSecondToLastWarmup = intLastWarmup;
-                        intLastWarmup = dataRow.Field<int>(str_col_Weight);
-                    }
-                    else if (dataRow.Field<int>(str_col_Weight) > intSecondToLastWarmup)
-                    {
-                        intThirdToLastWarmup = intSecondToLastWarmup;
-                        intSecondToLastWarmup = dataRow.Field<int>(str_col_Weight);
-                    }
-                    else if (dataRow.Field<int>(str_col_Weight) > intThirdToLastWarmup)
-                    {
-                        intThirdToLastWarmup = dataRow.Field<int>(str_col_Weight);
-                    }
-                }
-            }
+            List<int> topThreeWeights = [.. _steps
+                .Where(step => (step.Weight ?? 0) > 0)
+                .Select(step => step.Weight.Value)
+                .Distinct()
+                .OrderByDescending(weight => weight)];
+            int _int_LastWarmup = topThreeWeights.ElementAtOrDefault(0);
+            int _int_SecondToLastWarmup = topThreeWeights.ElementAtOrDefault(1);
+            int _int_ThirdToLastWarmup = topThreeWeights.ElementAtOrDefault(2);
 
             if (intOpener > 0)
             {
-                if (intOpener == intLastWarmup)
+                if (intOpener == _int_LastWarmup)
                 {
-                    if (intLastWarmup > 0 & intSecondToLastWarmup > 0 & intThirdToLastWarmup > 0)
+                    if ((_int_LastWarmup > 0 & _int_SecondToLastWarmup > 0 & _int_ThirdToLastWarmup > 0) &&
+                        (_int_LastWarmup - _int_ThirdToLastWarmup > 3) &&
+                        (((int)(decimal)(_int_LastWarmup - _int_ThirdToLastWarmup) / 2 + (decimal)_int_ThirdToLastWarmup) != _int_SecondToLastWarmup))
                     {
-                        if (intLastWarmup - intThirdToLastWarmup > 3)
+                        Step _step = _steps.FirstOrDefault(r => r.Weight == _int_SecondToLastWarmup && !r.Override);
+                        if (_step != null)
                         {
-                            if (((int)(decimal)(intLastWarmup - intThirdToLastWarmup) / 2 + (decimal)intThirdToLastWarmup) != intSecondToLastWarmup)
-                            {
-                                foreach (DataRow dataRow in dataTable.Rows)
-                                {
-                                    if (dataRow.Field<int>(str_col_Weight) == intSecondToLastWarmup)
-                                    {
-                                        if (!dataRow.Field<bool>(str_col_Override))
-                                        {
-                                            dataRow[str_col_Weight] = (int)Math.Floor((decimal)(intLastWarmup - intThirdToLastWarmup) / 2 + intThirdToLastWarmup);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
+                            _step.Weight = (int)Math.Floor((decimal)(_int_LastWarmup - _int_ThirdToLastWarmup) / 2 + _int_ThirdToLastWarmup);
                         }
                     }
                 }
-                else if (intLastWarmup > 0 & intSecondToLastWarmup > 0)
+                else if (_int_LastWarmup > 0 & _int_SecondToLastWarmup > 0)
                 {
-                    if (intOpener - intSecondToLastWarmup > 3)
+                    if ((intOpener - _int_SecondToLastWarmup > 3) &&
+                        (((int)(decimal)(intOpener - _int_SecondToLastWarmup) / 2 + (decimal)_int_SecondToLastWarmup) != _int_LastWarmup))
                     {
-                        if (((int)(decimal)(intOpener - intSecondToLastWarmup) / 2 + (decimal)intSecondToLastWarmup) != intLastWarmup)
+                        Step _step = _steps.FirstOrDefault(r => r.Weight == _int_LastWarmup && !r.Override);
+                        if (_step != null)
                         {
-                            foreach (DataRow dataRow in dataTable.Rows)
-                            {
-                                if (dataRow.Field<int>(str_col_Weight) == intLastWarmup)
-                                {
-                                    if (!dataRow.Field<bool>(str_col_Override))
-                                    {
-                                        dataRow[str_col_Weight] = (int)Math.Floor((decimal)(intOpener - intSecondToLastWarmup) / 2 + intSecondToLastWarmup);
-                                    }
-                                    break;
-                                }
-                            }
+                            _step.Weight = (int)Math.Floor((decimal)(intOpener - _int_SecondToLastWarmup) / 2 + _int_SecondToLastWarmup);
                         }
                     }
                 }
@@ -5384,196 +3761,153 @@ namespace Weightlifting_Comp_Warmup.Main
             )
         {
             if (_extras == null | _jumps == null | _times == null) { return null; }
-            int _int_Seconds;
-            int _int_TotalSeconds = 0;
-            int _int_Order = 1;
-            Dictionary<int, bool> _weightInputOverrides = new();
-            Dictionary<int, bool> _weightOverrides = new();
-            List<Step> _steps = new();
+            Dictionary<int, bool> _weightInputs = [];
+            Dictionary<int, bool> _weights = [];
+            List<Step> _steps = [];
             if (_bool_PreserveLifts & _stepsIn != null)
             {
-                foreach (DataRow dR in _stepsIn.Rows)
+                foreach (Step _step in _stepsIn)
                 {
-                    if (!dR.IsNull(str_col_Weight) && dR.Field<int>(str_col_Weight) > 0)
+                    if ((_step.Weight ?? 0) > 0)
                     {
-                        _weightInputOverrides[dR.Field<int>(str_col_Weight)] = dR.Field<bool>(str_col_Override);
+                        _weightInputs[(int)_step.Weight] = _step.Override;
                     }
                 }
                 //remove final auto populated weights
-                for (int i = _weightInputOverrides.Rows.Count - 1; i >= 0; i--)
+                int _max = _weightInputs.Max().Key;
+                if (_max > 0)
                 {
-                    if (_weightInputOverrides.Rows[i].Field<bool>(str_col_Override))
-                    { break; }
-                    else
+                    foreach (int key in _weightInputs.Keys.Where(r => r > _max))
                     {
-                        _weightInputOverrides.Rows.RemoveAt(i);
+                        _weightInputs.Remove(key);
                     }
                 }
             }
-            dataTableWeights = dataTable_Weights(
-                dt_x_jumps: _jumps,
-                _dataTableWeight_Input: _weightInputOverrides,
+            _weights = dictionary_Weights(
+                _jumps: _jumps,
+                _weightInputs: _weightInputs,
                 bool_Opener_in_Warmup: _bool_Opener_in_Warmup,
-                int_x_Wgt_Opener: _int_x_Wgt_Opener
-                );
+                _int_Weight_Opener: _int_x_Wgt_Opener);
 
-            _extras.DefaultView.Sort = str_col_Order + " ASC";
-            foreach (DataRow dataRow in _extras.DefaultView.ToTable().Rows)
+            int _int_TotalSeconds = _extras.Sum(r => r.Length);
+            int _int_Order = 1;
+            foreach (Extra _extra in _extras.OrderBy(r => r.Order))
             {
-                DataRow dR = _steps.NewRow();
-                _int_Seconds = dataRow.Field<int>(str_col_Length);
-                _int_TotalSeconds += _int_Seconds;
-                dR[str_col_Action] = dataRow.Field<string>(str_col_Action);
-                dR[str_col_Weight] = 0;
-                dR[str_col_Length] = _int_Seconds;
-                dR[str_col_TotalLength] = _int_TotalSeconds;
-                dR[str_col_Order] = _int_Order;
-                dR[str_col_PreStep] = false;
-                dR[str_col_Override] = false;
+                _steps.Add(new Step(
+                    action: _extra.Action,
+                    weight: 0,
+                    length: _extra.Length,
+                    totalLength: _int_TotalSeconds,
+                    order: _int_Order,
+                    preStep: false,
+                    @override: false
+                    ));
                 _int_Order++;
-                _steps.Rows.Add(dR);
             }
 
-            int intWeight;
-            int intTime;
-            _times.DefaultView.Sort = str_col_FromWeight;
-            using (DataTable dTTimes = _times.DefaultView.ToTable())
+            _times = _times.OrderBy(r => r.Key).ToDictionary(r => r.Key, r => r.Value);
+            int _int_Weight_Last = _weights.Last().Key;
+            foreach (KeyValuePair<int, bool> _kvp_Weight in _weights)
             {
-                foreach (DataRow dRWeight in dataTableWeights.Rows)
+                int intTime = _times.Where(r => r.Key <= _kvp_Weight.Key).Max(r => r.Value);
+                if (_kvp_Weight.Key == _int_Weight_Last)
                 {
-                    intWeight = dRWeight.Field<int>(str_col_Weight);
-                    intTime = 0;
-                    foreach (DataRow dataRow in _times.DefaultView.ToTable().Rows)
-                    {
-                        if (dataRow.Field<int>(str_col_FromWeight) <= intWeight)
-                        {
-                            intTime = dataRow.Field<int>(str_col_Length);
-                        }
-                        else break;
-                    }
-                    if (dataTableWeights.Rows.IndexOf(dRWeight) == dataTableWeights.Rows.Count - 1)
-                    {
-                        intTime += _int_x_Sec_End;
-                    }
-                    _int_TotalSeconds += intTime;
-                    DataRow dR = _steps.NewRow();
-                    dR[str_col_Action] = "Lift";
-                    dR[str_col_Weight] = intWeight;
-                    dR[str_col_Length] = intTime;
-                    dR[str_col_TotalLength] = _int_TotalSeconds;
-                    dR[str_col_Order] = _int_Order;
-                    dR[str_col_PreStep] = false;
-                    dR[str_col_Override] = dRWeight.Field<bool>(str_col_Override);
-                    _int_Order++;
-                    _steps.Rows.Add(dR);
+                    intTime += _int_x_Sec_End;
                 }
+                _int_TotalSeconds += intTime;
+                _steps.Add(new Step(
+                    action: "Lift",
+                    weight: _kvp_Weight.Key,
+                    length: intTime,
+                    totalLength: _int_TotalSeconds,
+                    order: _int_Order,
+                    preStep: false,
+                    @override: _kvp_Weight.Value));
+                _int_Order++;
             }
 
             _int_TotalSeconds = 0;
-            for (int i = _steps.Rows.Count - 1; i >= 0; i--)
+            for (int i = _steps.Count - 1; i >= 0; i--)
             {
-                _int_Seconds = _steps.Rows[i].Field<int>(str_col_Length);
-                _int_TotalSeconds += _int_Seconds;
-                _steps.Rows[i][str_col_TotalLengthReverse] = _int_TotalSeconds;
+                _int_TotalSeconds += _steps[i].Length;
+                _steps[i].TotalLengthReverse = _int_TotalSeconds;
             }
 
-            Smooth_Last_Jumps(ref _steps, _int_x_Wgt_Opener);
+            Smooth_Last_Jumps(_steps: _steps, intOpener: _int_x_Wgt_Opener);
 
-            DataRow dRPre = _steps.NewRow();
-            dRPre[str_col_Action] = "wait";
-            dRPre[str_col_Weight] = 0;
-            dRPre[str_col_Length] = 0;
-            dRPre[str_col_TotalLength] = 0;
-            dRPre[str_col_TotalLengthReverse] = _int_TotalSeconds;
-            dRPre[str_col_Order] = 0;
-            dRPre[str_col_PreStep] = true;
-            dRPre[str_col_Override] = false;
-            _steps.Rows.InsertAt(dRPre, 0);
-
+            _steps.Insert(0, new Step(
+                action: "wait",
+                weight: 0,
+                length: 0,
+                totalLength: 0,
+                totalLengthReverse: _int_TotalSeconds,
+                order: 0,
+                preStep: true,
+                @override: false));
             return _steps;
         }
         private Dictionary<int, bool> dictionary_Weights(
             Dictionary<int, int> _jumps,
-            DataTable _dataTableWeight_Input,
-            int int_x_Wgt_Opener,
+            Dictionary<int, bool> _weightInputs,
+            int _int_Weight_Opener,
             bool bool_Opener_in_Warmup
             )
         {
-            DataTable dt = new();
-            dt.Columns.AddRange(
-            [
-                new(str_col_Weight, typeof(int)),
-                new(str_col_Override, typeof(bool))
-            ]);
-
-            int intWeight = 0;
-            int intJump;
-            int intLift = 0;
-            bool boolOverride;
-
-            dt_x_jumps.DefaultView.Sort = str_col_FromWeight + " ASC";
-            using (DataTable dtJumps = dt_x_jumps.DefaultView.ToTable())
+            List<KeyValuePair<int, bool>> _weightInputs_List = [.. _weightInputs.OrderBy(r => r.Key)];
+            Dictionary<int, bool> _weights = [];
+            int _int_Weight = 0;
+            int _int_Lift = 0;
+            bool _bool_Override;
+            do
             {
-                do
+                int _int_Jump = 0;
+                if (_int_Lift < _weightInputs_List.Count)
                 {
-                    intJump = 0;
-                    if (intLift < _dataTableWeight_Input.Rows.Count)
+                    _int_Jump = _weightInputs_List[_int_Lift].Key - _int_Weight;
+                    _bool_Override = _weightInputs_List[_int_Lift].Value;
+                }
+                else if (_int_Weight == 0)
+                {
+                    _int_Jump = int_Barbell;
+                    _bool_Override = false;
+                }
+                else
+                {
+                    _bool_Override = false;
+                    foreach (KeyValuePair<int, int> _jump in _jumps.OrderBy(r => r.Key))
                     {
-                        intJump = _dataTableWeight_Input.Rows[intLift].Field<int>(str_col_Weight) - intWeight;
-                        boolOverride = _dataTableWeight_Input.Rows[intLift].Field<bool>(str_col_Override);
-                    }
-                    else if (intWeight == 0)
-                    {
-                        intJump = int_Barbell;
-                        boolOverride = false;
-                    }
-                    else
-                    {
-                        boolOverride = false;
-                        foreach (DataRow dataRow in dtJumps.Rows)
+                        if (_jump.Key <= _int_Weight)
                         {
-                            if (dataRow.Field<int>(str_col_FromWeight) <= intWeight)
-                            {
-                                intJump = dataRow.Field<int>(str_col_Jump);
-                            }
-                            else if (intJump > 0 & dataRow.Field<int>(str_col_FromWeight) + dataRow.Field<int>(str_col_Jump) <= intWeight + intJump)
-                            {
-                                intJump = dataRow.Field<int>(str_col_FromWeight) - intWeight + dataRow.Field<int>(str_col_Jump);
-                            }
-                            else break;
+                            _int_Jump = _jump.Value;
+                        }
+                        else if (_int_Jump > 0 && _jump.Key + _jump.Value <= _int_Weight + _int_Jump)
+                        {
+                            _int_Jump = _jump.Key - _int_Weight + _jump.Value;
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
-                    if (intJump < 1)
-                    { break; }
-                    else if (intWeight + intJump >= int_x_Wgt_Opener)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        intWeight += intJump;
-                        DataRow dataRow1 = dt.NewRow();
-                        dataRow1[0] = intWeight;
-                        dataRow1[1] = boolOverride;
-                        dt.Rows.Add(dataRow1);
-                        intLift++;
-                    }
-                } while (intWeight < int_x_Wgt_Opener);
-                if (bool_Opener_in_Warmup && dt.Rows.Count > 0)
-                {
-                    if (dt.Rows[dt.Rows.Count - 1].Field<int>(0) < int_x_Wgt_Opener)
-                    {
-                        intWeight = int_x_Wgt_Opener;
-                        DataRow dataRow1 = dt.NewRow();
-                        dataRow1[0] = intWeight;
-                        dataRow1[1] = boolOverride;
-                        dt.Rows.Add(dataRow1);
-                        intLift++;
-                    }
                 }
+                if (_int_Jump < 1 || (_int_Weight + _int_Jump >= _int_Weight_Opener))
+                {
+                    break;
+                }
+                else
+                {
+                    _int_Weight += _int_Jump;
+                    _weights[_int_Weight] = _bool_Override;
+                    _int_Lift++;
+                }
+            } while (_int_Weight < _int_Weight_Opener);
+            if (bool_Opener_in_Warmup && _weights.Count > 0 &&
+                _weights.Max(r => r.Key) < _int_Weight_Opener)
+            {
+                _weights[_int_Weight_Opener] = _bool_Override;
             }
 
-            return dt;
+            return _weights;
         }
         private static DialogResult ShowInputDialog(ref string input)
         {
@@ -5632,8 +3966,8 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void Apply_Opener_Graphic_Vector(
             int _intWeightBar,
- int _intWeightOpener,
- bool _boolSnatch
+            int _intWeightOpener,
+            bool _boolSnatch
             )
         {
             Panel _panelGraphic;
@@ -5664,781 +3998,339 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void Apply_Vector_Weight_Graphic(object sender, PaintEventArgs e)
         {
-            WeightBox weightBoxGraphic = (WeightBox)sender;
-            int _intWeightBar = weightBoxGraphic.intWeightBar;
-            int _intWeight = weightBoxGraphic.intWeight;
-            int _int_Shadow_Width = weightBoxGraphic.intShadowWidth;
-            int _intPlateGap = weightBoxGraphic.intPlateGap;
-            bool _boolOpener = weightBoxGraphic.boolOpener;
+            WeightBox _weightBox_Graphic = (WeightBox)sender;
+            int _int_WeightBar = _weightBox_Graphic.intWeightBar;
+            int _int_Weight = _weightBox_Graphic.intWeight;
+            int _int_Shadow_Width = _weightBox_Graphic.intShadowWidth;
+            int _int_PlateGap = _weightBox_Graphic.intPlateGap;
+            bool _bool_Opener = _weightBox_Graphic.boolOpener;
 
-            int intLBuffer, intTBuffer, intBBuffer;
-            bool _boolCollars;
-            bool _bool5KGCollars;
-            if (_boolOpener)
+            int _int_LBuffer;
+            int _int_TBuffer;
+            int _int_BBuffer;
+            bool _bool_Collars;
+            bool _bool_5KGCollars;
+            if (_bool_Opener)
             {
-                _boolCollars = _intWeight - 5 >= _intWeightBar;
-                _bool5KGCollars = ((_intWeight - 15) >= _intWeightBar);
-                intLBuffer = 0;
-                intTBuffer = 0;
-                intBBuffer = 0;
+                _bool_Collars = _int_Weight - 5 >= _int_WeightBar;
+                _bool_5KGCollars = ((_int_Weight - 15) >= _int_WeightBar);
+                _int_LBuffer = 0;
+                _int_TBuffer = 0;
+                _int_BBuffer = 0;
             }
             else
             {
-                _boolCollars = false;
-                _bool5KGCollars = false;
-                intTBuffer = 1;
-                intLBuffer = intTBuffer;
-                intBBuffer = intTBuffer + 4;
+                _bool_Collars = false;
+                _bool_5KGCollars = false;
+                _int_TBuffer = 1;
+                _int_LBuffer = _int_TBuffer;
+                _int_BBuffer = _int_TBuffer + 4;
             }
 
-            Plates_Count_For_Weight(
-                _intWeightBar: _intWeightBar,
-                _bool5KGCollar: _bool5KGCollars,
-                _intWeightLift: _intWeight,
-                _int25_0: out int int25_0,
-                _bool20_0: out bool bool20_0,
-                _bool15_0: out bool bool15_0,
-                _bool10_0: out bool bool10_0,
-                _bool05_0: out bool bool05_0,
-                _bool02_5: out bool bool02_5,
-                _bool02_0: out bool bool02_0,
-                _bool01_5: out bool bool01_5,
-                _bool01_0: out bool bool01_0,
-                _bool00_5: out bool bool00_5);
+            Dictionary<decimal, int> _plates = Plates_Count_For_Weight(
+                _int_WeightBar: _int_WeightBar,
+                _bool_5KGCollar: _bool_5KGCollars,
+                _int_WeightLift: _int_Weight);
 
-            int int_Full_Height = weightBoxGraphic.Height - intTBuffer - intBBuffer;
-            int int_Plate_Height = int_Full_Height;
-            int int_Plate_Width25_0 = 16;
-            int int_Plate_Width20_0 = 15;
-            int int_Plate_Width15_0 = 13;
-            int int_Plate_Width10_0 = 11;
-            int int_Plate_Width05_0 = 9;
-            int int_Plate_Width02_5 = 8;
-            int int_Plate_Width02_0 = 8;
-            int int_Plate_Width01_5 = 8;
-            int int_Plate_Width01_0 = 7;
-            int int_Plate_Width00_5 = 6;
-            int int_Collar_Height = _bool5KGCollars ? 18 : 12;
-            int int_Collar_Width = _bool5KGCollars ? 8 : 6;
-            int int_MainBar_Width = (
-                    _boolOpener ?
-                    Math.Min(400, weightBoxGraphic.Width - intLBuffer - (2 * _int_Shadow_Width)) :
+            int _int_Full_Height = _weightBox_Graphic.Height - _int_TBuffer - _int_BBuffer;
+            Dictionary<decimal, PlateParameter> _plateParameters = new()
+            {
+                [25m] = new PlateParameter(width: 16, height: _int_Full_Height, brush: new SolidBrush(color: color_Plate_Red)),
+                [20m] = new PlateParameter(width: 15, height: _int_Full_Height, brush: new SolidBrush(color: color_Plate_Blue)),
+                [15m] = new PlateParameter(width: 13, height: _int_Full_Height, brush: new SolidBrush(color: color_Plate_Yellow)),
+                [10m] = new PlateParameter(width: 11, height: _int_Full_Height, brush: new SolidBrush(color: color_Plate_Green)),
+            };
+            // 5.0s
+            int _int_Plate_Height = Convert.ToInt32(_int_Full_Height * .75);
+            if (_plates.Where(r => r.Value > 0).Max(r => r.Key) == 5.0m)
+            {
+                _plateParameters[5.0m] = new PlateParameter(width: _plateParameters[25m].Width * 2, height: _int_Full_Height, brush: new SolidBrush(color: color_Plate_White));
+            }
+            else
+            {
+                _plateParameters[5.0m] = new PlateParameter(width: 9, height: _int_Plate_Height, brush: new SolidBrush(color: color_Plate_White));
+            }
+            // 2.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .85);
+            if (_plates.Where(r => r.Value > 0).Max(r => r.Key) == 2.5m)
+            {
+                _plateParameters[2.5m] = new PlateParameter(width: _plateParameters[25m].Width * 2, height: _int_Full_Height, brush: new SolidBrush(color: color_Plate_White));
+            }
+            else
+            {
+                _plateParameters[2.5m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: color_Plate_Red));
+            }
+            // 2.0s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[2.0m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: color_Plate_Blue));
+            // 1.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[1.5m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: color_Plate_Yellow));
+            // 1.0s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[1.0m] = new PlateParameter(width: 7, height: _int_Plate_Height, brush: new SolidBrush(color: color_Plate_Green));
+            // 0.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[0.5m] = new PlateParameter(width: 6, height: _int_Plate_Height, brush: new SolidBrush(color: color_Plate_White));
+
+            int _int_Collar_Height = _bool_5KGCollars ? 18 : 12;
+            int _int_Collar_Width = _bool_5KGCollars ? 8 : 6;
+            int _int_MainBar_Width = (
+                    _bool_Opener ?
+                    Math.Min(400, _weightBox_Graphic.Width - _int_LBuffer - (2 * _int_Shadow_Width)) :
                     10);
-            int int_Sleeve_Width =
+            int _int_Sleeve_Width =
                 (
-                    _boolOpener ?
+                    _bool_Opener ?
                     (
-                        _intWeight > 229 ?
+                        _int_Weight > 229 ?
                         125 :
                         (
-                            _intWeight > 149 ?
+                            _int_Weight > 149 ?
                             100 :
                             75
                         )
                     ) :
                     75
                 );
-            int int_SleeveKnuckle_Width = 9;
-            bool _boolShadow = (_int_Shadow_Width > 0);
+            int _int_SleeveKnuckle_Width = 9;
+            bool _bool_Shadow = (_int_Shadow_Width > 0);
 
-            SolidBrush brush_BarShadow = new(color: Color.Black);
-            SolidBrush brush_PlateShadow = new(color: Color.Black);
-            SolidBrush brush_CollarSilver = new(color: Color.Gainsboro);
-            SolidBrush brush_BarGrey = new(color: color_BarGrey);
-            SolidBrush brush_Red = new(color: color_Plate_Red);
-            SolidBrush brush_Blue = new(color: color_Plate_Blue);
-            SolidBrush brush_Yellow = new(color: color_Plate_Yellow);
-            SolidBrush brush_Green = new(color: color_Plate_Green);
-            SolidBrush brush_White = new(color: color_Plate_White);
+            SolidBrush _brush_BarShadow = new(color: Color.Black);
+            SolidBrush _brush_PlateShadow = new(color: Color.Black);
+            SolidBrush _brush_CollarSilver = new(color: Color.Gainsboro);
+            SolidBrush _brush_BarGrey = new(color: color_BarGrey);
 
             //add bar
             //add bar shadow
-            Rectangle
-                rect_MainBar, rectShadow_MainBar,
-                rect_SleeveKnuckle_Right, rectShadow_SleeveKnuckle_Right,
-                rect_Sleeve_Right, rectShadow_Sleeve_Right,
-                rect_SleeveKnuckle_Left, rectShadow_SleeveKnuckle_Left,
-                rect_Sleeve_Left, rectShadow_Sleeve_Left;
+            Rectangle _rect_MainBar;
+            Rectangle _rectShadow_MainBar;
+            Rectangle _rect_SleeveKnuckle_Right;
+            Rectangle _rectShadow_SleeveKnuckle_Right;
+            Rectangle _rect_Sleeve_Right, _rectShadow_Sleeve_Right;
+            Rectangle _rect_SleeveKnuckle_Left;
+            Rectangle _rectShadow_SleeveKnuckle_Left;
+            Rectangle _rect_Sleeve_Left;
+            Rectangle _rectShadow_Sleeve_Left;
 
-            rect_MainBar = new(
-                x: intLBuffer + _int_Shadow_Width,
+            _rect_MainBar = new(
+                x: _int_LBuffer + _int_Shadow_Width,
                 y: 0,
-                width: int_MainBar_Width,
+                width: _int_MainBar_Width,
                 height: 6);
-            rect_MainBar.Y = (int_Full_Height / 2) - (rect_MainBar.Height / 2) + intTBuffer;
-            if (_boolOpener)
+            _rect_MainBar.Y = (_int_Full_Height / 2) - (_rect_MainBar.Height / 2) + _int_TBuffer;
+            if (_bool_Opener)
             {
-                rect_Sleeve_Right = new(
-                    x: rect_MainBar.X + rect_MainBar.Width - int_Sleeve_Width,
+                _rect_Sleeve_Right = new(
+                    x: _rect_MainBar.X + _rect_MainBar.Width - _int_Sleeve_Width,
                     y: 0,
-                    width: int_Sleeve_Width,
+                    width: _int_Sleeve_Width,
                     height: 10);
-                rect_SleeveKnuckle_Right = new(
-                    x: rect_Sleeve_Right.X - int_SleeveKnuckle_Width,
+                _rect_SleeveKnuckle_Right = new(
+                    x: _rect_Sleeve_Right.X - _int_SleeveKnuckle_Width,
                     y: 0,
-                    width: int_SleeveKnuckle_Width,
+                    width: _int_SleeveKnuckle_Width,
                     height: 16);
-                rect_Sleeve_Left = new(
-                    x: intLBuffer + _int_Shadow_Width,
+                _rect_Sleeve_Left = new(
+                    x: _int_LBuffer + _int_Shadow_Width,
                     y: 0,
-                    width: int_Sleeve_Width,
+                    width: _int_Sleeve_Width,
                     height: 10);
-                rect_SleeveKnuckle_Left = new(
-                    x: rect_Sleeve_Left.X + rect_Sleeve_Left.Width - 1,
+                _rect_SleeveKnuckle_Left = new(
+                    x: _rect_Sleeve_Left.X + _rect_Sleeve_Left.Width - 1,
                     y: 0,
-                    width: int_SleeveKnuckle_Width,
+                    width: _int_SleeveKnuckle_Width,
                     height: 16);
             }
             else
             {
-                rect_SleeveKnuckle_Right = new(
-                    x: rect_MainBar.X + rect_MainBar.Width - 1,
+                _rect_SleeveKnuckle_Right = new(
+                    x: _rect_MainBar.X + _rect_MainBar.Width - 1,
                     y: 0,
-                    width: int_SleeveKnuckle_Width,
+                    width: _int_SleeveKnuckle_Width,
                     height: 16);
-                rect_Sleeve_Right = new(
-                    x: rect_SleeveKnuckle_Right.X + rect_SleeveKnuckle_Right.Width - 1,
+                _rect_Sleeve_Right = new(
+                    x: _rect_SleeveKnuckle_Right.X + _rect_SleeveKnuckle_Right.Width - 1,
                     y: 0,
-                    width: int_Sleeve_Width,
+                    width: _int_Sleeve_Width,
                     height: 10);
-                rect_Sleeve_Left = new();
-                rect_SleeveKnuckle_Left = new();
+                _rect_Sleeve_Left = new();
+                _rect_SleeveKnuckle_Left = new();
             }
-            rect_SleeveKnuckle_Right.Y = (int_Full_Height / 2) - (rect_SleeveKnuckle_Right.Height / 2) + intTBuffer;
-            rect_Sleeve_Right.Y = (int_Full_Height / 2) - (rect_Sleeve_Right.Height / 2) + intTBuffer;
-            rect_SleeveKnuckle_Left.Y = rect_SleeveKnuckle_Right.Y;
-            rect_Sleeve_Left.Y = rect_Sleeve_Right.Y;
-            if (_boolShadow)
+            _rect_SleeveKnuckle_Right.Y = (_int_Full_Height / 2) - (_rect_SleeveKnuckle_Right.Height / 2) + _int_TBuffer;
+            _rect_Sleeve_Right.Y = (_int_Full_Height / 2) - (_rect_Sleeve_Right.Height / 2) + _int_TBuffer;
+            _rect_SleeveKnuckle_Left.Y = _rect_SleeveKnuckle_Right.Y;
+            _rect_Sleeve_Left.Y = _rect_Sleeve_Right.Y;
+            if (_bool_Shadow)
             {
-                rectShadow_MainBar = rect_MainBar;
-                rectShadow_MainBar.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
-                rectShadow_SleeveKnuckle_Right = rect_SleeveKnuckle_Right;
-                rectShadow_SleeveKnuckle_Right.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
-                rectShadow_Sleeve_Right = rect_Sleeve_Right;
-                rectShadow_Sleeve_Right.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                _rectShadow_MainBar = _rect_MainBar;
+                _rectShadow_MainBar.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                _rectShadow_SleeveKnuckle_Right = _rect_SleeveKnuckle_Right;
+                _rectShadow_SleeveKnuckle_Right.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                _rectShadow_Sleeve_Right = _rect_Sleeve_Right;
+                _rectShadow_Sleeve_Right.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
                 e.Graphics.FillRectangle(
-                    brush: brush_BarShadow,
-                    rect: rectShadow_MainBar);
+                    brush: _brush_BarShadow,
+                    rect: _rectShadow_MainBar);
                 e.Graphics.FillRectangle(
-                    brush: brush_BarShadow,
-                    rect: rectShadow_SleeveKnuckle_Right);
+                    brush: _brush_BarShadow,
+                    rect: _rectShadow_SleeveKnuckle_Right);
                 e.Graphics.FillRectangle(
-                    brush: brush_BarShadow,
-                    rect: rectShadow_Sleeve_Right);
-                if (_boolOpener)
+                    brush: _brush_BarShadow,
+                    rect: _rectShadow_Sleeve_Right);
+                if (_bool_Opener)
                 {
-                    rectShadow_SleeveKnuckle_Left = rect_SleeveKnuckle_Left;
-                    rectShadow_SleeveKnuckle_Left.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
-                    rectShadow_Sleeve_Left = rect_Sleeve_Left;
-                    rectShadow_Sleeve_Left.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                    _rectShadow_SleeveKnuckle_Left = _rect_SleeveKnuckle_Left;
+                    _rectShadow_SleeveKnuckle_Left.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
+                    _rectShadow_Sleeve_Left = _rect_Sleeve_Left;
+                    _rectShadow_Sleeve_Left.Inflate(width: _int_Shadow_Width, height: _int_Shadow_Width);
                     e.Graphics.FillRectangle(
-                        brush: brush_BarShadow,
-                        rect: rectShadow_MainBar);
+                        brush: _brush_BarShadow,
+                        rect: _rectShadow_MainBar);
                     e.Graphics.FillRectangle(
-                        brush: brush_BarShadow,
-                        rect: rectShadow_SleeveKnuckle_Left);
+                        brush: _brush_BarShadow,
+                        rect: _rectShadow_SleeveKnuckle_Left);
                     e.Graphics.FillRectangle(
-                        brush: brush_BarShadow,
-                        rect: rectShadow_Sleeve_Left);
+                        brush: _brush_BarShadow,
+                        rect: _rectShadow_Sleeve_Left);
                 }
             }
             e.Graphics.FillRectangle(
-                brush: brush_BarGrey,
-                rect: rect_MainBar);
+                brush: _brush_BarGrey,
+                rect: _rect_MainBar);
             e.Graphics.FillRectangle(
-                brush: brush_BarGrey,
-                rect: rect_SleeveKnuckle_Right);
+                brush: _brush_BarGrey,
+                rect: _rect_SleeveKnuckle_Right);
             e.Graphics.FillRectangle(
-                brush: brush_BarGrey,
-                rect: rect_Sleeve_Right);
-            if (_boolOpener)
+                brush: _brush_BarGrey,
+                rect: _rect_Sleeve_Right);
+            if (_bool_Opener)
             {
                 e.Graphics.FillRectangle(
-                    brush: brush_BarGrey,
-                    rect: rect_MainBar);
+                    brush: _brush_BarGrey,
+                    rect: _rect_MainBar);
                 e.Graphics.FillRectangle(
-                    brush: brush_BarGrey,
-                    rect: rect_SleeveKnuckle_Left);
+                    brush: _brush_BarGrey,
+                    rect: _rect_SleeveKnuckle_Left);
                 e.Graphics.FillRectangle(
-                    brush: brush_BarGrey,
-                    rect: rect_Sleeve_Left);
+                    brush: _brush_BarGrey,
+                    rect: _rect_Sleeve_Left);
             }
 
             // add plates
-            Rectangle rect, rectShadow;
-            int intLeft = rect_SleeveKnuckle_Right.X + int_SleeveKnuckle_Width + _int_Shadow_Width + 1;
-            int intRight = rect_SleeveKnuckle_Left.X - _int_Shadow_Width - 1;
-            for (int intI = 1; intI <= int25_0; intI++)
+            int _int_Left = _rect_SleeveKnuckle_Right.X + _int_SleeveKnuckle_Width + _int_Shadow_Width + 1;
+            int _int_Right = _rect_SleeveKnuckle_Left.X - _int_Shadow_Width - 1;
+            bool _bool_CollarsDone = !_bool_Collars; // if not doing collar, mark them already done
+            foreach (KeyValuePair<decimal, int> _plate in _plates.OrderByDescending(r => r.Key).Where(r => r.Value > 0))
             {
-                rect = new(
-                    x: intLeft,
-                    y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
-                    width: int_Plate_Width25_0,
-                    height: int_Plate_Height);
-                rectShadow = rect;
-                if (_boolShadow)
+                if (!_bool_CollarsDone && _plate.Value < 2.5m)
                 {
-                    rectShadow.Width += _int_Shadow_Width * 2;
-                    rect.X += _int_Shadow_Width;
-                    rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                    e.Graphics.FillRectangle(
-                        brush: brush_PlateShadow,
-                        rect: rectShadow);
-                }
-                e.Graphics.FillRectangle(
-                    brush: brush_Red,
-                    rect: rect);
-                intLeft += rectShadow.Width + _intPlateGap;
-                if (_boolOpener)
-                {
-                    intRight -= rectShadow.Width;
-                    rect.X = intRight;
-                    if (_boolShadow)
+                    Rectangle _rect = new(
+                        x: _int_Left,
+                        y: (_int_Full_Height / 2) - (_int_Collar_Height / 2) + _int_TBuffer,
+                        width: _int_Collar_Width,
+                        height: _int_Collar_Height);
+                    Rectangle _rect_Shadow = _rect;
+                    if (_bool_Shadow)
                     {
-                        rectShadow.X = rect.X;
-                        rect.X += _int_Shadow_Width;
+                        _rect_Shadow.Width += _int_Shadow_Width * 2;
+                        _rect.X += _int_Shadow_Width;
+                        _rect.Inflate(width: 0, height: -_int_Shadow_Width);
                         e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
+                            brush: _brush_BarShadow,
+                            rect: _rect_Shadow);
                     }
-                    e.Graphics.FillRectangle(
-                        brush: brush_Red,
-                        rect: rect);
-                    intRight -= _intPlateGap;
-                }
-            }
-
-            if (bool20_0)
-            {
-                rect = new(
-                    x: intLeft,
-                    y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
-                    width: int_Plate_Width20_0,
-                    height: int_Plate_Height);
-                rectShadow = rect;
-                if (_boolShadow)
-                {
-                    rectShadow.Width += _int_Shadow_Width * 2;
-                    rect.X += _int_Shadow_Width;
-                    rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                    e.Graphics.FillRectangle(
-                        brush: brush_PlateShadow,
-                        rect: rectShadow);
-                }
-                e.Graphics.FillRectangle(
-                    brush: brush_Blue,
-                    rect: rect);
-                intLeft += rectShadow.Width + _intPlateGap;
-                if (_boolOpener)
-                {
-                    intRight -= rectShadow.Width;
-                    rect.X = intRight;
-                    if (_boolShadow)
-                    {
-                        rectShadow.X = rect.X;
-                        rect.X += _int_Shadow_Width;
-                        e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
-                    }
-                    e.Graphics.FillRectangle(
-                        brush: brush_Blue,
-                        rect: rect);
-                    intRight -= _intPlateGap;
-                }
-            }
-
-            if (bool15_0)
-            {
-                rect = new(
-                    x: intLeft,
-                    y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
-                    width: int_Plate_Width15_0,
-                    height: int_Plate_Height);
-                rectShadow = rect;
-                if (_boolShadow)
-                {
-                    rectShadow.Width += _int_Shadow_Width * 2;
-                    rect.X += _int_Shadow_Width;
-                    rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                    e.Graphics.FillRectangle(
-                        brush: brush_PlateShadow,
-                        rect: rectShadow);
-                }
-                e.Graphics.FillRectangle(
-                    brush: brush_Yellow,
-                    rect: rect);
-                intLeft += rectShadow.Width + _intPlateGap;
-                if (_boolOpener)
-                {
-                    intRight -= rectShadow.Width;
-                    rect.X = intRight;
-                    if (_boolShadow)
-                    {
-                        rectShadow.X = rect.X;
-                        rect.X += _int_Shadow_Width;
-                        e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
-                    }
-                    e.Graphics.FillRectangle(
-                        brush: brush_Yellow,
-                        rect: rect);
-                    intRight -= _intPlateGap;
-                }
-            }
-
-            if (bool10_0)
-            {
-                rect = new(
-                    x: intLeft,
-                    y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
-                    width: int_Plate_Width10_0,
-                    height: int_Plate_Height);
-                rectShadow = rect;
-                if (_boolShadow)
-                {
-                    rectShadow.Width += _int_Shadow_Width * 2;
-                    rect.X += _int_Shadow_Width;
-                    rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                    e.Graphics.FillRectangle(
-                        brush: brush_PlateShadow,
-                        rect: rectShadow);
-                }
-                e.Graphics.FillRectangle(
-                    brush: brush_Green,
-                    rect: rect);
-                intLeft += rectShadow.Width + _intPlateGap;
-                if (_boolOpener)
-                {
-                    intRight -= rectShadow.Width;
-                    rect.X = intRight;
-                    if (_boolShadow)
-                    {
-                        rectShadow.X = rect.X;
-                        rect.X += _int_Shadow_Width;
-                        e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
-                    }
-                    e.Graphics.FillRectangle(
-                        brush: brush_Green,
-                        rect: rect);
-                    intRight -= _intPlateGap;
-                }
-            }
-
-            int_Plate_Height = Convert.ToInt32(int_Plate_Height * .75);
-            if (bool05_0)
-            {
-                int int_050_Height;
-                if (int25_0 == 0 & !bool20_0 & !bool15_0 & !bool10_0)
-                {
-                    int_050_Height = int_Full_Height;
-                    int_Plate_Width05_0 = int_Plate_Width25_0 * 2;
-                }
-                else
-                {
-                    int_050_Height = int_Plate_Height;
-                }
-
-                rect = new(
-                    x: intLeft,
-                    y: (int_Full_Height / 2) - (int_050_Height / 2) + intTBuffer,
-                    width: int_Plate_Width05_0,
-                    height: int_050_Height);
-                rectShadow = rect;
-                if (_boolShadow)
-                {
-                    rectShadow.Width += _int_Shadow_Width * 2;
-                    rect.X += _int_Shadow_Width;
-                    rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                    e.Graphics.FillRectangle(
-                        brush: brush_PlateShadow,
-                        rect: rectShadow);
-                }
-                e.Graphics.FillRectangle(
-                    brush: brush_White,
-                    rect: rect);
-                intLeft += rectShadow.Width + _intPlateGap;
-                if (_boolOpener)
-                {
-                    intRight -= rectShadow.Width;
-                    rect.X = intRight;
-                    if (_boolShadow)
-                    {
-                        rectShadow.X = rect.X;
-                        rect.X += _int_Shadow_Width;
-                        e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
-                    }
-                    e.Graphics.FillRectangle(
-                        brush: brush_White,
-                        rect: rect);
-                    intRight -= _intPlateGap;
-                }
-            }
-
-            int_Plate_Height = Convert.ToInt32(int_Plate_Height * .85);
-            if (bool02_5)
-            {
-                int int_025_Height;
-                if (int25_0 == 0 & !bool20_0 & !bool15_0 & !bool10_0 & !bool05_0)
-                {
-                    int_025_Height = int_Full_Height;
-                    int_Plate_Width02_5 = int_Plate_Width25_0 * 2;
-                }
-                else
-                {
-                    int_025_Height = int_Plate_Height;
-                }
-
-                rect = new(
-                    x: intLeft,
-                    y: (int_Full_Height / 2) - (int_025_Height / 2) + intTBuffer,
-                    width: int_Plate_Width02_5,
-                    height: int_025_Height);
-                rectShadow = rect;
-                if (_boolShadow)
-                {
-                    rectShadow.Width += _int_Shadow_Width * 2;
-                    rect.X += _int_Shadow_Width;
-                    rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                    e.Graphics.FillRectangle(
-                        brush: brush_PlateShadow,
-                        rect: rectShadow);
-                }
-                e.Graphics.FillRectangle(
-                    brush: brush_Red,
-                    rect: rect);
-                intLeft += rectShadow.Width + _intPlateGap;
-                if (_boolOpener)
-                {
-                    intRight -= rectShadow.Width;
-                    rect.X = intRight;
-                    if (_boolShadow)
-                    {
-                        rectShadow.X = rect.X;
-                        rect.X += _int_Shadow_Width;
-                        e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
-                    }
-                    e.Graphics.FillRectangle(
-                        brush: brush_Red,
-                        rect: rect);
-                    intRight -= _intPlateGap;
-                }
-            }
-
-            if (_boolCollars)
-            {
-                rect = new(
-                    x: intLeft,
-                    y: (int_Full_Height / 2) - (int_Collar_Height / 2) + intTBuffer,
-                    width: int_Collar_Width,
-                    height: int_Collar_Height);
-                rectShadow = rect;
-                if (_boolShadow)
-                {
-                    rectShadow.Width += _int_Shadow_Width * 2;
-                    rect.X += _int_Shadow_Width;
-                    rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                    e.Graphics.FillRectangle(
-                        brush: brush_BarShadow,
-                        rect: rectShadow);
-                }
-                Brush b = _bool5KGCollars ? brush_CollarSilver : Brushes.Black;
-                e.Graphics.FillRectangle(
-                    brush: b,
-                    rect: rect);
-                intLeft += rectShadow.Width + _intPlateGap;
-                if (_boolOpener)
-                {
-                    intRight -= rectShadow.Width;
-                    rect.X = intRight;
-                    if (_boolShadow)
-                    {
-                        rectShadow.X = rect.X;
-                        rect.X += _int_Shadow_Width;
-                        e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
-                    }
+                    Brush b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
                     e.Graphics.FillRectangle(
                         brush: b,
-                        rect: rect);
-                    intRight -= _intPlateGap;
-                }
-            }
-
-            int_Plate_Height = Convert.ToInt32(int_Plate_Height * .90);
-            if (bool02_0)
-            {
-                rect = new(
-                    x: intLeft,
-                    y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
-                    width: int_Plate_Width02_0,
-                    height: int_Plate_Height);
-                rectShadow = rect;
-                if (_boolShadow)
-                {
-                    rectShadow.Width += _int_Shadow_Width * 2;
-                    rect.X += _int_Shadow_Width;
-                    rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                    e.Graphics.FillRectangle(
-                        brush: brush_PlateShadow,
-                        rect: rectShadow);
-                }
-                e.Graphics.FillRectangle(
-                    brush: brush_Blue,
-                    rect: rect);
-                if (_boolOpener)
-                {
-                    intRight -= rectShadow.Width;
-                    rect.X = intRight;
-                    if (_boolShadow)
+                        rect: _rect);
+                    _int_Left += _rect_Shadow.Width + _int_PlateGap;
+                    if (_bool_Opener)
                     {
-                        rectShadow.X = rect.X;
-                        rect.X += _int_Shadow_Width;
-                        e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
-                    }
-                    e.Graphics.FillRectangle(
-                        brush: brush_Blue,
-                        rect: rect);
-                }
-            }
-            else
-            {
-                int_Plate_Height = Convert.ToInt32(int_Plate_Height * .90);
-                if (bool01_5)
-                {
-                    rect = new(
-                        x: intLeft,
-                        y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
-                        width: int_Plate_Width01_5,
-                        height: int_Plate_Height);
-                    rectShadow = rect;
-                    if (_boolShadow)
-                    {
-                        rectShadow.Width += _int_Shadow_Width * 2;
-                        rect.X += _int_Shadow_Width;
-                        rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                        e.Graphics.FillRectangle(
-                            brush: brush_PlateShadow,
-                            rect: rectShadow);
-                    }
-                    e.Graphics.FillRectangle(
-                        brush: brush_Yellow,
-                        rect: rect);
-                    if (_boolOpener)
-                    {
-                        intRight -= rectShadow.Width;
-                        rect.X = intRight;
-                        if (_boolShadow)
+                        _int_Right -= _rect_Shadow.Width;
+                        _rect.X = _int_Right;
+                        if (_bool_Shadow)
                         {
-                            rectShadow.X = rect.X;
-                            rect.X += _int_Shadow_Width;
+                            _rect_Shadow.X = _rect.X;
+                            _rect.X += _int_Shadow_Width;
                             e.Graphics.FillRectangle(
-                                brush: brush_PlateShadow,
-                                rect: rectShadow);
+                                brush: _brush_PlateShadow,
+                                rect: _rect_Shadow);
                         }
                         e.Graphics.FillRectangle(
-                            brush: brush_Yellow,
-                            rect: rect);
+                            brush: b,
+                            rect: _rect);
+                        _int_Right -= _int_PlateGap;
                     }
+                    _bool_CollarsDone = true;
                 }
-                else
+                if (_plateParameters.TryGetValue(_plate.Key, out PlateParameter _parameter))
                 {
-                    int_Plate_Height = Convert.ToInt32(int_Plate_Height * .90);
-                    if (bool01_0)
+                    for (int _int_Plate = 1; _int_Plate <= _plate.Value; _int_Plate++)
                     {
-                        rect = new(
-                            x: intLeft,
-                            y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
-                            width: int_Plate_Width01_0,
-                            height: int_Plate_Height);
-                        rectShadow = rect;
-                        if (_boolShadow)
+                        Rectangle _rect = new(
+                            x: _int_Left,
+                            y: (_int_Full_Height / 2) - (_parameter.Height / 2) + _int_TBuffer,
+                            width: _parameter.Width,
+                            height: _parameter.Height);
+                        Rectangle _rect_Shadow = _rect;
+                        if (_bool_Shadow)
                         {
-                            rectShadow.Width += _int_Shadow_Width * 2;
-                            rect.X += _int_Shadow_Width;
-                            rect.Inflate(width: 0, height: -_int_Shadow_Width);
+                            _rect_Shadow.Width += _int_Shadow_Width * 2;
+                            _rect.X += _int_Shadow_Width;
+                            _rect.Inflate(width: 0, height: -_int_Shadow_Width);
                             e.Graphics.FillRectangle(
-                                brush: brush_PlateShadow,
-                                rect: rectShadow);
+                                brush: _brush_PlateShadow,
+                                rect: _rect_Shadow);
                         }
                         e.Graphics.FillRectangle(
-                            brush: brush_Green,
-                            rect: rect);
-                        if (_boolOpener)
+                            brush: _parameter.Brush,
+                            rect: _rect);
+                        _int_Left += _rect_Shadow.Width + _int_PlateGap;
+                        if (_bool_Opener)
                         {
-                            intRight -= rectShadow.Width;
-                            rect.X = intRight;
-                            if (_boolShadow)
+                            _int_Right -= _rect_Shadow.Width;
+                            _rect.X = _int_Right;
+                            if (_bool_Shadow)
                             {
-                                rectShadow.X = rect.X;
-                                rect.X += _int_Shadow_Width;
+                                _rect_Shadow.X = _rect.X;
+                                _rect.X += _int_Shadow_Width;
                                 e.Graphics.FillRectangle(
-                                    brush: brush_PlateShadow,
-                                    rect: rectShadow);
+                                    brush: _brush_PlateShadow,
+                                    rect: _rect_Shadow);
                             }
                             e.Graphics.FillRectangle(
-                                brush: brush_Green,
-                                rect: rect);
-                        }
-                    }
-                    else
-                    {
-                        int_Plate_Height = Convert.ToInt32(int_Plate_Height * .90);
-                        if (bool00_5)
-                        {
-                            rect = new(
-                                x: intLeft,
-                                y: (int_Full_Height / 2) - (int_Plate_Height / 2) + intTBuffer,
-                                width: int_Plate_Width00_5,
-                                height: int_Plate_Height);
-                            rectShadow = rect;
-                            if (_boolShadow)
-                            {
-                                rectShadow.Width += _int_Shadow_Width * 2;
-                                rect.X += _int_Shadow_Width;
-                                rect.Inflate(width: 0, height: -_int_Shadow_Width);
-                                e.Graphics.FillRectangle(
-                                    brush: brush_PlateShadow,
-                                    rect: rectShadow);
-                            }
-                            e.Graphics.FillRectangle(
-                                brush: brush_White,
-                                rect: rect);
-                            if (_boolOpener)
-                            {
-                                intRight -= rectShadow.Width;
-                                rect.X = intRight;
-                                if (_boolShadow)
-                                {
-                                    rectShadow.X = rect.X;
-                                    rect.X += _int_Shadow_Width;
-                                    e.Graphics.FillRectangle(
-                                        brush: brush_PlateShadow,
-                                        rect: rectShadow);
-                                }
-                                e.Graphics.FillRectangle(
-                                    brush: brush_White,
-                                    rect: rect);
-                            }
+                                brush: _parameter.Brush,
+                                rect: _rect);
+                            _int_Right -= _int_PlateGap;
                         }
                     }
                 }
             }
         }
-        private void Plates_Count_For_Weight(
-            int _intWeightBar,
- bool _bool5KGCollar,
- int _intWeightLift,
- out int _int25_0,     // 25kg     red
- out bool _bool20_0,     // 20kg     blue
- out bool _bool15_0,     // 15kg     yellow
- out bool _bool10_0,     // 10kg     green
- out bool _bool05_0,      // 5kg      largechange_white
- out bool _bool02_5,    // 2.5kg    change_red
- out bool _bool02_0,      // 2kg      change_blue
- out bool _bool01_5,    // 1.5kg    change_yellow
- out bool _bool01_0,      // 1kg      change_green
- out bool _bool00_5    // 0.5kg    change_white
-            )
+        private Dictionary<decimal, int> Plates_Count_For_Weight(
+            int _int_WeightBar,
+            bool _bool_5KGCollar,
+            int _int_WeightLift)
         {
-            _bool20_0 = false;
-            _bool15_0 = false;
-            _bool10_0 = false;
-            _bool05_0 = false;
-            _bool02_5 = false;
-            _bool02_0 = false;
-            _bool01_5 = false;
-            _bool01_0 = false;
-            _bool00_5 = false;
-
-            if (_bool5KGCollar) { _intWeightBar += 5; }
-            if (_intWeightLift > _intWeightBar)
+            Dictionary<decimal, int> _plates = [];
+            if (_bool_5KGCollar) { _int_WeightBar += 5; }
+            if (_int_WeightLift > _int_WeightBar)
             {
-                decimal _decToGo = Convert.ToDecimal(_intWeightLift - _intWeightBar) / 2;
-                decimal _decPlateWeight;
-
-                _decPlateWeight = 25M;
-                _int25_0 = Convert.ToInt32((_decToGo - _decToGo % _decPlateWeight) / _decPlateWeight);
-                _decToGo -= Convert.ToDecimal(_int25_0) * _decPlateWeight;
-
-                _decPlateWeight = 20M;
-                if (_decToGo >= _decPlateWeight)
+                decimal _decToGo = Convert.ToDecimal(_int_WeightLift - _int_WeightBar) / 2m;
+                decimal[] _decPlateWeights = [25m, 20m, 15m, 10m, 5.0m, 2.5m, 2.0m, 1.5m, 1.0m, 0.5m];
+                foreach (decimal _decPlateWeight in _decPlateWeights)
                 {
-                    _bool20_0 = true;
-                    _decToGo -= _decPlateWeight;
-                }
-
-                _decPlateWeight = 15M;
-                if (_decToGo >= _decPlateWeight)
-                {
-                    _bool15_0 = true;
-                    _decToGo -= _decPlateWeight;
-                }
-
-                _decPlateWeight = 10M;
-                if (_decToGo >= _decPlateWeight)
-                {
-                    _bool10_0 = true;
-                    _decToGo -= _decPlateWeight;
-                }
-
-                _decPlateWeight = 5M;
-                if (_decToGo >= _decPlateWeight)
-                {
-                    _bool05_0 = true;
-                    _decToGo -= _decPlateWeight;
-                }
-
-                _decPlateWeight = 2.5M;
-                if (_decToGo >= _decPlateWeight)
-                {
-                    _bool02_5 = true;
-                    _decToGo -= _decPlateWeight;
-                }
-
-                _decPlateWeight = 2M;
-                if (_decToGo >= _decPlateWeight)
-                {
-                    _bool02_0 = true;
-                    _decToGo -= _decPlateWeight;
-                }
-
-                _decPlateWeight = 1.5M;
-                if (_decToGo >= _decPlateWeight)
-                {
-                    _bool01_5 = true;
-                    _decToGo -= _decPlateWeight;
-                }
-
-                _decPlateWeight = 1M;
-                if (_decToGo >= _decPlateWeight)
-                {
-                    _bool01_0 = true;
-                    _decToGo -= _decPlateWeight;
-                }
-
-                _decPlateWeight = 0.5M;
-                if (_decToGo >= _decPlateWeight)
-                {
-                    _bool00_5 = true;
+                    int _int = Convert.ToInt32((_decToGo - _decToGo % _decPlateWeight) / _decPlateWeight);
+                    if (_int > 0)
+                    {
+                        _plates[_decPlateWeight] = _int;
+                        _decToGo -= Convert.ToDecimal(_int) * _decPlateWeight;
+                    }
                 }
             }
-            else
-            {
-                _int25_0 = 0;
-            }
+            return _plates;
         }
-
         #endregion
 
     }
