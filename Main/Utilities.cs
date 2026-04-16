@@ -201,7 +201,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
                 else if (_int_Weight == 0)
                 {
-                    _int_Jump = int_Barbell;
+                    _int_Jump = profileActive.BarbellWeight;
                     _bool_Override = false;
                 }
                 else

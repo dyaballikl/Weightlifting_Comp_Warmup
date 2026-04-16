@@ -1,7 +1,8 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Configuration;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -10,520 +11,309 @@ namespace Weightlifting_Comp_Warmup.Main
 {
     public partial class form_Main
     {
-        private void Clean_Settings()
+        private Dictionary<int, Profile> profiles;
+        private void LoadSettings()
         {
-            Print_All_Settings();
-            // ensures the string lists have the same number of entries as the profile id list
-            int _int_Profile_Count = 0;
-            if (savedSettings.ii_int_ProfileIds != null)
+            profiles = [];
+            for (int i = 0; i < (savedSettings.ii_int_ProfileIds?.Count ?? 0); i++)
             {
-                _int_Profile_Count = savedSettings.ii_int_ProfileIds.Count;
+                int id = int.Parse(savedSettings.ii_int_ProfileIds[i]);
+                setting_TryFetch(
+                    settings: savedSettings.ii_string_ProfileName,
+                    id: id,
+                    defaultGenerator: (i) => $"DefaultName_{i}",
+                    setting: out string name);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_BarbellWeight,
+                    id: id,
+                    minValue: 1,
+                    defaultGenerator: (_) => int_default_Barbell,
+                    setting: out int barbellWeight);
+                setting_TryFetch(
+                    settings: savedSettings.ii_hhmm_Start,
+                    id: id,
+                    defaultGenerator: (_) => new(hours: 9, minutes: 0, seconds: 0),
+                    setting: out TimeSpan start);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_Snatch_SecondsStage,
+                    id: id,
+                    minValue: 1,
+                    defaultGenerator: (_) => int_default_snatch_SecondsStage,
+                    setting: out int snatch_SecondsStage);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_Snatch_OpenerWeight,
+                    id: id,
+                    minValue: 1,
+                    defaultGenerator: (_) => int_default_snatch_OpenerWeight,
+                    setting: out int snatch_OpenerWeight);
+                setting_TryFetch(
+                    settings: savedSettings.ii_bool_Snatch_OpenerInWarmup,
+                    id: id,
+                    defaultGenerator: (_) => bool_default_snatch_OpenerInWarmup,
+                    setting: out bool snatch_OpenerInWarmup);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_Snatch_SecondsEnd,
+                    id: id,
+                    minValue: 0,
+                    defaultGenerator: (_) => int_default_snatch_SecondsEnd,
+                    setting: out int snatch_SecondsEnd);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_Snatch_LiftsOut,
+                    id: id,
+                    minValue: 0,
+                    defaultGenerator: (_) => int_default_snatch_Lifts_Out,
+                    setting: out int snatch_LiftsOut);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_CJ_SecondsStage,
+                    id: id,
+                    minValue: 1,
+                    defaultGenerator: (_) => int_default_cj_SecondsStage,
+                    setting: out int cj_SecondsStage);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_CJ_OpenerWeight,
+                    id: id,
+                    minValue: 1,
+                    defaultGenerator: (_) => int_default_cj_OpenerWeight,
+                    setting: out int cj_OpenerWeight);
+                setting_TryFetch(
+                    settings: savedSettings.ii_bool_CJ_OpenerInWarmup,
+                    id: id,
+                    defaultGenerator: (_) => bool_default_cj_OpenerInWarmup,
+                    setting: out bool cj_OpenerInWarmup);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_CJ_SecondsEnd,
+                    id: id,
+                    minValue: 0,
+                    defaultGenerator: (_) => int_default_cj_SecondsEnd,
+                    setting: out int cj_SecondsEnd);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_CJ_LiftsOut,
+                    id: id,
+                    minValue: 0,
+                    defaultGenerator: (_) => int_default_cj_LiftsOut,
+                    setting: out int cj_LiftsOut);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_CJ_SecondsBreak,
+                    id: id,
+                    minValue: 0,
+                    defaultGenerator: (_) => int_default_cJ_SecondsBreak,
+                    setting: out int cJ_SecondsBreak);
+                setting_TryFetch(
+                    settings: savedSettings.ii_int_CJ_SnatchLifts_Out,
+                    id: id,
+                    minValue: 0,
+                    defaultGenerator: (_) => int_default_cJ_SnatchLifts_Out,
+                    setting: out int cJ_SnatchLifts_Out);
+                setting_TryFetch(
+                    settings: savedSettings.ii_bool_Beep,
+                    id: id,
+                    defaultGenerator: (_) => bool_default_Beep,
+                    setting: out bool beep);
+                List<Extra> snatchExtras = [];
+                foreach (string str in savedSettings.ii_strings_SnatchExtras)
+                {
+                    if (TryParseExtras(record: str, profileId: out int profileId, extra: out Extra extra) && profileId == id)
+                    {
+                        snatchExtras.Add(extra);
+                    }
+                }
+                Dictionary<int, int> snatchJumps = [];
+                foreach (string str in savedSettings.ii_strings_SnatchJumps)
+                {
+                    if (TryParseJumpTime(record: str, profileId: out int profileId, fromWeight: out int fromWeight, stepValue: out int stepValue) && profileId == id)
+                    {
+                        snatchJumps[fromWeight] = stepValue;
+                    }
+                }
+                Dictionary<int, int> snatchTimes = [];
+                foreach (string str in savedSettings.ii_strings_SnatchTimes)
+                {
+                    if (TryParseJumpTime(record: str, profileId: out int profileId, fromWeight: out int fromWeight, stepValue: out int stepValue) && profileId == id)
+                    {
+                        snatchTimes[fromWeight] = stepValue;
+                    }
+                }
+                List<Extra> cJExtras = [];
+                foreach (string str in savedSettings.ii_strings_CJExtras)
+                {
+                    if (TryParseExtras(record: str, profileId: out int profileId, extra: out Extra extra) && profileId == id)
+                    {
+                        cJExtras.Add(extra);
+                    }
+                }
+                Dictionary<int, int> cJJumps = [];
+                foreach (string str in savedSettings.ii_strings_CJJumps)
+                {
+                    if (TryParseJumpTime(record: str, profileId: out int profileId, fromWeight: out int fromWeight, stepValue: out int stepValue) && profileId == id)
+                    {
+                        cJJumps[fromWeight] = stepValue;
+                    }
+                }
+                Dictionary<int, int> cJTimes = [];
+                foreach (string str in savedSettings.ii_strings_CJTimes)
+                {
+                    if (TryParseJumpTime(record: str, profileId: out int profileId, fromWeight: out int fromWeight, stepValue: out int stepValue) && profileId == id)
+                    {
+                        cJTimes[fromWeight] = stepValue;
+                    }
+                }
+
+                Profile _profile = new(
+                    id: id,
+                    name: name,
+                    barbellWeight: barbellWeight,
+                    start: start,
+                    snatch_SecondsStage: snatch_SecondsStage,
+                    snatch_OpenerWeight: snatch_OpenerWeight,
+                    snatch_OpenerInWarmup: snatch_OpenerInWarmup,
+                    snatch_SecondsEnd: snatch_SecondsEnd,
+                    snatch_LiftsOut: snatch_LiftsOut,
+                    cJ_SecondsStage: cj_SecondsStage,
+                    cJ_SecondsBreak: cJ_SecondsBreak,
+                    cJ_OpenerWeight: cj_OpenerWeight,
+                    cJ_OpenerInWarmup: cj_OpenerInWarmup,
+                    cJ_SecondsEnd: cj_SecondsEnd,
+                    cJ_LiftsOut: cj_LiftsOut,
+                    cJ_SnatchLifts_Out: cJ_SnatchLifts_Out,
+                    beep: beep,
+                    snatchExtras: snatchExtras,
+                    snatchJumps: snatchJumps,
+                    snatchTimes: snatchTimes,
+                    cJExtras: cJExtras,
+                    cJJumps: cJJumps,
+                    cJTimes: cJTimes);
+
+                profiles[id] = _profile;
             }
-            if (_int_Profile_Count == 0)
-            {
-                savedSettings.ii_int_ProfileIds = [];
-                savedSettings.ii_string_ProfileName = [];
-                savedSettings.ii_int_Barbell = [];
-                savedSettings.ii_HHmm_StartTimes = [];
-                savedSettings.ii_int_snatch_Sec_Stage = [];
-                savedSettings.ii_int_snatch_Wgt_Opener = [];
-                savedSettings.ii_bool_snatch_OpenerWarmup = [];
-                savedSettings.ii_int_snatch_Sec_End = [];
-                savedSettings.ii_int_snatch_Lifts_Out = [];
-                savedSettings.ii_int_cj_Sec_Stage = [];
-                savedSettings.ii_int_cj_Sec_Break = [];
-                savedSettings.ii_int_cj_Wgt_Opener = [];
-                savedSettings.ii_bool_cj_OpenerWarmup = [];
-                savedSettings.ii_int_cj_Sec_End = [];
-                savedSettings.ii_int_cj_Lifts_Out = [];
-                savedSettings.ii_int_cj_snLifts_Out = [];
-                savedSettings.ii_bool_Beep = [];
-                savedSettings.ii_strings_snatch_Extras = [];
-                savedSettings.ii_strings_snatch_Jumps = [];
-                savedSettings.ii_strings_snatch_Times = [];
-                savedSettings.ii_strings_cj_Extras = [];
-                savedSettings.ii_strings_cj_Jumps = [];
-                savedSettings.ii_strings_cj_Times = [];
-            }
-            else
-            {
-                List<string> _strings = [];
-                if (savedSettings.ii_string_ProfileName != null)
-                {
-                    _strings = savedSettings.ii_string_ProfileName;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add("DefaultName" + i.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_string_ProfileName = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_Barbell != null)
-                {
-                    _strings = savedSettings.ii_int_Barbell;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_Barbell.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_Barbell = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_HHmm_StartTimes != null)
-                {
-                    _strings = savedSettings.ii_HHmm_StartTimes;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add("1200");
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_HHmm_StartTimes = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_snatch_Sec_Stage != null)
-                {
-                    _strings = savedSettings.ii_int_snatch_Sec_Stage;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_snatch_Sec_Stage.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_snatch_Sec_Stage = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_snatch_Wgt_Opener != null)
-                {
-                    _strings = savedSettings.ii_int_snatch_Wgt_Opener;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_snatch_Wgt_Opener.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_snatch_Wgt_Opener = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_bool_snatch_OpenerWarmup != null)
-                {
-                    _strings = savedSettings.ii_bool_snatch_OpenerWarmup;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(bool_default_snatch_OpenerWarmup.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_bool_snatch_OpenerWarmup = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_snatch_Sec_End != null)
-                {
-                    _strings = savedSettings.ii_int_snatch_Sec_End;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_snatch_Sec_End.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_snatch_Sec_End = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_snatch_Lifts_Out != null)
-                {
-                    _strings = savedSettings.ii_int_snatch_Lifts_Out;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_snatch_Lifts_Out.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_snatch_Lifts_Out = _strings;
-                }
-
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Sec_Stage != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Sec_Stage;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Sec_Stage.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Sec_Stage = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Sec_Break != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Sec_Break;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Sec_Break.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Sec_Break = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Wgt_Opener != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Wgt_Opener;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Wgt_Opener.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Wgt_Opener = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_bool_cj_OpenerWarmup != null)
-                {
-                    _strings = savedSettings.ii_bool_cj_OpenerWarmup;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(bool_default_cj_OpenerWarmup.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_bool_cj_OpenerWarmup = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Sec_End != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Sec_End;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Sec_End.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Sec_End = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_Lifts_Out != null)
-                {
-                    _strings = savedSettings.ii_int_cj_Lifts_Out;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_Lifts_Out.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_Lifts_Out = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_int_cj_snLifts_Out != null)
-                {
-                    _strings = savedSettings.ii_int_cj_snLifts_Out;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(int_default_cj_snLifts_Out.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_int_cj_snLifts_Out = _strings;
-                }
-
-                _strings = [];
-                if (savedSettings.ii_bool_Beep != null)
-                {
-                    _strings = savedSettings.ii_bool_Beep;
-                }
-                if (_strings.Count != _int_Profile_Count)
-                {
-                    int _int_Count = _strings.Count;
-                    if (_int_Count < _int_Profile_Count)
-                    {
-                        for (int i = _int_Count + 1; i <= _int_Profile_Count; i++)
-                        {
-                            _strings.Add(bool_default_Beep.ToString());
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _int_Count - 1; i > _int_Profile_Count; i--)
-                        {
-                            _strings.RemoveAt(i);
-                        }
-                    }
-                    savedSettings.ii_bool_Beep = _strings;
-                }
-
-                savedSettings.ii_strings_snatch_Extras.RemoveAll(r => !TryParseExtras(record: r, profileId: out _, extra: out _));
-                savedSettings.ii_strings_snatch_Jumps.RemoveAll(r => !TryParseJumpTime(record: r, profileId: out _, fromWeight: out _, step: out _));
-                savedSettings.ii_strings_snatch_Times.RemoveAll(r => !TryParseJumpTime(record: r, profileId: out _, fromWeight: out _, step: out _));
-                savedSettings.ii_strings_cj_Extras.RemoveAll(r => !TryParseExtras(record: r, profileId: out _, extra: out _));
-                savedSettings.ii_strings_cj_Jumps.RemoveAll(r => !TryParseJumpTime(record: r, profileId: out _, fromWeight: out _, step: out _));
-                savedSettings.ii_strings_cj_Times.RemoveAll(r => !TryParseJumpTime(record: r, profileId: out _, fromWeight: out _, step: out _));
-            }
-            Print_All_Settings();
         }
-        private void ProfileId_Select(int _int_ProfileId)
+        private void setting_TryFetch( // string
+            List<string> settings,
+            int id,
+            Func<int, string> defaultGenerator,
+            out string setting)
         {
-            Clean_Settings();
-            int_ProfileId = _int_ProfileId;
-            int _int_Barbell = int_default_Barbell;
-            TimeSpan _timeSpan_Start = new(12, 0, 0);
-            int _int_snatch_Sec_Stage = int_default_snatch_Sec_Stage;
-            int _int_snatch_Wgt_Opener = int_default_snatch_Wgt_Opener;
-            int _int_snatch_Sec_End = int_default_snatch_Sec_End;
-            int _int_snatch_Lifts_Out = int_default_snatch_Lifts_Out;
-            int _int_cj_Sec_Stage = int_default_cj_Sec_Stage;
-            int _int_cj_Sec_Break = int_default_cj_Sec_Break;
-            int _int_cj_Wgt_Opener = int_default_cj_Wgt_Opener;
-            int _int_cj_Sec_End = int_default_cj_Sec_End;
-            int _int_cj_Lifts_Out = int_default_cj_Lifts_Out;
-            int _int_cj_snLifts_Out = int_default_cj_snLifts_Out;
-            bool _bool_snatch_OpenerWarmup = bool_default_snatch_OpenerWarmup;
-            bool _bool_cj_OpenerWarmup = bool_default_cj_OpenerWarmup;
-            bool _bool_Beep = bool_default_Beep;
-
-            Get_Settings_Defaults_Lists();
-
-            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-            if (_int_Sequence > -1)
+            setting = settings?.FirstOrDefault(r => r.Length >= 3 && int.TryParse(r.Substring(0, 3), out int i) && i == id);
+            if (!string.IsNullOrEmpty(setting))
             {
-                int.TryParse(s: savedSettings.ii_int_Barbell[_int_Sequence], out _int_Barbell);
-                string _str_Start = savedSettings.ii_HHmm_StartTimes[_int_Sequence];
-                if (!string.IsNullOrEmpty(_str_Start) && _str_Start.Length == 4)
-                {
-                    try
-                    {
-                        _timeSpan_Start = new(int.Parse(s: _str_Start.Substring(0, 2)), int.Parse(s: _str_Start.Substring(2)), 0);
-                    }
-                    catch { }
-                }
-                int.TryParse(s: savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence], out _int_snatch_Sec_Stage);
-                int.TryParse(s: savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence], out _int_snatch_Wgt_Opener);
-                bool.TryParse(value: savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence], out _bool_snatch_OpenerWarmup);
-                int.TryParse(s: savedSettings.ii_int_snatch_Sec_End[_int_Sequence], out _int_snatch_Sec_End);
-                int.TryParse(s: savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence], out _int_snatch_Lifts_Out);
-
-                int.TryParse(s: savedSettings.ii_int_cj_Sec_Stage[_int_Sequence], out _int_cj_Sec_Stage);
-                int.TryParse(s: savedSettings.ii_int_cj_Sec_Break[_int_Sequence], out _int_cj_Sec_Break);
-                int.TryParse(s: savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence], out _int_cj_Wgt_Opener);
-                bool.TryParse(value: savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence], out _bool_cj_OpenerWarmup);
-                int.TryParse(s: savedSettings.ii_int_cj_Sec_End[_int_Sequence], out _int_cj_Sec_End);
-                int.TryParse(s: savedSettings.ii_int_cj_Lifts_Out[_int_Sequence], out _int_cj_Lifts_Out);
-                int.TryParse(s: savedSettings.ii_int_cj_snLifts_Out[_int_Sequence], out _int_cj_snLifts_Out);
-
-                bool.TryParse(value: savedSettings.ii_bool_Beep[_int_Sequence], out _bool_Beep);
+                setting = (setting.Length > 3 ? setting.Substring(3) : string.Empty);
             }
-
-            int_Barbell = _int_Barbell;
-            timeSpan_Start = _timeSpan_Start;
-            int_snatch_Sec_Stage = _int_snatch_Sec_Stage;
-            int_snatch_Wgt_Opener = _int_snatch_Wgt_Opener;
-            int_snatch_Sec_End = _int_snatch_Sec_End;
-            int_snatch_Lifts_Out = _int_snatch_Lifts_Out;
-            int_cj_Sec_Stage = _int_cj_Sec_Stage;
-            int_cj_Sec_Break = _int_cj_Sec_Break;
-            int_cj_Wgt_Opener = _int_cj_Wgt_Opener;
-            int_cj_Sec_End = _int_cj_Sec_End;
-            int_cj_Lifts_Out = _int_cj_Lifts_Out;
-            int_cj_snLifts_Out = _int_cj_snLifts_Out;
-            bool_snatch_OpenerWarmup = _bool_snatch_OpenerWarmup;
-            bool_cj_OpenerWarmup = _bool_cj_OpenerWarmup;
-            bool_Beep = _bool_Beep;
+            if (string.IsNullOrEmpty(setting))
+            {
+                setting = defaultGenerator(id);
+            }
+        }
+        private void setting_TryFetch( // int
+            List<string> settings,
+            int id,
+            int minValue,
+            Func<int, int> defaultGenerator,
+            out int setting)
+        {
+            setting = default;
+            string _setting = settings?.FirstOrDefault(r => r.Length >= 3 && int.TryParse(r.Substring(0, 3), out int i) && i == id);
+            bool _bool_Default = true;
+            if (!string.IsNullOrEmpty(_setting) && _setting.Length > 3)
+            {
+                _setting = _setting.Substring(3);
+                _bool_Default = !int.TryParse(_setting, out setting) || setting < minValue;
+            }
+            if (_bool_Default)
+            {
+                setting = defaultGenerator(id);
+            }
+        }
+        private void setting_TryFetch( // bool
+            List<string> settings,
+            int id,
+            Func<int, bool> defaultGenerator,
+            out bool setting)
+        {
+            setting = default;
+            string _setting = settings?.FirstOrDefault(r => r.Length >= 3 && int.TryParse(r.Substring(0, 3), out int i) && i == id);
+            bool _bool_Default = true;
+            if (!string.IsNullOrEmpty(_setting) && _setting.Length > 3)
+            {
+                _setting = _setting.Substring(3);
+                _bool_Default = !bool.TryParse(_setting, out setting);
+            }
+            if (_bool_Default)
+            {
+                setting = defaultGenerator(id);
+            }
+        }
+        private void setting_TryFetch( // TimeSpan
+            List<string> settings,
+            int id,
+            Func<int, TimeSpan> defaultGenerator,
+            out TimeSpan setting)
+        {
+            setting = default;
+            string _setting = settings?.FirstOrDefault(r => r.Length >= 3 && int.TryParse(r.Substring(0, 3), out int i) && i == id);
+            bool _bool_Default = true;
+            if (!string.IsNullOrEmpty(_setting) && _setting.Length == 7)
+            {
+                _setting = _setting.Substring(3);
+                if (int.TryParse(_setting.Substring(0, 2), out int hour) &&
+                    int.TryParse(_setting.Substring(2, 2), out int minute) &&
+                    hour >= 0 && hour < 24 && minute >= 0 && minute < 60)
+                {
+                    setting = new(hours: hour, minutes: minute, seconds: 0);
+                    _bool_Default = false;
+                }
+            }
+            if (_bool_Default)
+            {
+                setting = defaultGenerator(id);
+            }
+        }
+        private bool ProfileSelect(int _int_ProfileId)
+        {
+            if (profiles == null || !profiles.TryGetValue(_int_ProfileId, out Profile _profile))
+            {
+                return false;
+            }
+            if (_profile.SnatchExtras.Count == 0)
+            {
+                _profile.SnatchExtras = Defaults.default_snatchExtras();
+            }
+            if (_profile.SnatchJumps.Count == 0)
+            {
+                _profile.SnatchJumps = Defaults.default_snatchJumps();
+            }
+            if (_profile.SnatchTimes.Count == 0)
+            {
+                _profile.SnatchTimes = Defaults.default_snatchTimes();
+            }
+            if (_profile.CJExtras.Count == 0)
+            {
+                _profile.CJExtras = Defaults.default_cjExtras();
+            }
+            if (_profile.CJJumps.Count == 0)
+            {
+                _profile.CJJumps = Defaults.default_cjJumps();
+            }
+            if (_profile.CJTimes.Count == 0)
+            {
+                _profile.CJTimes = Defaults.default_cjTimes();
+            }
+            if (!_profile.SnatchJumps.TryGetValue(1, out _))
+            {
+                _profile.SnatchJumps[1] = 1;
+            }
+            if (!_profile.SnatchTimes.TryGetValue(1, out _))
+            {
+                _profile.SnatchTimes[1] = 1;
+            }
+            if (!_profile.CJJumps.TryGetValue(1, out _))
+            {
+                _profile.CJJumps[1] = 1;
+            }
+            if (!_profile.CJTimes.TryGetValue(1, out _))
+            {
+                _profile.CJTimes[1] = 1;
+            }
+            profileActive = _profile;
+            return true;
         }
         private void Load_Profile_Values_To_Controls()
         {
@@ -536,138 +326,132 @@ namespace Weightlifting_Comp_Warmup.Main
             color_snatch_Live_BG = splitContainer_snatch.Panel2.BackColor;
             color_cj_Live_BG = splitContainer_cj.Panel2.BackColor;
 
-            if (int_Barbell < numericUpDown_snatch_weight_barbell.Minimum)
+            if (profileActive.BarbellWeight < numericUpDown_snatch_weight_barbell.Minimum)
             {
-                int_Barbell = 20;
+                profileActive.BarbellWeight = int_default_Barbell;
             }
-            numericUpDown_snatch_weight_barbell.Value = int_Barbell;
+            numericUpDown_snatch_weight_barbell.Value = profileActive.BarbellWeight;
 
-            DateTime dateTime = DateTime.Today.Add(timeSpan_Start);
+            DateTime dateTime = DateTime.Today.Add(profileActive.Start);
             if (dateTime < DateTime.Now)
             {
                 dateTime = dateTime.AddDays(1);
             }
             dateTimePicker_snatch_Start.Value = dateTime;
 
-            if (int_snatch_Sec_Stage < numericUpDown_snatch_time_stage.Minimum)
+            if (profileActive.Snatch_SecondsStage < numericUpDown_snatch_time_stage.Minimum)
             {
-                int_snatch_Sec_Stage = 55;
+                profileActive.Snatch_SecondsStage = int_default_snatch_SecondsStage;
             }
-            numericUpDown_snatch_time_stage.Value = int_snatch_Sec_Stage;
+            numericUpDown_snatch_time_stage.Value = profileActive.Snatch_SecondsStage;
 
-            if (int_snatch_Wgt_Opener < int_Barbell)
+            if (profileActive.Snatch_OpenerWeight < profileActive.BarbellWeight)
             {
-                int_snatch_Wgt_Opener = 85;
+                profileActive.Snatch_OpenerWeight = int_default_snatch_OpenerWeight;
             }
-            numericUpDown_snatch_weight_opener.Value = int_snatch_Wgt_Opener;
+            numericUpDown_snatch_weight_opener.Value = profileActive.Snatch_OpenerWeight;
 
-            if (int_snatch_Sec_End < numericUpDown_snatch_time_PostWarmup.Minimum)
+            if (profileActive.Snatch_SecondsEnd < numericUpDown_snatch_time_PostWarmup.Minimum)
             {
-                int_snatch_Sec_End = 60;
+                profileActive.Snatch_SecondsEnd = int_default_snatch_SecondsEnd;
             }
-            numericUpDown_snatch_time_PostWarmup.Value = int_snatch_Sec_End;
+            numericUpDown_snatch_time_PostWarmup.Value = profileActive.Snatch_SecondsEnd;
 
-            if (int_snatch_Lifts_Out < 0)
+            if (profileActive.Snatch_LiftsOut < 0)
             {
-                int_snatch_Lifts_Out = 3;
+                profileActive.Snatch_LiftsOut = 3;
             }
-            else if (int_snatch_Lifts_Out > 99)
+            else if (profileActive.Snatch_LiftsOut > 99)
             {
-                int_snatch_Lifts_Out = 99;
+                profileActive.Snatch_LiftsOut = 99;
             }
-            label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+            label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
             label_snatch_Live_LiftsPassed.Text = string.Empty;
-            snatch_Stop_Live();
 
 
-            if (int_cj_Sec_Stage < numericUpDown_cj_time_stage.Minimum)
+            if (profileActive.CJ_SecondsStage < numericUpDown_cj_time_stage.Minimum)
             {
-                int_cj_Sec_Stage = 62;
+                profileActive.CJ_SecondsStage = int_default_cj_SecondsStage;
             }
-            numericUpDown_cj_time_stage.Value = int_cj_Sec_Stage;
+            numericUpDown_cj_time_stage.Value = profileActive.CJ_SecondsStage;
 
-            if (int_cj_Sec_Break < (numericUpDown_cj_Live_Break.Minimum * 60))
+            if (profileActive.CJ_SecondsBreak < (numericUpDown_cj_Live_Break.Minimum * 60))
             {
-                int_cj_Sec_Break = 10 * 60;
+                profileActive.CJ_SecondsBreak = int_default_cJ_SecondsBreak;
             }
-            numericUpDown_cj_Live_Break.Value = (int)((double)int_cj_Sec_Break / 60);
+            numericUpDown_cj_Live_Break.Value = (int)((double)profileActive.CJ_SecondsBreak / 60);
 
-            if (int_cj_Wgt_Opener < int_Barbell)
+            if (profileActive.CJ_OpenerWeight < profileActive.BarbellWeight)
             {
-                int_cj_Wgt_Opener = 108;
+                profileActive.CJ_OpenerWeight = int_default_cj_OpenerWeight;
             }
-            numericUpDown_cj_weight_opener.Value = int_cj_Wgt_Opener;
+            numericUpDown_cj_weight_opener.Value = profileActive.CJ_OpenerWeight;
 
-            if (int_cj_Sec_End < numericUpDown_cj_time_PostWarmup.Minimum)
+            if (profileActive.CJ_SecondsEnd < numericUpDown_cj_time_PostWarmup.Minimum)
             {
-                int_cj_Sec_End = 75;
+                profileActive.CJ_SecondsEnd = int_default_cj_SecondsEnd;
             }
-            numericUpDown_cj_time_PostWarmup.Value = int_cj_Sec_End;
+            numericUpDown_cj_time_PostWarmup.Value = profileActive.CJ_SecondsEnd;
 
-            if (int_cj_Lifts_Out < 0)
+            if (profileActive.CJ_LiftsOut < 0)
             {
-                int_cj_Lifts_Out = 3;
+                profileActive.CJ_LiftsOut = 3;
             }
-            else if (int_cj_Lifts_Out > 99)
+            else if (profileActive.CJ_LiftsOut > 99)
             {
-                int_cj_Lifts_Out = 99;
+                profileActive.CJ_LiftsOut = 99;
             }
-            label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+            label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
             label_cj_Live_LiftsPassed.Text = string.Empty;
 
-            if (int_cj_snLifts_Out < 0)
+            if (profileActive.CJ_SnatchLifts_Out < 0)
             {
-                int_cj_snLifts_Out = 0;
+                profileActive.CJ_SnatchLifts_Out = 0;
             }
-            label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+            label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
 
-            checkBox_snatch_Param_OpenerWarmup.Checked = bool_snatch_OpenerWarmup;
-            checkBox_cj_Param_OpenerWarmup.Checked = bool_cj_OpenerWarmup;
-
-            cj_Stop_Live();
+            checkBox_snatch_Param_OpenerWarmup.Checked = profileActive.Snatch_OpenerInWarmup;
+            checkBox_cj_Param_OpenerWarmup.Checked = profileActive.CJ_OpenerInWarmup;
 
 
-            checkBox_snatch_Live_Beep.Checked = bool_Beep;
-            checkBox_cj_Live_Beep.Checked = bool_Beep;
-
-
-            InitialiseCollections();
+            checkBox_snatch_Live_Beep.Checked = profileActive.Beep;
+            checkBox_cj_Live_Beep.Checked = profileActive.Beep;
 
             bool bool_AutoVals;
 
             bool_AutoVals = true;
             if (default_snatchExtras != null && default_snatchExtras.Count > 0)
             {
-                snatchExtras = [.. default_snatchExtras];
+                profileActive.SnatchExtras = [.. default_snatchExtras];
                 bool_AutoVals = false;
             }
             if (bool_AutoVals)
             {
-                snatchExtras = Defaults.default_snatchExtras();
+                profileActive.SnatchExtras = Defaults.default_snatchExtras();
             }
             PopulateExtras(liftType: LiftType.Snatch);
 
             bool_AutoVals = true;
             if (default_snatchJumps != null && default_snatchJumps.Count > 0)
             {
-                snatchJumps = new(default_snatchJumps);
+                profileActive.SnatchJumps = new(default_snatchJumps);
                 bool_AutoVals = false;
             }
             if (bool_AutoVals)
             {
-                snatchJumps = Defaults.default_snatchJumps();
+                profileActive.SnatchJumps = Defaults.default_snatchJumps();
             }
             PopulateJumps(liftType: LiftType.Snatch);
 
             bool_AutoVals = true;
             if (default_snatchTimes != null && default_snatchTimes.Count > 0)
             {
-                snatchTimes = new(default_snatchTimes);
+                profileActive.SnatchTimes = new(default_snatchTimes);
                 bool_AutoVals = false;
             }
             if (bool_AutoVals)
             {
-                snatchTimes = Defaults.default_snatchTimes();
+                profileActive.SnatchTimes = Defaults.default_snatchTimes();
             }
             PopulateTimes(liftType: LiftType.Snatch);
 
@@ -676,12 +460,12 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_AutoVals = true;
             if (default_cjExtras != null && default_cjExtras.Count > 0)
             {
-                cjExtras = [.. default_cjExtras];
+                profileActive.CJExtras = [.. default_cjExtras];
                 bool_AutoVals = false;
             }
             if (bool_AutoVals)
             {
-                cjExtras = Defaults.default_cjExtras();
+                profileActive.CJExtras = Defaults.default_cjExtras();
             }
             PopulateExtras(liftType: LiftType.CleanAndJerk);
 
@@ -690,13 +474,13 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 if (default_cjJumps.Count > 0)
                 {
-                    cjJumps = new(default_cjJumps);
+                    profileActive.CJJumps = new(default_cjJumps);
                     bool_AutoVals = false;
                 }
             }
             if (bool_AutoVals)
             {
-                cjJumps = Defaults.default_cjJumps();
+                profileActive.CJJumps = Defaults.default_cjJumps();
             }
             PopulateJumps(liftType: LiftType.CleanAndJerk);
 
@@ -705,174 +489,100 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 if (default_cjTimes.Count > 0)
                 {
-                    cjTimes = new(default_cjTimes);
+                    profileActive.CJTimes = new(default_cjTimes);
                     bool_AutoVals = false;
                 }
             }
             if (bool_AutoVals)
             {
-                cjTimes = Defaults.default_cjTimes();
+                profileActive.CJTimes = Defaults.default_cjTimes();
             }
             PopulateTimes(liftType: LiftType.CleanAndJerk);
 
             PopulateSteps(liftType: LiftType.CleanAndJerk, preserveLifts: false);
 
-            CheckCollections();
             ApplyOpener(liftType: LiftType.Snatch);
             ApplyOpener(liftType: LiftType.CleanAndJerk);
 
             bool_Loading = _bool_Loading;
         }
-        private int int_Profile_Sequence(int _int_ProfileId)
+        private Profile Add_Profile(string _str_ProfileName)
         {
-            if (_int_ProfileId > -1 && savedSettings.ii_int_ProfileIds != null)
+            int _int_ProfileId;
+            if (profiles.Count == 0)
             {
-                if (savedSettings.ii_int_ProfileIds.Contains(_int_ProfileId.ToString()))
-                {
-                    return savedSettings.ii_int_ProfileIds.IndexOf(_int_ProfileId.ToString());
-                }
-            }
-            return -1;
-        }
-        private int Add_Profile(string _str_ProfileName)
-        {
-            Clean_Settings();
-            int _int_ProfileId = 1;
-            foreach (string s in savedSettings.ii_int_ProfileIds)
-            {
-                if (int.TryParse(s: s, result: out int _i) &&
-                    _i >= _int_ProfileId)
-                {
-                    _int_ProfileId = _i + 1;
-                }
-            }
-            savedSettings.ii_int_ProfileIds.Add(_int_ProfileId.ToString());
-            savedSettings.ii_string_ProfileName.Add(_str_ProfileName);
-            Print_All_Settings();
-            Clean_Settings();
-            Print_All_Settings();
-            Settings_Changes_Save();
-            Print_All_Settings();
-
-            return _int_ProfileId;
-        }
-        private void Delete_Profile(int _int_ProfileId)
-        {
-            Clean_Settings();
-            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-            if (_int_Sequence >= 0)
-            {
-                savedSettings.ii_int_ProfileIds.RemoveAt(_int_Sequence);
-                savedSettings.ii_string_ProfileName.RemoveAt(_int_Sequence);
-
-                savedSettings.ii_int_Barbell.RemoveAt(_int_Sequence);
-                savedSettings.ii_HHmm_StartTimes.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_snatch_Sec_Stage.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_snatch_Wgt_Opener.RemoveAt(_int_Sequence);
-                savedSettings.ii_bool_snatch_OpenerWarmup.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_snatch_Sec_End.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_snatch_Lifts_Out.RemoveAt(_int_Sequence);
-
-                savedSettings.ii_int_cj_Sec_Stage.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_Wgt_Opener.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_Sec_Break.RemoveAt(_int_Sequence);
-                savedSettings.ii_bool_cj_OpenerWarmup.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_Sec_End.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_Lifts_Out.RemoveAt(_int_Sequence);
-                savedSettings.ii_int_cj_snLifts_Out.RemoveAt(_int_Sequence);
-
-                savedSettings.ii_strings_snatch_Extras.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_snatch_Jumps.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_snatch_Times.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_cj_Extras.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_cj_Jumps.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-                savedSettings.ii_strings_cj_Times.RemoveAll(r => int_ParseOutProfileId(record: r) == _int_ProfileId);
-            }
-            if (savedSettings.int_ProfileId == _int_ProfileId)
-            {
-                savedSettings.int_ProfileId = -1;
-            }
-        }
-        private string string_Profile_Name_From_Id(int _int_ProfileId)
-        {
-            if (savedSettings.ii_string_ProfileName != null &&
-                savedSettings.ii_string_ProfileName.Count > 0)
-            {
-                int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-                return savedSettings.ii_string_ProfileName[_int_Sequence];
-            }
-            return "default";
-        }
-        private void Settings_Changes_Save()
-        {
-            savedSettings.Save();
-            Print_All_Settings();
-        }
-        private void Update_Settings()
-        {
-            Print_All_Settings();
-            savedSettings.int_ProfileId = int_ProfileId;
-            Clean_Settings();
-            int _int_Sequence = int_Profile_Sequence(_int_ProfileId: int_ProfileId);
-            if (_int_Sequence < 0)
-            {
-                if (savedSettings.ii_int_ProfileIds == null)
-                {
-                    savedSettings.ii_int_ProfileIds =
-                    [
-                        int_ProfileId.ToString()
-                    ];
-                }
-                else
-                {
-                    savedSettings.ii_int_ProfileIds.Add(int_ProfileId.ToString());
-                }
-                Clean_Settings();
-            }
-            savedSettings.ii_int_Barbell[_int_Sequence] = int_Barbell.ToString();
-            savedSettings.ii_HHmm_StartTimes[_int_Sequence] = dateTimePicker_snatch_Start.Value.ToString("HHmm");
-            savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence] = int_snatch_Sec_Stage.ToString();
-            savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence] = int_snatch_Wgt_Opener.ToString();
-            savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence] = bool_snatch_OpenerWarmup.ToString();
-            savedSettings.ii_int_snatch_Sec_End[_int_Sequence] = int_snatch_Sec_End.ToString();
-            savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence] = int_snatch_Lifts_Out.ToString();
-
-            savedSettings.ii_int_cj_Sec_Stage[_int_Sequence] = int_cj_Sec_Stage.ToString();
-            savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence] = int_cj_Wgt_Opener.ToString();
-            savedSettings.ii_int_cj_Sec_Break[_int_Sequence] = int_cj_Sec_Break.ToString();
-            savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence] = bool_cj_OpenerWarmup.ToString();
-            savedSettings.ii_int_cj_Sec_End[_int_Sequence] = int_cj_Sec_End.ToString();
-            savedSettings.ii_int_cj_Lifts_Out[_int_Sequence] = int_cj_Lifts_Out.ToString();
-            savedSettings.ii_int_cj_snLifts_Out[_int_Sequence] = int_cj_snLifts_Out.ToString();
-
-            savedSettings.ii_bool_Beep[_int_Sequence] = bool_Beep.ToString();
-
-            savedSettings.ii_strings_snatch_Extras.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_snatch_Jumps.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_snatch_Times.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_cj_Extras.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_cj_Jumps.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-            savedSettings.ii_strings_cj_Times.RemoveAll(r => int_ParseOutProfileId(r) == int_ProfileId || !savedSettings.ii_int_ProfileIds.Contains(int_ParseOutProfileId(r).ToString()));
-
-            savedSettings.ii_strings_snatch_Extras.AddRange(snatchExtras.OrderBy(r => r.id).Select(r => $"{int_ProfileId:000}{r}"));
-            savedSettings.ii_strings_snatch_Jumps.AddRange(snatchJumps.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
-            savedSettings.ii_strings_snatch_Times.AddRange(snatchTimes.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
-            savedSettings.ii_strings_cj_Extras.AddRange(cjExtras.OrderBy(r => r.id).Select(r => $"{int_ProfileId:000}{r}"));
-            savedSettings.ii_strings_cj_Jumps.AddRange(cjJumps.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
-            savedSettings.ii_strings_cj_Times.AddRange(cjTimes.OrderBy(r => r.Key).Select(r => $"{int_ProfileId:000}{r.Key:000}{r.Value:000}"));
-
-            Print_All_Settings();
-        }
-        private int int_ParseOutProfileId(string record)
-        {
-            if (string.IsNullOrEmpty(record) ||
-                !int.TryParse(record.Substring(0, Math.Min(record.Length, 3)), out int i))
-            {
-                return default;
+                _int_ProfileId = 1;
             }
             else
             {
-                return i;
+                _int_ProfileId = profiles.Max(r => r.Key) + 1;
+            }
+            Profile _profile = new(
+                id: _int_ProfileId,
+                name: _str_ProfileName,
+                barbellWeight: int_default_Barbell,
+                start: new(hours: 9, minutes: 0, seconds: 0),
+                snatch_SecondsStage: int_default_snatch_SecondsStage,
+                snatch_OpenerWeight: int_default_snatch_OpenerWeight,
+                snatch_OpenerInWarmup: bool_default_snatch_OpenerInWarmup,
+                snatch_SecondsEnd: int_default_snatch_SecondsEnd,
+                snatch_LiftsOut: int_default_snatch_Lifts_Out,
+                cJ_SecondsStage: int_default_cj_SecondsStage,
+                cJ_SecondsBreak: int_default_cJ_SecondsBreak,
+                cJ_OpenerWeight: int_default_cj_OpenerWeight,
+                cJ_OpenerInWarmup: bool_default_cj_OpenerInWarmup,
+                cJ_SecondsEnd: int_default_cj_SecondsEnd,
+                cJ_LiftsOut: int_default_cj_LiftsOut,
+                cJ_SnatchLifts_Out: int_default_cJ_SnatchLifts_Out,
+                beep: bool_default_Beep,
+                snatchExtras: [new()],
+                snatchJumps: [],
+                snatchTimes: [],
+                cJExtras: [],
+                cJJumps: [],
+                cJTimes: []);
+            profiles.Add(_int_ProfileId, _profile);
+            SaveSettings();
+            return _profile;
+        }
+        private bool ParseOutSetting(string record, out int id, out int setting)
+        {
+            setting = default;
+            return ParseOutSetting(record: record, id: out id, setting: out string _setting) &&
+                int.TryParse(_setting, out setting);
+        }
+        private bool ParseOutSetting(string record, out int id, out bool setting)
+        {
+            setting = default;
+            return ParseOutSetting(record: record, id: out id, setting: out string _setting) &&
+                bool.TryParse(_setting, out setting);
+        }
+        private bool ParseOutSetting(string record, out int id, out TimeSpan setting)
+        {
+            if (ParseOutSetting(record: record, id: out id, setting: out string _setting) && _setting.Length == 4)
+            {
+                setting = new(
+                    hours: int.Parse(_setting.Substring(0, 2)),
+                    minutes: int.Parse(_setting.Substring(2, 2)),
+                    seconds: 0);
+                return true;
+            }
+            setting = default;
+            return false;
+        }
+        private bool ParseOutSetting(string record, out int id, out string setting)
+        {
+            if (string.IsNullOrEmpty(record) || record.Length < 3 ||
+                !int.TryParse(record.Substring(0, 3), out id))
+            {
+                id = -1;
+                setting = default;
+                return false;
+            }
+            else
+            {
+                setting = (record.Length > 3 ? record.Substring(3) : string.Empty);
+                return true;
             }
         }
         private bool TryParseExtras(
@@ -880,207 +590,53 @@ namespace Weightlifting_Comp_Warmup.Main
             out int profileId,
             out Extra extra)
         {
-            //  at character:
-            //  0   3 digit profile id
-            //  3   6 digit id
-            //  9   3 digit order
-            //  12  5 digit length
-            //  17  variable length string (action name)
-            profileId = int_ParseOutProfileId(record: record);
             extra = default;
-            if (record?.Length < 17)
+            if (!ParseOutSetting(record: record, id: out profileId, setting: out string setting))
             {
                 return false;
             }
-
-            if (int.TryParse(record.Substring(3, 6), out int id) &&
-                int.TryParse(record.Substring(9, 3), out int order) && order > -1 &&
-                int.TryParse(record.Substring(12, 5), out int length) && length > 0)
+            //  at character:
+            //  0   3 digit id
+            //  3   3 digit order
+            //  6   5 digit length
+            //  11  variable length string (action name)
+            if (setting.Length < 11 &&
+                int.TryParse(setting.Substring(0, 3), out int extraId) && extraId > -1 &&
+                int.TryParse(setting.Substring(3, 3), out int order) && order > -1 &&
+                int.TryParse(setting.Substring(6, 5), out int length) && length > 0)
             {
-                string action = record.Substring(17);
-                extra = new(id, action, length, order);
+                string action = (record.Length == 11 ? string.Empty : record.Substring(11, record.Length - 11));
+                extra = new(id: extraId, action: action, length: length, order: order);
                 return true;
             }
             return false;
         }
-        private bool TryParseJumpTime(string record, out int profileId, out int fromWeight, out int step)
+        private bool TryParseJumpTime(string record, out int profileId, out int fromWeight, out int stepValue)
         {
-            profileId = int_ParseOutProfileId(record: record);
             fromWeight = 0;
-            step = 0;
-            if (record?.Length != 9)
+            stepValue = 0;
+            if (!ParseOutSetting(record: record, id: out profileId, setting: out string setting))
             {
                 return false;
             }
-            return int.TryParse(record.Substring(3, 3), out fromWeight) &&
-                   int.TryParse(record.Substring(6, 3), out step) && step > 0;
-        }
-        private void Get_Settings_Defaults_Lists()
-        {
-            default_snatchExtras = [];
-            default_snatchJumps = [];
-            default_snatchTimes = [];
-            default_cjExtras = [];
-            default_cjJumps = [];
-            default_cjTimes = [];
-            Clean_Settings();
-            foreach (string s in savedSettings.ii_strings_snatch_Extras)
+            if (setting.Length != 6)
             {
-                TryParseExtras(
-                    record: s,
-                    profileId: out int profileId,
-                    extra: out Extra _extra);
-                if (profileId == int_ProfileId)
-                {
-                    default_snatchExtras.Add(_extra);
-                }
+                return false;
             }
-            if (default_snatchExtras.Count == 0)
-            {
-                default_snatchExtras = Defaults.default_snatchExtras();
-            }
-
-            foreach (string s in savedSettings.ii_strings_snatch_Jumps)
-            {
-                if (TryParseJumpTime(
-                    record: s,
-                    profileId: out int profileId,
-                    fromWeight: out int fromWeight,
-                    step: out int step) &&
-                    profileId == int_ProfileId)
-                {
-                    default_snatchJumps[fromWeight] = step;
-                }
-            }
-            if (default_snatchJumps.Count == 0)
-            {
-                default_snatchJumps = Defaults.default_snatchJumps();
-            }
-
-            foreach (string s in savedSettings.ii_strings_snatch_Times)
-            {
-                if (TryParseJumpTime(
-                    record: s,
-                    profileId: out int profileId,
-                    fromWeight: out int fromWeight,
-                    step: out int step) &&
-                    profileId == int_ProfileId)
-                {
-                    default_snatchTimes[fromWeight] = step;
-                }
-            }
-            if (default_snatchTimes.Count == 0)
-            {
-                default_snatchTimes = Defaults.default_snatchTimes();
-            }
-
-
-            foreach (string s in savedSettings.ii_strings_cj_Extras)
-            {
-                TryParseExtras(
-                    record: s,
-                    profileId: out int profileId,
-                    extra: out Extra _extra);
-                if (profileId == int_ProfileId)
-                {
-                    default_cjExtras.Add(_extra);
-                }
-            }
-            if (default_cjExtras.Count == 0)
-            {
-                default_cjExtras = Defaults.default_cjExtras();
-            }
-
-            foreach (string s in savedSettings.ii_strings_cj_Jumps)
-            {
-                if (TryParseJumpTime(
-                    record: s,
-                    profileId: out int profileId,
-                    fromWeight: out int fromWeight,
-                    step: out int step) &&
-                    profileId == int_ProfileId)
-                {
-                    default_cjJumps[fromWeight] = step;
-                }
-            }
-            if (default_cjJumps.Count == 0)
-            {
-                default_cjJumps = Defaults.default_cjJumps();
-            }
-
-            foreach (string s in savedSettings.ii_strings_cj_Times)
-            {
-                if (TryParseJumpTime(
-                    record: s,
-                    profileId: out int profileId,
-                    fromWeight: out int fromWeight,
-                    step: out int step) &&
-                    profileId == int_ProfileId)
-                {
-                    default_cjTimes[fromWeight] = step;
-                }
-            }
-            if (default_cjTimes.Count == 0)
-            {
-                default_cjTimes = Defaults.default_cjTimes();
-            }
+            return int.TryParse(record.Substring(0, 3), out fromWeight) &&
+                   int.TryParse(record.Substring(3, 3), out stepValue) && stepValue > 0;
         }
         private void button_snatch_ClearSettings_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show(@"This will erase all profiles and restore all defaults." +
-                Environment.NewLine + Environment.NewLine + "Continue?",
-                "Reset settings?",
-                buttons: MessageBoxButtons.OKCancel) == DialogResult.OK)
+            if (MessageBox.Show($"This will erase all profiles and restore all defaults.{Environment.NewLine}{Environment.NewLine}Continue?",
+                "Reset settings?", buttons: MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
             {
                 savedSettings.Reset();
-                Settings_Changes_Save();
-                int_ProfileId = Add_Profile(_str_ProfileName: "default");
+                savedSettings.Save();
+                profiles.Clear();
+                profileActive = Add_Profile(_str_ProfileName: "default");
                 Initialise_Form();
             }
-        }
-        private void Print_All_Settings()
-        {
-            static void PrintCollection<T>(string name, IEnumerable<T>? collection)
-            {
-                string value = collection == null ? "null" : string.Join("|", collection);
-                Console.WriteLine($"{name} = {value}");
-            }
-
-            Console.WriteLine("+++++++++++++++++++++++++++++++++++++++");
-
-            // Main profile settings
-            Console.WriteLine($"int_ProfileId = {savedSettings.int_ProfileId}");
-            PrintCollection(nameof(savedSettings.ii_int_ProfileIds), savedSettings.ii_int_ProfileIds);
-            PrintCollection(nameof(savedSettings.ii_string_ProfileName), savedSettings.ii_string_ProfileName);
-            PrintCollection(nameof(savedSettings.ii_int_Barbell), savedSettings.ii_int_Barbell);
-            PrintCollection(nameof(savedSettings.ii_HHmm_StartTimes), savedSettings.ii_HHmm_StartTimes);
-
-            // Snatch settings
-            PrintCollection(nameof(savedSettings.ii_int_snatch_Sec_Stage), savedSettings.ii_int_snatch_Sec_Stage);
-            PrintCollection(nameof(savedSettings.ii_int_snatch_Wgt_Opener), savedSettings.ii_int_snatch_Wgt_Opener);
-            PrintCollection(nameof(savedSettings.ii_int_snatch_Sec_End), savedSettings.ii_int_snatch_Sec_End);
-            PrintCollection(nameof(savedSettings.ii_int_snatch_Lifts_Out), savedSettings.ii_int_snatch_Lifts_Out);
-            PrintCollection(nameof(savedSettings.ii_bool_snatch_OpenerWarmup), savedSettings.ii_bool_snatch_OpenerWarmup);
-            PrintCollection(nameof(savedSettings.ii_strings_snatch_Extras), savedSettings.ii_strings_snatch_Extras);
-            PrintCollection(nameof(savedSettings.ii_strings_snatch_Jumps), savedSettings.ii_strings_snatch_Jumps);
-            PrintCollection(nameof(savedSettings.ii_strings_snatch_Times), savedSettings.ii_strings_snatch_Times);
-
-            // Clean & Jerk settings
-            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_Stage), savedSettings.ii_int_cj_Sec_Stage);
-            PrintCollection(nameof(savedSettings.ii_int_cj_Wgt_Opener), savedSettings.ii_int_cj_Wgt_Opener);
-            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_End), savedSettings.ii_int_cj_Sec_End);
-            PrintCollection(nameof(savedSettings.ii_int_cj_Lifts_Out), savedSettings.ii_int_cj_Lifts_Out);
-            PrintCollection(nameof(savedSettings.ii_int_cj_Sec_Break), savedSettings.ii_int_cj_Sec_Break);
-            PrintCollection(nameof(savedSettings.ii_int_cj_snLifts_Out), savedSettings.ii_int_cj_snLifts_Out);
-            PrintCollection(nameof(savedSettings.ii_bool_cj_OpenerWarmup), savedSettings.ii_bool_cj_OpenerWarmup);
-            PrintCollection(nameof(savedSettings.ii_strings_cj_Extras), savedSettings.ii_strings_cj_Extras);
-            PrintCollection(nameof(savedSettings.ii_strings_cj_Jumps), savedSettings.ii_strings_cj_Jumps);
-            PrintCollection(nameof(savedSettings.ii_strings_cj_Times), savedSettings.ii_strings_cj_Times);
-
-            // Miscellaneous settings
-            PrintCollection(nameof(savedSettings.ii_bool_Beep), savedSettings.ii_bool_Beep);
-
-            Console.WriteLine("---------------------------------------");
         }
         private void Populate_MenuStrip()
         {
@@ -1092,57 +648,52 @@ namespace Weightlifting_Comp_Warmup.Main
                 Font = new("Gadugi", 10F, FontStyle.Italic, GraphicsUnit.Point, 0)
             };
             menuStrip_Profile.Items.Add(toolStripLabel);
-            for (int i = 0; i < savedSettings.ii_int_ProfileIds.Count; i++)
+            foreach (KeyValuePair<int, Profile> _profilePair in profiles)
             {
-                if (int.TryParse(s: savedSettings.ii_int_ProfileIds[i], result: out int _int_ProfileId) &&
-                    _int_ProfileId > 0)
+                ToolStripMenuItem toolStripMenuItem = new()
                 {
-                    string _str_ProfileName = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
-                    ToolStripMenuItem toolStripMenuItem = new()
-                    {
-                        Text = _str_ProfileName,
-                        Tag = _int_ProfileId.ToString()
-                    };
-                    ToolStripButton toolStripButton;
-                    if (_int_ProfileId == int_ProfileId)
-                    {
-                        toolStripMenuItem.BackColor = Color.Red;
-                    }
-                    else
-                    {
-                        toolStripButton = new()
-                        {
-                            Text = "load",
-                            Tag = _int_ProfileId.ToString(),
-                        };
-                        toolStripButton.Click += ToolStripMenu_Load_Profile;
-                        toolStripMenuItem.DropDownItems.Add(toolStripButton);
-                    }
-                    toolStripButton = new()
-                    {
-                        Text = "delete",
-                        Tag = _int_ProfileId.ToString(),
-                    };
-                    toolStripButton.Click += ToolStripMenu_Delete_Profile;
-                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
-                    menuStrip_Profile.Items.Add(toolStripMenuItem);
-                    toolStripButton = new()
-                    {
-                        Text = "duplicate",
-                        Tag = _int_ProfileId.ToString(),
-                    };
-                    toolStripButton.Click += ToolStripMenu_Duplicate_Profile;
-                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
-                    menuStrip_Profile.Items.Add(toolStripMenuItem);
-                    toolStripButton = new()
-                    {
-                        Text = "rename",
-                        Tag = _int_ProfileId.ToString(),
-                    };
-                    toolStripButton.Click += ToolStripMenu_Rename_Profile;
-                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
-                    menuStrip_Profile.Items.Add(toolStripMenuItem);
+                    Text = _profilePair.Value.Name,
+                    Tag = _profilePair.Key.ToString()
+                };
+                ToolStripButton toolStripButton;
+                if (_profilePair.Key == profileActive.id)
+                {
+                    toolStripMenuItem.BackColor = Color.Red;
                 }
+                else
+                {
+                    toolStripButton = new()
+                    {
+                        Text = "load",
+                        Tag = _profilePair.Key.ToString(),
+                    };
+                    toolStripButton.Click += ToolStripMenu_Load_Profile;
+                    toolStripMenuItem.DropDownItems.Add(toolStripButton);
+                }
+                toolStripButton = new()
+                {
+                    Text = "delete",
+                    Tag = _profilePair.Key.ToString(),
+                };
+                toolStripButton.Click += ToolStripMenu_Delete_Profile;
+                toolStripMenuItem.DropDownItems.Add(toolStripButton);
+                menuStrip_Profile.Items.Add(toolStripMenuItem);
+                toolStripButton = new()
+                {
+                    Text = "duplicate",
+                    Tag = _profilePair.Key.ToString(),
+                };
+                toolStripButton.Click += ToolStripMenu_Duplicate_Profile;
+                toolStripMenuItem.DropDownItems.Add(toolStripButton);
+                menuStrip_Profile.Items.Add(toolStripMenuItem);
+                toolStripButton = new()
+                {
+                    Text = "rename",
+                    Tag = _profilePair.Key.ToString(),
+                };
+                toolStripButton.Click += ToolStripMenu_Rename_Profile;
+                toolStripMenuItem.DropDownItems.Add(toolStripButton);
+                menuStrip_Profile.Items.Add(toolStripMenuItem);
             }
             {
                 ToolStripMenuItem toolStripMenuItem = new()
@@ -1156,14 +707,17 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void ToolStripMenu_Load_Profile(object sender, EventArgs e)
         {
-            Update_Settings();
-            Settings_Changes_Save();
-            Print_All_Settings();
+            SaveSettings();
             ToolStripButton toolStripButton = (ToolStripButton)sender;
             string _string_Tag = toolStripButton.Tag.ToString();
             if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
             {
-                ProfileId_Select(_int_ProfileId: _int_ProfileId);
+                if (!ProfileSelect(_int_ProfileId: _int_ProfileId))
+                {
+                    MessageBox.Show("An error occurred and the profile could not be loaded. Please reopen and try again.", "Profile Loading Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Close();
+                    return;
+                }
                 Populate_MenuStrip();
                 Load_Profile_Values_To_Controls();
             }
@@ -1172,35 +726,38 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             ToolStripButton toolStripButton = (ToolStripButton)sender;
             string _string_Tag = toolStripButton.Tag.ToString();
-            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
-            {
-                if (MessageBox.Show(
+            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId) &&
+                profiles.ContainsKey(_int_ProfileId) &&
+                MessageBox.Show(
                     text: "Are you sure you want to delete this profile? This action is permanent.",
                     caption: "Delete",
                     buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                int _int_SelectedProfileId = profileActive.id;
+                profiles.Remove(_int_ProfileId);
+                SaveSettings();
+                if (_int_ProfileId == _int_SelectedProfileId)
                 {
-                    Delete_Profile(_int_ProfileId: _int_ProfileId);
-                    if (_int_ProfileId == int_ProfileId)
+                    if (profiles.Any())
                     {
-                        int _int_NewProfileId = -1;
-                        foreach (string s in savedSettings.ii_int_ProfileIds)
-                        {
-                            _int_NewProfileId = int.Parse(s: s);
-                            break;
-                        }
-                        if (_int_NewProfileId < 1)
-                        {
-                            // could not find a current profile
-                            _int_ProfileId = Add_Profile(_str_ProfileName: "default");
-                        }
-                        ProfileId_Select(_int_ProfileId: _int_ProfileId);
-                        Populate_MenuStrip();
-                        Load_Profile_Values_To_Controls();
+                        _int_ProfileId = profiles.First().Key;
                     }
                     else
                     {
-                        Populate_MenuStrip();
+                        _int_ProfileId = Add_Profile(_str_ProfileName: "default").id;
                     }
+                    if (!ProfileSelect(_int_ProfileId: _int_ProfileId))
+                    {
+                        MessageBox.Show("An error occurred and the profile could not be loaded. Please reopen and try again.", "Profile Loading Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Close();
+                        return;
+                    }
+                    Populate_MenuStrip();
+                    Load_Profile_Values_To_Controls();
+                }
+                else
+                {
+                    Populate_MenuStrip();
                 }
             }
         }
@@ -1217,20 +774,15 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             ToolStripButton toolStripButton = (ToolStripButton)sender;
             string _string_Tag = toolStripButton.Tag.ToString();
-            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
+            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId) &&
+                profiles.TryGetValue(_int_ProfileId, out Profile _profile))
             {
-                string _str_Name = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
-                _str_Name = Interaction.InputBox(Prompt: "Enter a new name:", DefaultResponse: _str_Name);
+                string _str_Name = Interaction.InputBox(Prompt: "Enter a new name:", DefaultResponse: _profile.Name);
                 if (!string.IsNullOrEmpty(_str_Name))
                 {
-                    Clean_Settings();
-                    int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-                    if (_int_Sequence >= 0)
-                    {
-                        savedSettings.ii_string_ProfileName[_int_Sequence] = _str_Name;
-                        Settings_Changes_Save();
-                        Populate_MenuStrip();
-                    }
+                    _profile.Name = _str_Name;
+                    SaveSettings();
+                    Populate_MenuStrip();
                 }
             }
         }
@@ -1238,121 +790,21 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             ToolStripButton toolStripButton = (ToolStripButton)sender;
             string _string_Tag = toolStripButton.Tag.ToString();
-            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
+            if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId) &&
+                profiles.TryGetValue(_int_ProfileId, out Profile _profile_ToCopy))
             {
-                Update_Settings();
-                Settings_Changes_Save();
-                Clean_Settings();
-                string _str_Name = string_Profile_Name_From_Id(_int_ProfileId: _int_ProfileId);
-                _str_Name = Interaction.InputBox(Prompt: "Enter a new name:", DefaultResponse: _str_Name);
-                if (!string.IsNullOrEmpty(_str_Name))
+                string _str_Name = Interaction.InputBox(Prompt: "Enter a new name:", DefaultResponse: _profile_ToCopy.Name);
+                if (!string.IsNullOrEmpty(_str_Name) && !string.Equals(_str_Name, _profile_ToCopy.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    int _int_New_ProfileId = Add_Profile(_str_ProfileName: _str_Name);
-                    if (_int_New_ProfileId > 0)
-                    {
-                        int _int_New_Sequence = int_Profile_Sequence(_int_ProfileId: _int_New_ProfileId);
-                        int _int_Sequence = int_Profile_Sequence(_int_ProfileId: _int_ProfileId);
-                        if (_int_Sequence >= 0 && _int_New_Sequence >= 0)
-                        {
-                            savedSettings.ii_int_Barbell[_int_New_Sequence] = savedSettings.ii_int_Barbell[_int_Sequence];
-                            savedSettings.ii_HHmm_StartTimes[_int_New_Sequence] = savedSettings.ii_HHmm_StartTimes[_int_Sequence];
-
-                            savedSettings.ii_int_snatch_Sec_Stage[_int_New_Sequence] = savedSettings.ii_int_snatch_Sec_Stage[_int_Sequence];
-                            savedSettings.ii_int_snatch_Wgt_Opener[_int_New_Sequence] = savedSettings.ii_int_snatch_Wgt_Opener[_int_Sequence];
-                            savedSettings.ii_int_snatch_Sec_End[_int_New_Sequence] = savedSettings.ii_int_snatch_Sec_End[_int_Sequence];
-                            savedSettings.ii_int_snatch_Lifts_Out[_int_New_Sequence] = savedSettings.ii_int_snatch_Lifts_Out[_int_Sequence];
-                            savedSettings.ii_bool_snatch_OpenerWarmup[_int_New_Sequence] = savedSettings.ii_bool_snatch_OpenerWarmup[_int_Sequence];
-                            for (int i = 0; i < savedSettings.ii_strings_snatch_Extras.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_snatch_Extras[i];
-                                TryParseExtras(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    extra: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_snatch_Extras.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-                            for (int i = 0; i < savedSettings.ii_strings_snatch_Jumps.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_snatch_Jumps[i];
-                                                                if (TryParseJumpTime(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    fromWeight: out _,
-                                    step: out _) &&
-                                    __int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_snatch_Jumps.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-                            for (int i = 0; i < savedSettings.ii_strings_snatch_Times.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_snatch_Times[i];
-                                if (TryParseJumpTime(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    fromWeight: out _,
-                                    step: out _) &&
-                                    __int_ProfileId == _int_ProfileId)
-                                {
-                                                                        savedSettings.ii_strings_snatch_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-
-                            savedSettings.ii_int_cj_Sec_Stage[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_Stage[_int_Sequence];
-                            savedSettings.ii_int_cj_Wgt_Opener[_int_New_Sequence] = savedSettings.ii_int_cj_Wgt_Opener[_int_Sequence];
-                            savedSettings.ii_int_cj_Sec_End[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_End[_int_Sequence];
-                            savedSettings.ii_int_cj_Lifts_Out[_int_New_Sequence] = savedSettings.ii_int_cj_Lifts_Out[_int_Sequence];
-                            savedSettings.ii_int_cj_Sec_Break[_int_New_Sequence] = savedSettings.ii_int_cj_Sec_Break[_int_Sequence];
-                            savedSettings.ii_int_cj_snLifts_Out[_int_New_Sequence] = savedSettings.ii_int_cj_snLifts_Out[_int_Sequence];
-                            savedSettings.ii_bool_cj_OpenerWarmup[_int_New_Sequence] = savedSettings.ii_bool_cj_OpenerWarmup[_int_Sequence];
-                            for (int i = 0; i < savedSettings.ii_strings_cj_Extras.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_cj_Extras[i];
-                                TryParseExtras(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    extra: out _);
-                                if (__int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_cj_Extras.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-                            for (int i = 0; i < savedSettings.ii_strings_cj_Jumps.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_cj_Jumps[i];
-                                if (TryParseJumpTime(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    fromWeight: out _,
-                                    step: out _) &&
-                                    __int_ProfileId == _int_ProfileId)
-                                {
-                                    savedSettings.ii_strings_cj_Jumps.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-                            for (int i = 0; i < savedSettings.ii_strings_cj_Times.Count; i++)
-                            {
-                                string s = savedSettings.ii_strings_cj_Times[i];
-                                if (TryParseJumpTime(
-                                    record: s,
-                                    profileId: out int __int_ProfileId,
-                                    fromWeight: out _,
-                                    step: out _) &&
-                                    __int_ProfileId == _int_ProfileId)
-                                {
-                                        savedSettings.ii_strings_cj_Times.Add($"{_int_New_ProfileId:000}{s.Substring(3)}");
-                                }
-                            }
-
-                            savedSettings.ii_bool_Beep[_int_New_Sequence] = savedSettings.ii_bool_Beep[_int_Sequence];
-
-                            Settings_Changes_Save();
-                        }
-                    }
+                    int idNew = profiles.Max(r => r.Key) + 1;
+                    Profile _profile_New = _profile_ToCopy.Clone(idNew: idNew);
+                    profiles[idNew] = _profile_New;
+                    SaveSettings();
                 }
+            }
+            else
+            {
+                MessageBox.Show("Unable to duplicate, could not find the original. Reopen the app to fix.", "Profile duplication error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             Populate_MenuStrip();
         }

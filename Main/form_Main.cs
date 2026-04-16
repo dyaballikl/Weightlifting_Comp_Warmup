@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Management;
 using System.Windows.Forms;
 
 namespace Weightlifting_Comp_Warmup.Main
@@ -13,30 +12,34 @@ namespace Weightlifting_Comp_Warmup.Main
         #region Form Level
         public form_Main()
         {
-            Clean_Settings();
+            //savedSettings.Reset();
+            LoadSettings();
+            SaveSettings();
 
-            int _int_ProfileId = -1;
+            int _int_ProfileId;
             try
             {
                 _int_ProfileId = savedSettings.int_ProfileId;
             }
-            catch { }
-            ;
+            catch
+            {
+                _int_ProfileId = -1;
+            }
 
-            if (_int_ProfileId < 1)
+            if (_int_ProfileId < 1 && profiles.Any())
             {
-                if (savedSettings.ii_int_ProfileIds != null &&
-                    savedSettings.ii_int_ProfileIds.Count > 0)
-                {
-                    int.TryParse(s: savedSettings.ii_int_ProfileIds[0], result: out _int_ProfileId);
-                }
+                _int_ProfileId = profiles.Min(r => r.Key);
             }
             if (_int_ProfileId < 1)
             {
-                _int_ProfileId = Add_Profile(_str_ProfileName: "default");
-                Print_All_Settings();
+                _int_ProfileId = Add_Profile(_str_ProfileName: "DefaultName_1").id;
             }
-            ProfileId_Select(_int_ProfileId: _int_ProfileId);
+            if (!ProfileSelect(_int_ProfileId: _int_ProfileId))
+            {
+                MessageBox.Show("An error occurred and the profile could not be loaded. Please reopen and try again.", "Profile Loading Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Close();
+                return;
+            }
 
             InitializeComponent();
             numericUpDown_snatch_time_stage.ValueChanged += (s, ev) => numericUpDown_time_stage_ValueChanged(s, ev, LiftType.Snatch);
@@ -76,43 +79,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void Form_WL_Comp_Warmup_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Update_Settings();
-            Settings_Changes_Save();
-        }
-        private void InitialiseCollections()
-        {
-            snatchExtras = [];
-            snatchJumps = [];
-            snatchTimes = [];
-            cjExtras = [];
-            cjJumps = [];
-            cjTimes = [];
-        }
-        private void CheckCollections()
-        {
-            snatchExtras ??= [];
-            snatchJumps ??= [];
-            snatchTimes ??= [];
-            cjExtras ??= [];
-            cjJumps ??= [];
-            cjTimes ??= [];
-
-            if (!snatchJumps.TryGetValue(1, out _))
-            {
-                snatchJumps[1] = 1;
-            }
-            if (!snatchTimes.TryGetValue(1, out _))
-            {
-                snatchTimes[1] = 1;
-            }
-            if (!cjJumps.TryGetValue(1, out _))
-            {
-                cjJumps[1] = 1;
-            }
-            if (!cjTimes.TryGetValue(1, out _))
-            {
-                cjTimes[1] = 1;
-            }
+            SaveSettings();
         }
         private void numericUpDown_snatch_weight_barbell_ValueChanged(object sender, EventArgs e)
         {
@@ -134,10 +101,8 @@ namespace Weightlifting_Comp_Warmup.Main
                 return;
             }
             (numericUpDown_snatch_weight_barbell).BackColor = Color.White;
-
-            int_Barbell = _int_Barbell;
-
-            numericUpDown_snatch_weight_opener.Minimum = _int_Barbell;
+            profileActive.BarbellWeight = _int_Barbell;
+                        numericUpDown_snatch_weight_opener.Minimum = _int_Barbell;
             numericUpDown_cj_weight_opener.Minimum = _int_Barbell;
             ApplyOpener(liftType: LiftType.Snatch);
             ApplyOpener(liftType: LiftType.CleanAndJerk);
@@ -168,7 +133,7 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return (
-                    snatchExtras,
+                    profileActive.SnatchExtras,
                     panel_snatch_extra,
                     () => PopulateExtras(LiftType.Snatch),
                     snatch_Stop_Live);
@@ -176,7 +141,7 @@ namespace Weightlifting_Comp_Warmup.Main
             else
             {
                 return (
-                    cjExtras,
+                    profileActive.CJExtras,
                     panel_cj_extra,
                     () => PopulateExtras(LiftType.CleanAndJerk),
                     cj_Stop_Live);
@@ -412,7 +377,7 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return (
-                    snatchJumps,
+                    profileActive.SnatchJumps,
                     panel_snatch_jump,
                     snatch_Stop_Live,
                     Defaults.default_snatchJumps);
@@ -420,7 +385,7 @@ namespace Weightlifting_Comp_Warmup.Main
             else // CleanAndJerk
             {
                 return (
-                    cjJumps,
+                    profileActive.CJJumps,
                     panel_cj_jump,
                     cj_Stop_Live,
                     Defaults.default_cjJumps);
@@ -435,8 +400,8 @@ namespace Weightlifting_Comp_Warmup.Main
             if (jumps.Count == 0)
             {
                 // This assignment requires the context.jumps to be a reference
-                if (liftType == LiftType.Snatch) snatchJumps = getDefaultJumps();
-                else cjJumps = getDefaultJumps();
+                if (liftType == LiftType.Snatch) profileActive.SnatchJumps = getDefaultJumps();
+                else profileActive.CJJumps = getDefaultJumps();
             }
 
             // A local function to create the UI controls for each row
@@ -569,7 +534,7 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return (
-                    snatchTimes,
+                    profileActive.SnatchTimes,
                     panel_snatch_time,
                     snatch_Stop_Live,
                     Defaults.default_snatchTimes);
@@ -577,7 +542,7 @@ namespace Weightlifting_Comp_Warmup.Main
             else // CleanAndJerk
             {
                 return (
-                    cjTimes,
+                    profileActive.CJTimes,
                     panel_cj_time,
                     cj_Stop_Live,
                     Defaults.default_cjTimes);
@@ -592,8 +557,8 @@ namespace Weightlifting_Comp_Warmup.Main
             // Assign default times if the current list is empty
             if (context.times.Count == 0)
             {
-                if (liftType == LiftType.Snatch) snatchTimes = context.getDefaultTimes();
-                else cjTimes = context.getDefaultTimes();
+                if (liftType == LiftType.Snatch) profileActive.SnatchTimes = context.getDefaultTimes();
+                else profileActive.CJTimes = context.getDefaultTimes();
                 // Re-fetch context to ensure we have the newly assigned dictionary
                 context = GetTimeContext(liftType);
             }
@@ -757,12 +722,12 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 return x_Steps(
                     _bool_PreserveLifts: preserveLifts,
-                    _extras: snatchExtras,
-                    _jumps: snatchJumps,
-                    _times: snatchTimes,
-                    _int_x_Sec_End: int_snatch_Sec_End,
-                    _int_x_Wgt_Opener: int_snatch_Wgt_Opener,
-                    _bool_Opener_in_Warmup: bool_snatch_OpenerWarmup,
+                    _extras: profileActive.SnatchExtras,
+                    _jumps: profileActive.SnatchJumps,
+                    _times: profileActive.SnatchTimes,
+                    _int_x_Sec_End: profileActive.Snatch_SecondsEnd,
+                    _int_x_Wgt_Opener: profileActive.Snatch_OpenerWeight,
+                    _bool_Opener_in_Warmup: profileActive.Snatch_OpenerInWarmup,
                     _stepsIn: stepsIn
                 );
             }
@@ -770,12 +735,12 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 return x_Steps(
                     _bool_PreserveLifts: preserveLifts,
-                    _extras: cjExtras,
-                    _jumps: cjJumps,
-                    _times: cjTimes,
-                    _int_x_Sec_End: int_cj_Sec_End,
-                    _int_x_Wgt_Opener: int_cj_Wgt_Opener,
-                    _bool_Opener_in_Warmup: bool_cj_OpenerWarmup,
+                    _extras: profileActive.CJExtras,
+                    _jumps: profileActive.CJJumps,
+                    _times: profileActive.CJTimes,
+                    _int_x_Sec_End: profileActive.CJ_SecondsEnd,
+                    _int_x_Wgt_Opener: profileActive.CJ_OpenerWeight,
+                    _bool_Opener_in_Warmup: profileActive.CJ_OpenerInWarmup,
                     _stepsIn: stepsIn
                 );
             }
@@ -928,10 +893,10 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return (
-                    (v) => int_snatch_Sec_Stage = v,
-                    (v) => int_snatch_Wgt_Opener = v,
-                    (v) => bool_snatch_OpenerWarmup = v,
-                    (v) => int_snatch_Sec_End = v,
+                    (v) => profileActive.Snatch_SecondsStage = v,
+                    (v) => profileActive.Snatch_OpenerWeight = v,
+                    (v) => profileActive.Snatch_OpenerInWarmup = v,
+                    (v) => profileActive.Snatch_SecondsEnd = v,
                     numericUpDown_snatch_time_stage,
                     numericUpDown_snatch_weight_opener,
                     checkBox_snatch_Param_OpenerWarmup,
@@ -942,10 +907,10 @@ namespace Weightlifting_Comp_Warmup.Main
             else // CleanAndJerk
             {
                 return (
-                    (v) => int_cj_Sec_Stage = v,
-                    (v) => int_cj_Wgt_Opener = v,
-                    (v) => bool_cj_OpenerWarmup = v,
-                    (v) => int_cj_Sec_End = v,
+                    (v) => profileActive.CJ_SecondsStage = v,
+                    (v) => profileActive.CJ_OpenerWeight = v,
+                    (v) => profileActive.CJ_OpenerInWarmup = v,
+                    (v) => profileActive.CJ_SecondsEnd = v,
                     numericUpDown_cj_time_stage,
                     numericUpDown_cj_weight_opener,
         checkBox_cj_Param_OpenerWarmup,
@@ -984,7 +949,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 setOpenerWarmup(chkOpenerWarmup.Checked);
                 numWgtOpener.BackColor = Color.White;
 
-                applyOpenerGraphic(int_Barbell, wgtOpener, liftType == LiftType.Snatch);
+                applyOpenerGraphic(profileActive.BarbellWeight, wgtOpener, liftType == LiftType.Snatch);
                 PopulateSteps(liftType, preserveLifts: false);
             }
             else
@@ -1070,7 +1035,7 @@ namespace Weightlifting_Comp_Warmup.Main
             label_snatch_Live_LiftsPassed.Text = "0";
             Populate_snatch_Live_Steps();
             progressBar_snatch_Live_StageLift.Value = 0;
-            progressBar_snatch_Live_StageLift.Maximum = int_snatch_Sec_Stage;
+            progressBar_snatch_Live_StageLift.Maximum = profileActive.Snatch_SecondsStage;
             label_snatch_Live_TimeTillStart.Text = String.Empty;
             label_snatch_Live_TimeTillOpener.Text = String.Empty;
 
@@ -1230,7 +1195,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     weightBoxGraphic = new()
                     {
                         boolOpener = false,
-                        intWeightBar = int_Barbell,
+                        intWeightBar = profileActive.BarbellWeight,
                         intWeight = (int)_step.Weight,
                         intOutlineWidth = 1,
                         intPlateGap = -1,
@@ -1282,14 +1247,14 @@ namespace Weightlifting_Comp_Warmup.Main
                     button_snatch_Live_StageAdvance.BackColor = color_snatch_Live_BG;
                 }
                 label_snatch_Live_TimeTillStart.Text = Seconds_To_String(intSecondsToStart);
-                intSecondsToOpen = intSecondsToStart + (int_snatch_Lifts_Out * int_snatch_Sec_Stage);
+                intSecondsToOpen = intSecondsToStart + (profileActive.Snatch_LiftsOut * profileActive.Snatch_SecondsStage);
                 bool_snatch_LiveLifting = false;
             }
             else
             {
                 if (!bool_snatch_LiveLifting)
                 {
-                    if (int_snatch_Lifts_Out > 0)
+                    if (profileActive.Snatch_LiftsOut > 0)
                     {
                         bool_snatch_LiveLifting = true;
                         progressBar_snatch_Live_StageLift.Value = 0;
@@ -1297,7 +1262,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     label_snatch_Live_TimeTillStart.Text = "passed";
                 }
 
-                if (int_snatch_Lifts_Out > 0)
+                if (profileActive.Snatch_LiftsOut > 0)
                 {
                     if ((int)button_snatch_Live_StageAdvance.Tag == 0)
                     {
@@ -1312,7 +1277,7 @@ namespace Weightlifting_Comp_Warmup.Main
                             snatch_Advance_StageLift();
                         }
                     }
-                    intSecondsToOpen += (int_snatch_Lifts_Out - 1) * int_snatch_Sec_Stage +
+                    intSecondsToOpen += (profileActive.Snatch_LiftsOut - 1) * profileActive.Snatch_SecondsStage +
                         progressBar_snatch_Live_StageLift.Maximum - progressBar_snatch_Live_StageLift.Value;
                 }
                 else
@@ -1460,7 +1425,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     }
                 }
                 int_snatch_Warmup_Step = _intStep;
-                if (boolUpdBGsFGs & bool_Beep)
+                if (boolUpdBGsFGs & profileActive.Beep)
                 {
                     Console.Beep(750, 600);
                 }
@@ -1489,11 +1454,11 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_snatch_Live_LiftsDecr_Click(object sender, EventArgs e)
         {
-            if (int_snatch_Lifts_Out > 0)
+            if (profileActive.Snatch_LiftsOut > 0)
             {
-                int_snatch_Lifts_Out--;
-                label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
-                if (int_snatch_Lifts_Out == 0)
+                profileActive.Snatch_LiftsOut--;
+                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
+                if (profileActive.Snatch_LiftsOut == 0)
                 {
                     if (bool_snatch_LiveLifting)
                     {
@@ -1505,15 +1470,15 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_snatch_Live_LiftsIncr_Click(object sender, EventArgs e)
         {
-            if (int_snatch_Lifts_Out < 99)
+            if (profileActive.Snatch_LiftsOut < 99)
             {
-                int_snatch_Lifts_Out++;
-                label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+                profileActive.Snatch_LiftsOut++;
+                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
             }
         }
         private void button_snatch_Live_StageAdvance_Click(object sender, EventArgs e)
         {
-            if (int_snatch_Lifts_Out >= 0 & bool_snatch_LiveLifting)
+            if (profileActive.Snatch_LiftsOut >= 0 & bool_snatch_LiveLifting)
             {
                 snatch_Advance_StageLift();
             }
@@ -1527,7 +1492,7 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_Loading = true;
             textBox_snatch_Live_LiftsOut.Location = label_snatch_Live_LiftsOut.Location;
             textBox_snatch_Live_LiftsOut.Size = label_snatch_Live_LiftsOut.Size;
-            textBox_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+            textBox_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
             textBox_snatch_Live_LiftsOut.Visible = true;
             textBox_snatch_Live_LiftsOut.BringToFront();
             textBox_snatch_Live_LiftsOut.Select();
@@ -1540,10 +1505,10 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_snatch_Lifts_Out) &&
                 _int_snatch_Lifts_Out >= 0 &&
                 _int_snatch_Lifts_Out < 100 &&
-                int_snatch_Lifts_Out != _int_snatch_Lifts_Out)
+                profileActive.Snatch_LiftsOut != _int_snatch_Lifts_Out)
             {
-                int_snatch_Lifts_Out = _int_snatch_Lifts_Out;
-                label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+                profileActive.Snatch_LiftsOut = _int_snatch_Lifts_Out;
+                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
             }
         }
         private void textBox_snatch_Live_LiftsOut_Leave(object sender, EventArgs e)
@@ -1553,19 +1518,19 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_snatch_Lifts_Out) &&
                 _int_snatch_Lifts_Out >= 0 &&
                 _int_snatch_Lifts_Out < 100 &&
-                int_snatch_Lifts_Out != _int_snatch_Lifts_Out)
+                profileActive.Snatch_LiftsOut != _int_snatch_Lifts_Out)
             {
-                int_snatch_Lifts_Out = _int_snatch_Lifts_Out;
-                label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+                profileActive.Snatch_LiftsOut = _int_snatch_Lifts_Out;
+                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
             }
             textBox_snatch_Live_LiftsOut.Visible = false;
         }
         private void snatch_Advance_StageLift()
         {
-            if (int_snatch_Lifts_Out > 0)
+            if (profileActive.Snatch_LiftsOut > 0)
             {
-                int_snatch_Lifts_Out--;
-                label_snatch_Live_LiftsOut.Text = int_snatch_Lifts_Out.ToString();
+                profileActive.Snatch_LiftsOut--;
+                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
                 if (bool_snatch_Live && datetime_snatch_Start < DateTime.Now)
                 {
                     int_snatch_Lifts_Passed++;
@@ -1596,9 +1561,9 @@ namespace Weightlifting_Comp_Warmup.Main
             if (!bool_Loading)
             {
                 bool_Loading = true;
-                bool_Beep = ((CheckBox)sender).Checked;
-                checkBox_snatch_Live_Beep.Checked = bool_Beep;
-                checkBox_cj_Live_Beep.Checked = bool_Beep;
+                profileActive.Beep = ((CheckBox)sender).Checked;
+                checkBox_snatch_Live_Beep.Checked = profileActive.Beep;
+                checkBox_cj_Live_Beep.Checked = profileActive.Beep;
                 bool_Loading = false;
             }
         }
@@ -1633,7 +1598,7 @@ namespace Weightlifting_Comp_Warmup.Main
             button_cj_Live_snStageAdvance.Tag = 0;
             bool_cj_LiveLifting = false;
             bool_cj_BreakRunning = false;
-            bool_cj_sn_Lifting = false;
+            bool_cj_SnStillLifting = false;
             button_cj_Live_StartStop.Text = "start";
             panel_cj_Live_Times.Visible = false;
             panel_Battery.Visible = false;
@@ -1654,11 +1619,11 @@ namespace Weightlifting_Comp_Warmup.Main
             label_cj_Live_LiftsPassed.Text = "0";
             Populate_cj_Live_Steps();
             progressBar_cj_Live_StageLift.Value = 0;
-            progressBar_cj_Live_StageLift.Maximum = int_cj_Sec_Stage;
+            progressBar_cj_Live_StageLift.Maximum = profileActive.CJ_SecondsStage;
             progressBar_cj_Live_sn.Value = 0;
-            progressBar_cj_Live_sn.Maximum = int_snatch_Sec_Stage;
+            progressBar_cj_Live_sn.Maximum = profileActive.Snatch_SecondsStage;
             progressBar_cj_Live_Break.Value = 0;
-            progressBar_cj_Live_Break.Maximum = int_cj_Sec_Break;
+            progressBar_cj_Live_Break.Maximum = profileActive.CJ_SecondsBreak;
             label_cj_Live_Break.Text = String.Empty;
             label_cj_Live_TimeTillOpener.Text = String.Empty;
 
@@ -1818,7 +1783,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     weightBoxGraphic = new()
                     {
                         boolOpener = false,
-                        intWeightBar = int_Barbell,
+                        intWeightBar = profileActive.BarbellWeight,
                         intWeight = _step.Weight ?? 0,
                         intOutlineWidth = 1,
                         intPlateGap = -1,
@@ -1861,11 +1826,11 @@ namespace Weightlifting_Comp_Warmup.Main
             int intSecondsToOpen = 0;
             UpdateBattery();
 
-            if (bool_cj_sn_Lifting) // snatches still running
+            if (bool_cj_SnStillLifting) // snatches still running
             {
-                if (int_cj_snLifts_Out == 0)
+                if (profileActive.CJ_SnatchLifts_Out == 0)
                 {
-                    bool_cj_sn_Lifting = false;
+                    bool_cj_SnStillLifting = false;
                     bool_cj_BreakRunning = true;
                     progressBar_cj_Live_Break.Value = 0;
                     bool_cj_LiveLifting = false;
@@ -1881,9 +1846,9 @@ namespace Weightlifting_Comp_Warmup.Main
                         }
                     }
 
-                    if (int_cj_snLifts_Out == 0)
+                    if (profileActive.CJ_SnatchLifts_Out == 0)
                     {
-                        bool_cj_sn_Lifting = false;
+                        bool_cj_SnStillLifting = false;
                         progressBar_cj_Live_Break.Value = 0;
                         bool_cj_BreakRunning = true;
                     }
@@ -1894,9 +1859,9 @@ namespace Weightlifting_Comp_Warmup.Main
                     bool_cj_LiveLifting = false;
                 }
             }
-            else if (int_cj_snLifts_Out > 0)
+            else if (profileActive.CJ_SnatchLifts_Out > 0)
             {
-                bool_cj_sn_Lifting = true;
+                bool_cj_SnStillLifting = true;
                 progressBar_cj_Live_Break.Value = 0;
                 bool_cj_BreakRunning = false;
                 bool_cj_LiveLifting = false;
@@ -1918,7 +1883,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     label_cj_Live_Break.Text = Seconds_To_String(progressBar_cj_Live_Break.Maximum - progressBar_cj_Live_Break.Value);
                 }
             }
-            else if (!bool_cj_sn_Lifting)
+            else if (!bool_cj_SnStillLifting)
             {
                 if (progressBar_cj_Live_Break.Value < progressBar_cj_Live_Break.Maximum)
                 {
@@ -1938,20 +1903,20 @@ namespace Weightlifting_Comp_Warmup.Main
                 progressBar_cj_Live_StageLift.PerformStep();
                 if (progressBar_cj_Live_StageLift.Value == progressBar_cj_Live_StageLift.Maximum)
                 {
-                    if (bool_cj_AutoAdvance | int_cj_Lifts_Out == 1)
+                    if (bool_cj_AutoAdvance | profileActive.CJ_LiftsOut == 1)
                     {
                         cj_Advance_StageLift();
                     }
                 }
 
-                if (int_cj_Lifts_Out == 0)
+                if (profileActive.CJ_LiftsOut == 0)
                 {
                     bool_cj_LiveLifting = false;
                 }
             }
-            else if (!bool_cj_sn_Lifting & !bool_cj_BreakRunning)
+            else if (!bool_cj_SnStillLifting & !bool_cj_BreakRunning)
             {
-                if (int_cj_Lifts_Out > 0)
+                if (profileActive.CJ_LiftsOut > 0)
                 {
                     if (progressBar_cj_Live_StageLift.Value < progressBar_cj_Live_StageLift.Maximum)
                     {
@@ -1962,7 +1927,7 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
 
-            if (bool_cj_sn_Lifting)
+            if (bool_cj_SnStillLifting)
             {
                 if ((int)button_cj_Live_snStageAdvance.Tag == 0)
                 {
@@ -1997,20 +1962,20 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
 
-            if (bool_cj_sn_Lifting | bool_cj_BreakRunning | bool_cj_LiveLifting)
+            if (bool_cj_SnStillLifting | bool_cj_BreakRunning | bool_cj_LiveLifting)
             {
-                intSecondsToOpen = (int_cj_Lifts_Out - 1) * int_cj_Sec_Stage +
+                intSecondsToOpen = (profileActive.CJ_LiftsOut - 1) * profileActive.CJ_SecondsStage +
                     progressBar_cj_Live_StageLift.Maximum - progressBar_cj_Live_StageLift.Value;
             }
 
-            if (bool_cj_sn_Lifting | bool_cj_BreakRunning)
+            if (bool_cj_SnStillLifting | bool_cj_BreakRunning)
             {
                 intSecondsToOpen += progressBar_cj_Live_Break.Maximum - progressBar_cj_Live_Break.Value;
             }
 
-            if (bool_cj_sn_Lifting) // snatches still running
+            if (bool_cj_SnStillLifting) // snatches still running
             {
-                intSecondsToOpen += (int_cj_snLifts_Out - 1) * int_snatch_Sec_Stage +
+                intSecondsToOpen += (profileActive.CJ_SnatchLifts_Out - 1) * profileActive.Snatch_SecondsStage +
                     progressBar_cj_Live_sn.Maximum - progressBar_cj_Live_sn.Value;
             }
 
@@ -2153,7 +2118,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     }
                 }
                 int_cj_Warmup_Step = _intStep;
-                if (boolUpdBGsFGs & bool_Beep)
+                if (boolUpdBGsFGs & profileActive.Beep)
                 {
                     Console.Beep(750, 600);
                 }
@@ -2178,7 +2143,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void progressBar_cj_Live_sn_MouseClick(object sender, MouseEventArgs e)
         {
-            if (bool_cj_Live & bool_cj_sn_Lifting)
+            if (bool_cj_Live & bool_cj_SnStillLifting)
             {
                 double dbl_Percent = e.X / (double)(progressBar_cj_Live_sn.Width);
                 if (dbl_Percent >= 0 & dbl_Percent <= 1)
@@ -2200,11 +2165,11 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_Live_LiftsDecr_Click(object sender, EventArgs e)
         {
-            if (int_cj_Lifts_Out > 0)
+            if (profileActive.CJ_LiftsOut > 0)
             {
-                int_cj_Lifts_Out--;
-                label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
-                if (int_cj_Lifts_Out == 0)
+                profileActive.CJ_LiftsOut--;
+                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
+                if (profileActive.CJ_LiftsOut == 0)
                 {
                     if (bool_cj_LiveLifting)
                     {
@@ -2216,10 +2181,10 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_Live_LiftsIncr_Click(object sender, EventArgs e)
         {
-            if (int_cj_Lifts_Out < 99)
+            if (profileActive.CJ_LiftsOut < 99)
             {
-                int_cj_Lifts_Out++;
-                label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+                profileActive.CJ_LiftsOut++;
+                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
             }
         }
         private void label_cj_Live_LiftsOut_Click(object sender, EventArgs e)
@@ -2227,7 +2192,7 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_Loading = true;
             textBox_cj_Live_LiftsOut.Location = label_cj_Live_LiftsOut.Location;
             textBox_cj_Live_LiftsOut.Size = label_cj_Live_LiftsOut.Size;
-            textBox_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+            textBox_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
             textBox_cj_Live_LiftsOut.Visible = true;
             textBox_cj_Live_LiftsOut.BringToFront();
             textBox_cj_Live_LiftsOut.Select();
@@ -2240,10 +2205,10 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_cj_Lifts_Out) &&
                 _int_cj_Lifts_Out >= 0 &&
                 _int_cj_Lifts_Out < 100 &&
-                int_cj_Lifts_Out != _int_cj_Lifts_Out)
+                profileActive.CJ_LiftsOut != _int_cj_Lifts_Out)
             {
-                int_cj_Lifts_Out = _int_cj_Lifts_Out;
-                label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+                profileActive.CJ_LiftsOut = _int_cj_Lifts_Out;
+                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
             }
         }
         private void textBox_cj_Live_LiftsOut_Leave(object sender, EventArgs e)
@@ -2253,20 +2218,20 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_cj_Lifts_Out) &&
                 _int_cj_Lifts_Out >= 0 &&
                 _int_cj_Lifts_Out < 100 &&
-                int_cj_Lifts_Out != _int_cj_Lifts_Out)
+                profileActive.CJ_LiftsOut != _int_cj_Lifts_Out)
             {
-                int_cj_Lifts_Out = _int_cj_Lifts_Out;
-                label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
+                profileActive.CJ_LiftsOut = _int_cj_Lifts_Out;
+                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
             }
             textBox_cj_Live_LiftsOut.Visible = false;
         }
         private void button_cj_Live_StageAdvance_Click(object sender, EventArgs e)
         {
-            if (int_cj_Lifts_Out >= 0 & bool_cj_LiveLifting)
+            if (profileActive.CJ_LiftsOut >= 0 && bool_cj_LiveLifting)
             {
                 cj_Advance_StageLift();
             }
-            else if (int_cj_snLifts_Out >= 0 & bool_cj_sn_Lifting)
+            else if (profileActive.CJ_SnatchLifts_Out >= 0 && bool_cj_SnStillLifting)
             {
                 cj_Advance_snLift();
             }
@@ -2277,11 +2242,11 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void cj_Advance_StageLift()
         {
-            if (int_cj_Lifts_Out > 0)
+            if (profileActive.CJ_LiftsOut > 0)
             {
-                int_cj_Lifts_Out--;
-                label_cj_Live_LiftsOut.Text = int_cj_Lifts_Out.ToString();
-                if (bool_cj_Live && !bool_cj_sn_Lifting && !bool_cj_BreakRunning)
+                profileActive.CJ_LiftsOut--;
+                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
+                if (bool_cj_Live && !bool_cj_SnStillLifting && !bool_cj_BreakRunning)
                 {
                     int_cj_Lifts_Passed++;
                 }
@@ -2307,28 +2272,28 @@ namespace Weightlifting_Comp_Warmup.Main
             int _int_cj_Sec_Break = (int)(numericUpDown_cj_Live_Break.Value);
             if (_int_cj_Sec_Break < 1)
             {
-                int_cj_Sec_Break = 1;
+                profileActive.CJ_SecondsBreak = 1;
             }
             else
             {
-                int_cj_Sec_Break = _int_cj_Sec_Break * 60;
+                profileActive.CJ_SecondsBreak = _int_cj_Sec_Break * 60;
             }
 
-            if (progressBar_cj_Live_Break.Value > int_cj_Sec_Break)
-            { progressBar_cj_Live_Break.Value = int_cj_Sec_Break; }
-            progressBar_cj_Live_Break.Maximum = int_cj_Sec_Break;
+            if (progressBar_cj_Live_Break.Value > profileActive.CJ_SecondsBreak)
+            { progressBar_cj_Live_Break.Value = profileActive.CJ_SecondsBreak; }
+            progressBar_cj_Live_Break.Maximum = profileActive.CJ_SecondsBreak;
         }
         private void button_cj_Live_snDecr_Click(object sender, EventArgs e)
         {
-            if (int_cj_snLifts_Out > 0)
+            if (profileActive.CJ_SnatchLifts_Out > 0)
             {
-                int_cj_snLifts_Out--;
-                label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
-                if (int_cj_snLifts_Out == 0)
+                profileActive.CJ_SnatchLifts_Out--;
+                label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
+                if (profileActive.CJ_SnatchLifts_Out == 0)
                 {
-                    if (bool_cj_sn_Lifting)
+                    if (bool_cj_SnStillLifting)
                     {
-                        bool_cj_sn_Lifting = false;
+                        bool_cj_SnStillLifting = false;
                         progressBar_cj_Live_sn.Value = 0;
                     }
                 }
@@ -2336,10 +2301,10 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_Live_snIncr_Click(object sender, EventArgs e)
         {
-            if (int_cj_snLifts_Out < 98)
+            if (profileActive.CJ_SnatchLifts_Out < 98)
             {
-                int_cj_snLifts_Out++;
-                label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+                profileActive.CJ_SnatchLifts_Out++;
+                label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
             }
         }
         private void label_cj_Live_snLeft_Click(object sender, EventArgs e)
@@ -2347,7 +2312,7 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_Loading = true;
             textBox_cj_Live_snLeft.Location = label_cj_Live_snLeft.Location;
             textBox_cj_Live_snLeft.Size = label_cj_Live_snLeft.Size;
-            textBox_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+            textBox_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
             textBox_cj_Live_snLeft.Visible = true;
             textBox_cj_Live_snLeft.BringToFront();
             textBox_cj_Live_snLeft.Select();
@@ -2370,10 +2335,10 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_cj_snLifts_Out) &&
                 _int_cj_snLifts_Out >= 0 &&
                 _int_cj_snLifts_Out < 100 &&
-                int_cj_snLifts_Out != _int_cj_snLifts_Out)
+                profileActive.CJ_SnatchLifts_Out != _int_cj_snLifts_Out)
             {
-                int_cj_snLifts_Out = _int_cj_snLifts_Out;
-                label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+                profileActive.CJ_SnatchLifts_Out = _int_cj_snLifts_Out;
+                label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
             }
         }
         private void label_cj_Live_Break_Click(object sender, EventArgs e)
@@ -2381,7 +2346,7 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_Loading = true;
             textBox_cj_Live_Break.Location = label_cj_Live_Break.Location;
             textBox_cj_Live_Break.Size = label_cj_Live_Break.Size;
-            textBox_cj_Live_Break.Text = int_cj_snLifts_Out.ToString();
+            textBox_cj_Live_Break.Text = profileActive.CJ_SnatchLifts_Out.ToString();
             textBox_cj_Live_Break.Visible = true;
             textBox_cj_Live_Break.BringToFront();
             textBox_cj_Live_Break.Select();
@@ -2407,7 +2372,7 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 if (_int_cj_Break > (int)(numericUpDown_cj_Live_Break.Value * 60m))
                 {
-                    numericUpDown_cj_Live_Break.Value = Math.Ceiling((decimal)_int_cj_Break / 60m);
+                    numericUpDown_cj_Live_Break.Value = Math.Ceiling(_int_cj_Break / 60m);
                     cj_Break_Updated();
                 }
                 progressBar_cj_Live_Break.Value = progressBar_cj_Live_Break.Maximum - _int_cj_Break;
@@ -2416,21 +2381,21 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_Live_snStageAdvance_Click(object sender, EventArgs e)
         {
-            if (int_cj_Lifts_Out >= 0 & bool_cj_LiveLifting)
+            if (profileActive.CJ_LiftsOut >= 0 & bool_cj_LiveLifting)
             {
                 cj_Advance_StageLift();
             }
-            else if (int_cj_snLifts_Out >= 0 & bool_cj_sn_Lifting)
+            else if (profileActive.CJ_SnatchLifts_Out >= 0 & bool_cj_SnStillLifting)
             {
                 cj_Advance_snLift();
             }
         }
         private void cj_Advance_snLift()
         {
-            if (int_cj_snLifts_Out > 0)
+            if (profileActive.CJ_SnatchLifts_Out > 0)
             {
-                int_cj_snLifts_Out--;
-                label_cj_Live_snLeft.Text = int_cj_snLifts_Out.ToString();
+                profileActive.CJ_SnatchLifts_Out--;
+                label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
             }
             progressBar_cj_Live_sn.Value = 0;
         }

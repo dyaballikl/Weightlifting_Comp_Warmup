@@ -34,36 +34,16 @@ namespace Weightlifting_Comp_Warmup.Main
         private Dictionary<int /*from weight*/, int /*jump size*/> default_cjJumps = null;
         private Dictionary<int /*from weight*/, int /*time length*/> default_cjTimes = null;
 
-        private List<Extra> snatchExtras = null;
-        private Dictionary<int /*from weight*/, int /*jump size*/> snatchJumps = null;
-        private Dictionary<int /*from weight*/, int /*time length*/> snatchTimes = null;
-        private List<Extra> cjExtras = null;
-        private Dictionary<int /*from weight*/, int /*jump size*/> cjJumps = null;
-        private Dictionary<int /*from weight*/, int /*time length*/> cjTimes = null;
-
         private const string str_buttontext_up = "^";
         private const string str_buttontext_down = "v";
         private const string str_buttontext_delete = "X";
         private const string str_buttontext_commit = "commit";
 
-        private int int_ProfileId;
-        private int int_Barbell;
-        private int int_snatch_Sec_Stage;
-        private int int_snatch_Wgt_Opener;
-        private int int_snatch_Sec_End;
-        private int int_snatch_Lifts_Out;
-        private int int_snatch_Lifts_Passed;
-        private int int_snatch_Warmup_Step;
-        private int int_cj_Sec_Stage;
-        private int int_cj_Wgt_Opener;
-        private int int_cj_Sec_End;
-        private int int_cj_Lifts_Out;
-        private int int_cj_Lifts_Passed;
-        private int int_cj_snLifts_Out;
-        private int int_cj_Warmup_Step;
-        private int int_cj_Sec_Break;
-
-        private TimeSpan timeSpan_Start;
+        private int int_snatch_Lifts_Passed = 0;
+        private int int_cj_Warmup_Step = 0;
+        private int int_snatch_Warmup_Step = 0;
+        private int int_cj_Lifts_Passed = 0;
+        private Profile profileActive = null;
 
         private bool bool_snatch_Live;
         private bool bool_snatch_LiveLifting;
@@ -71,28 +51,25 @@ namespace Weightlifting_Comp_Warmup.Main
         private bool bool_cj_Live;
         private bool bool_cj_LiveLifting;
         private bool bool_cj_BreakRunning;
-        private bool bool_cj_sn_Lifting;
+        private bool bool_cj_SnStillLifting;
         private bool bool_cj_AutoAdvance = false;
-        private bool bool_Beep = false;
         private bool bool_Loading = true;
-        private bool bool_snatch_OpenerWarmup;
-        private bool bool_cj_OpenerWarmup;
 
         private const int int_default_Barbell = 20;
-        private const int int_default_snatch_Sec_Stage = 55;
-        private const int int_default_snatch_Wgt_Opener = 85;
-        private const int int_default_snatch_Sec_End = 60;
+        private const int int_default_snatch_SecondsStage = 55;
+        private const int int_default_snatch_OpenerWeight = 85;
+        private const int int_default_snatch_SecondsEnd = 60;
         private const int int_default_snatch_Lifts_Out = 0;
-        private const int int_default_cj_Sec_Stage = 62;
-        private const int int_default_cj_Wgt_Opener = 110;
-        private const int int_default_cj_Sec_End = 75;
-        private const int int_default_cj_Lifts_Out = 0;
-        private const int int_default_cj_snLifts_Out = 0;
-        private const int int_default_cj_Sec_Break = 0;
+        private const int int_default_cj_SecondsStage = 62;
+        private const int int_default_cj_OpenerWeight = 110;
+        private const int int_default_cj_SecondsEnd = 75;
+        private const int int_default_cj_LiftsOut = 0;
+        private const int int_default_cJ_SnatchLifts_Out = 0;
+        private const int int_default_cJ_SecondsBreak = 600;
 
         private const bool bool_default_Beep = false;
-        private const bool bool_default_snatch_OpenerWarmup = true;
-        private const bool bool_default_cj_OpenerWarmup = false;
+        private const bool bool_default_snatch_OpenerInWarmup = true;
+        private const bool bool_default_cj_OpenerInWarmup = false;
 
         private DateTime datetime_snatch_Start;
 

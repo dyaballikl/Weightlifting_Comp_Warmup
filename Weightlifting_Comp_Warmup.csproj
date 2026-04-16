@@ -92,6 +92,10 @@
       <DependentUpon>form_Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Main\SaveSettings.cs">
+      <DependentUpon>form_Main.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Main\Utilities.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
       <SubType>Form</SubType>
