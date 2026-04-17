@@ -18,67 +18,53 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private string Seconds_To_String(int _int_Seconds, bool _bool_ShortString = false)
         {
-            int intHrs = (_int_Seconds - (_int_Seconds % 3600)) / 3600;
-            _int_Seconds -= (intHrs * 3600);
-            int intMns = (_int_Seconds - (_int_Seconds % 60)) / 60;
-            _int_Seconds -= (intMns * 60);
-            if (intHrs == 0)
+            TimeSpan _timeSpan = TimeSpan.FromSeconds(_int_Seconds);
+            if (_timeSpan.Hours == 0)
             {
-                if (intMns == 0)
+                if (_timeSpan.Minutes == 0)
                 {
-                    return _int_Seconds.ToString() + "s";
+                    return $"{_int_Seconds}s";
                 }
                 else
                 {
-                    return intMns.ToString() + "m" + _int_Seconds.ToString() + "s";
+                    return $"{_timeSpan.Minutes}m{_timeSpan.Seconds}s";
                 }
             }
             else if (_bool_ShortString)
             {
-                return intHrs.ToString() + "h" + intMns.ToString() + "m";
+                return $"{_timeSpan.Hours}h{_timeSpan.Minutes}m";
             }
             else
             {
-                return intHrs.ToString() + "h" + intMns.ToString() + "m" + _int_Seconds.ToString() + "s";
+                return $"{_timeSpan.Hours}h{_timeSpan.Minutes}m{_timeSpan.Seconds}s";
             }
         }
-        private void Smooth_Last_Jumps(List<Step> _steps, int intOpener)
+        private void Smooth_Last_Jumps(Dictionary<int, bool> _weights, int _int_Opener)
         {
-            List<int> topThreeWeights = [.. _steps
-                .Where(step => (step.Weight ?? 0) > 0)
-                .Select(step => step.Weight.Value)
-                .Distinct()
-                .OrderByDescending(weight => weight)];
-            int _int_LastWarmup = topThreeWeights.ElementAtOrDefault(0);
-            int _int_SecondToLastWarmup = topThreeWeights.ElementAtOrDefault(1);
-            int _int_ThirdToLastWarmup = topThreeWeights.ElementAtOrDefault(2);
+            IEnumerable<int> topThreeWeights = _weights
+                .Where(r => r.Key > 0)
+                .OrderByDescending(r => r.Key)
+                .Select(r => r.Key);
+            int _int_FinalWarmup = topThreeWeights.ElementAtOrDefault(0);
+            int _int_SecondToFinalWarmup = topThreeWeights.ElementAtOrDefault(1);
+            int _int_ThirdToFinalWarmup = topThreeWeights.ElementAtOrDefault(2);
 
-            if (intOpener > 0)
+            if (_int_Opener > 0)
             {
-                if (intOpener == _int_LastWarmup)
+                if (_int_Opener > _int_FinalWarmup) // not hitting opener in warmup
                 {
-                    if ((_int_LastWarmup > 0 & _int_SecondToLastWarmup > 0 & _int_ThirdToLastWarmup > 0) &&
-                        (_int_LastWarmup - _int_ThirdToLastWarmup > 3) &&
-                        (((int)(decimal)(_int_LastWarmup - _int_ThirdToLastWarmup) / 2 + (decimal)_int_ThirdToLastWarmup) != _int_SecondToLastWarmup))
-                    {
-                        Step _step = _steps.FirstOrDefault(r => r.Weight == _int_SecondToLastWarmup && !r.Override);
-                        if (_step != null)
-                        {
-                            _step.Weight = (int)Math.Floor((decimal)(_int_LastWarmup - _int_ThirdToLastWarmup) / 2 + _int_ThirdToLastWarmup);
-                        }
-                    }
+                    _int_ThirdToFinalWarmup = _int_SecondToFinalWarmup;
+                    _int_SecondToFinalWarmup = _int_FinalWarmup;
+                    _int_FinalWarmup = _int_Opener;
                 }
-                else if (_int_LastWarmup > 0 & _int_SecondToLastWarmup > 0)
+                if ((_int_FinalWarmup > 0 & _int_SecondToFinalWarmup > 0 & _int_ThirdToFinalWarmup > 0) && // 3+ warmups
+                    (_int_FinalWarmup - _int_ThirdToFinalWarmup > 3) && // last 3 warmups span more than 3kg
+                    (((int)(decimal)(_int_FinalWarmup - _int_ThirdToFinalWarmup) / 2m + _int_ThirdToFinalWarmup) != _int_SecondToFinalWarmup) && // 2nd to last warmup not right in the middle (already smoothed)
+                    !_weights[_int_SecondToFinalWarmup]) // not an override
                 {
-                    if ((intOpener - _int_SecondToLastWarmup > 3) &&
-                        (((int)(decimal)(intOpener - _int_SecondToLastWarmup) / 2 + (decimal)_int_SecondToLastWarmup) != _int_LastWarmup))
-                    {
-                        Step _step = _steps.FirstOrDefault(r => r.Weight == _int_LastWarmup && !r.Override);
-                        if (_step != null)
-                        {
-                            _step.Weight = (int)Math.Floor((decimal)(intOpener - _int_SecondToLastWarmup) / 2 + _int_SecondToLastWarmup);
-                        }
-                    }
+                    _weights.Remove(_int_SecondToFinalWarmup);
+                    _int_SecondToFinalWarmup = (int)Math.Floor((_int_FinalWarmup - _int_ThirdToFinalWarmup) / 2m + _int_ThirdToFinalWarmup);
+                    _weights[_int_SecondToFinalWarmup] = false;
                 }
             }
         }
@@ -97,7 +83,7 @@ namespace Weightlifting_Comp_Warmup.Main
             Dictionary<int, bool> _weightInputs = [];
             Dictionary<int, bool> _weights = [];
             List<Step> _steps = [];
-            if (_bool_PreserveLifts & _stepsIn != null)
+            if (_bool_PreserveLifts && _stepsIn != null)
             {
                 foreach (Step _step in _stepsIn)
                 {
@@ -107,7 +93,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     }
                 }
                 //remove final auto populated weights
-                int _max = _weightInputs.Max().Key;
+                int _max = _weightInputs.Keys.Max();
                 if (_max > 0)
                 {
                     foreach (int key in _weightInputs.Keys.Where(r => r > _max))
@@ -121,6 +107,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 _weightInputs: _weightInputs,
                 bool_Opener_in_Warmup: _bool_Opener_in_Warmup,
                 _int_Weight_Opener: _int_x_Wgt_Opener);
+            Smooth_Last_Jumps(_weights: _weights, _int_Opener: _int_x_Wgt_Opener);
 
             int _int_TotalSeconds = _extras.Sum(r => r.Length);
             int _int_Order = 1;
@@ -138,11 +125,13 @@ namespace Weightlifting_Comp_Warmup.Main
                 _int_Order++;
             }
 
-            _times = _times.OrderBy(r => r.Key).ToDictionary(r => r.Key, r => r.Value);
             int _int_Weight_Last = _weights.Last().Key;
             foreach (KeyValuePair<int, bool> _kvp_Weight in _weights)
             {
-                int intTime = _times.Where(r => r.Key <= _kvp_Weight.Key).Max(r => r.Value);
+                int intTime = _times
+                    .Where(r => r.Key <= _kvp_Weight.Key)
+                    .OrderByDescending(r => r.Key)
+                    .FirstOrDefault().Value;
                 if (_kvp_Weight.Key == _int_Weight_Last)
                 {
                     intTime += _int_x_Sec_End;
@@ -166,8 +155,6 @@ namespace Weightlifting_Comp_Warmup.Main
                 _steps[i].TotalLengthReverse = _int_TotalSeconds;
             }
 
-            Smooth_Last_Jumps(_steps: _steps, intOpener: _int_x_Wgt_Opener);
-
             _steps.Insert(0, new Step(
                 action: "wait",
                 weight: 0,
@@ -178,6 +165,33 @@ namespace Weightlifting_Comp_Warmup.Main
                 preStep: true,
                 @override: false));
             return _steps;
+        }
+        private int GetJumpForWeight(Dictionary<int, int> _jumps, int _int_Weight)
+        {
+            // Phase 1: Find the last jump entry whose key is at or below the current weight.
+            // This corresponds to the 'if' block in your loop.
+            KeyValuePair<int, int> baseJumpKvp = _jumps
+                .Where(kvp => kvp.Key <= _int_Weight && kvp.Value != 0 && kvp.Key != 0)
+                .OrderByDescending(kvp => kvp.Key)
+                .FirstOrDefault();
+            // If no such jump exists (e.g., weight is less than the first jump key), return 0.
+            if (baseJumpKvp.Key == 0)
+            {
+                return 0;
+            }
+
+            // Phase 2: Find the very next jump entry whose key is above the current weight.
+            KeyValuePair<int, int> nextJumpKvp = _jumps
+                .Where(r => r.Key > baseJumpKvp.Key && r.Value != 0 && r.Key != 0 &&
+                    (r.Key + r.Value <= _int_Weight + baseJumpKvp.Value) // we're not yet to this jump, but this jump would take us to/beyond where this jump would take us
+                    )
+                .OrderBy(kvp => kvp.Key)
+                .FirstOrDefault();
+            if (nextJumpKvp.Key != 0)
+            {
+                return nextJumpKvp.Key - _int_Weight + nextJumpKvp.Value;
+            }
+            return baseJumpKvp.Value;
         }
         private Dictionary<int, bool> dictionary_Weights(
             Dictionary<int, int> _jumps,
@@ -207,21 +221,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 else
                 {
                     _bool_Override = false;
-                    foreach (KeyValuePair<int, int> _jump in _jumps.OrderBy(r => r.Key))
-                    {
-                        if (_jump.Key <= _int_Weight)
-                        {
-                            _int_Jump = _jump.Value;
-                        }
-                        else if (_int_Jump > 0 && _jump.Key + _jump.Value <= _int_Weight + _int_Jump)
-                        {
-                            _int_Jump = _jump.Key - _int_Weight + _jump.Value;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
+                    _int_Jump = GetJumpForWeight(_jumps, _int_Weight);
                 }
                 if (_int_Jump < 1 || (_int_Weight + _int_Jump >= _int_Weight_Opener))
                 {
@@ -716,82 +716,92 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             return _plates;
         }
-        private UInt32? uint_LastBatteryPercent = null;
-        private UInt32? uint_LastBatteryMinutes = null;
         private void UpdateBattery()
         {
-            if (propertyData_BatteryPercent is null || propertyData_BatteryMinutesRemaining is null)
+            System.Management.ObjectQuery _query = new("Select * FROM Win32_Battery");
+            ManagementObjectSearcher _searcher = new(_query);
+            ManagementObjectCollection _collection = _searcher.Get();
+            PropertyData _propertyData_BatteryPercent = null;
+            PropertyData _propertyData_BatteryMinutesRemaining = null;
+            bool _bool_A = false, _bool_B = false;
+            bool _bool_BatteryVisible;
+            foreach (ManagementObject mo in _collection.Cast<ManagementObject>())
             {
-                System.Management.ObjectQuery query = new("Select * FROM Win32_Battery");
-                ManagementObjectSearcher searcher = new(query);
-                ManagementObjectCollection collection = searcher.Get();
-                bool _bool_A = false, _bool_B = false;
-                foreach (ManagementObject mo in collection.Cast<ManagementObject>())
+                foreach (PropertyData property in mo.Properties)
                 {
-                    foreach (PropertyData property in mo.Properties)
+                    if (property.Name == "EstimatedChargeRemaining")
                     {
-                        if (property.Name == "EstimatedChargeRemaining")
-                        {
-                            propertyData_BatteryPercent = property;
-                            _bool_A = true;
-                        }
-                        else if (property.Name == "EstimatedRunTime")
-                        {
-                            propertyData_BatteryMinutesRemaining = property;
-                            _bool_B = true;
-                        }
-                        if (_bool_A && _bool_B)
-                        {
-                            break;
-                        }
+                        _propertyData_BatteryPercent = property;
+                        _bool_A = true;
+                    }
+                    else if (property.Name == "EstimatedRunTime")
+                    {
+                        _propertyData_BatteryMinutesRemaining = property;
+                        _bool_B = true;
+                    }
+                    if (_bool_A && _bool_B)
+                    {
+                        break;
                     }
                 }
             }
-            bool _bool_Visible = false;
-            if (propertyData_BatteryPercent is not null || propertyData_BatteryMinutesRemaining is not null)
+            if (_propertyData_BatteryPercent is not null || _propertyData_BatteryMinutesRemaining is not null)
             {
                 UInt32? _uint_BatteryPercent = 100;
-                if (propertyData_BatteryPercent is not null)
+                if (_propertyData_BatteryPercent is not null)
                 {
                     try
                     {
-                        _uint_BatteryPercent = Convert.ToUInt32(propertyData_BatteryPercent.Value);
+                        _uint_BatteryPercent = Convert.ToUInt32(_propertyData_BatteryPercent.Value);
                     }
                     catch { }
                 }
                 UInt32? _uint_BatteryMinutes = 9999;
-                if (propertyData_BatteryMinutesRemaining is not null)
+                if (_propertyData_BatteryMinutesRemaining is not null)
                 {
                     try
                     {
-                        _uint_BatteryMinutes = Convert.ToUInt32(propertyData_BatteryMinutesRemaining.Value);
+                        _uint_BatteryMinutes = Convert.ToUInt32(_propertyData_BatteryMinutesRemaining.Value);
                     }
                     catch { }
                 }
-                if (uint_LastBatteryPercent != _uint_BatteryPercent || uint_LastBatteryMinutes != _uint_BatteryMinutes)
+                if (_uint_BatteryPercent < 97 || _uint_BatteryMinutes < 500)
                 {
-                    uint_LastBatteryPercent = _uint_BatteryPercent;
-                    uint_LastBatteryMinutes = _uint_BatteryMinutes;
-                    if (uint_LastBatteryPercent < 97 || uint_LastBatteryMinutes < 500)
+                    _bool_BatteryVisible = true;
+                    panel_Battery.BringToFront();
+                    progressBar_Battery.Value = (int)(_uint_BatteryPercent ?? 100);
+                    if (_uint_BatteryMinutes < 999)
                     {
-                        _bool_Visible = true;
-                        panel_Battery.BringToFront();
-                        panel_Battery.Visible = true;
-                        progressBar_Battery.Value = (int)(_uint_BatteryPercent ?? 100);
-                        string _str_LabelText;
-                        if (uint_LastBatteryMinutes < 500)
-                        {
-                            _str_LabelText = $"{uint_LastBatteryMinutes} min";
-                        }
-                        else
-                        {
-                            _str_LabelText = $"{_uint_BatteryPercent:%}";
-                        }
-                        label_Battery_Percentage.Text = _str_LabelText;
+                        TimeSpan _timeSpan = TimeSpan.FromMinutes((int)_uint_BatteryMinutes);
+                        label_Battery_Minutes.Text = $"{_timeSpan.Hours}h{_timeSpan.Minutes}m ({_uint_BatteryPercent}%)";
+                        label_Battery_Minutes.Visible = true;
+                        label_Battery_Percentage.Visible = false;
+                    }
+                    else
+                    {
+                        label_Battery_Percentage.Text = $"{_uint_BatteryPercent}%";
+                        label_Battery_Minutes.Visible = false;
+                        label_Battery_Percentage.Visible = true;
                     }
                 }
+                else
+                {
+                    _bool_BatteryVisible = false;
+                }
             }
-            panel_Battery.Visible = _bool_Visible;
+            else
+            {
+                _bool_BatteryVisible = false;
+            }
+            panel_Battery.Visible = _bool_BatteryVisible;
+        }
+        private DateTime _now
+        {
+            get
+            {
+                DateTime currentTime = DateTime.Now;
+                return currentTime.AddMilliseconds(500).AddTicks(-(currentTime.AddMilliseconds(500).Ticks % TimeSpan.TicksPerSecond));
+            }
         }
     }
 }

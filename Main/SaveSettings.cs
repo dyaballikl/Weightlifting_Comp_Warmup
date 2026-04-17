@@ -1,24 +1,26 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace Weightlifting_Comp_Warmup.Main
 {
     public partial class form_Main
     {
+        private void button_SaveSettings_Click(object sender, EventArgs eventArgs)
+        {
+            SaveSettings();
+        }
         private void SaveSettings()
         {
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
             profiles ??= [];
             savedSettings.int_ProfileId = profileActive?.id ?? 0;
             savedSettings.ii_int_ProfileIds = [.. profiles.Select(r => $"{r.Key:D3}")];
             savedSettings.ii_string_ProfileName = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Name}")];
             savedSettings.ii_int_BarbellWeight = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.BarbellWeight}")];
             savedSettings.ii_int_BarbellWeight = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.BarbellWeight}")];
-            savedSettings.ii_hhmm_Start = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Start.ToString("hhmm")}")];
+            savedSettings.ii_hhmm_Start = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Start:hhmm}")];
             savedSettings.ii_int_Snatch_SecondsStage = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Snatch_SecondsStage}")];
             savedSettings.ii_int_Snatch_OpenerWeight = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Snatch_OpenerWeight}")];
             savedSettings.ii_bool_Snatch_OpenerInWarmup = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Snatch_OpenerInWarmup}")];
@@ -63,6 +65,8 @@ namespace Weightlifting_Comp_Warmup.Main
                     p => p.CJTimes,
                     (p, t) => $"{p.id:D3}{t.Key:D3}{t.Value:D3}")];
             savedSettings.Save();
+            stopwatch.Stop();
+            Console.WriteLine($"save settings time: {stopwatch.ElapsedMilliseconds} ms");
         }
     }
 }

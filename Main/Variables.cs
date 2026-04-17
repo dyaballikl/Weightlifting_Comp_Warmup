@@ -75,6 +75,7 @@ namespace Weightlifting_Comp_Warmup.Main
 
         private Timer timer_snatch_Live;
         private Timer timer_cj_Live;
+        private Timer timer_Battery;
 
         private readonly Color color_Live_Default_FG = Color.FromArgb(240, 240, 240);
         private readonly Color color_Live_Highlight_BG = Color.Yellow;
@@ -90,8 +91,6 @@ namespace Weightlifting_Comp_Warmup.Main
         private Color color_snatch_Live_BG;
         private Color color_cj_Live_BG;
 
-        PropertyData propertyData_BatteryPercent = null;
-        PropertyData propertyData_BatteryMinutesRemaining = null;
         readonly Properties.Settings savedSettings = Properties.Settings.Default;
     }
 }
