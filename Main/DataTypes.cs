@@ -96,6 +96,9 @@ namespace Weightlifting_Comp_Warmup.Main
         public bool PreStep { get; set; }
         public bool Override { get; set; }
         public LiveStepControls Controls { get; set; }
+        public string FormattedWeight => (this.Weight ?? 0) == 0 ? "" : $"{this.Weight}"; // for datagridview
+        public string FormattedLength => Seconds_To_String(this.Length); // for datagridview
+        public string FormattedTotalLength => Seconds_To_String(this.TotalLength); // for datagridview
 
         public Step(string action, int weight, int length, int totalLength, int order, bool preStep, bool @override)
         { // extras
@@ -144,6 +147,16 @@ namespace Weightlifting_Comp_Warmup.Main
         public Step Clone()
         {
             return (Step)this.MemberwiseClone();
+        }
+        private string Seconds_To_String(int seconds)
+        {
+            if (seconds == 0) return "-";
+            TimeSpan ts = TimeSpan.FromSeconds(seconds);
+            string formatted = "";
+            if (ts.Hours > 0) formatted += $"{ts.Hours}h";
+            if (ts.Minutes > 0) formatted += $"{ts.Minutes}m";
+            if (ts.Seconds > 0 || formatted == "") formatted += $"{ts.Seconds}s";
+            return formatted;
         }
     }
     public struct PlateParameter(int width, int height, SolidBrush brush)

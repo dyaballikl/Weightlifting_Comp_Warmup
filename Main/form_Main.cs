@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -52,6 +53,12 @@ namespace Weightlifting_Comp_Warmup.Main
             numericUpDown_cj_weight_opener.ValueChanged += (s, ev) => Opener_Set(LiftType.CleanAndJerk);
             checkBox_cj_Param_OpenerWarmup.CheckedChanged += (s, ev) => Opener_Set(LiftType.CleanAndJerk);
             numericUpDown_cj_time_PostWarmup.ValueChanged += (s, ev) => numericUpDown_time_PostWarmup_ValueChanged(s, ev, LiftType.CleanAndJerk);
+            button_snatch_AddStep.Click += (s, e) => Step_Add(s, e, LiftType.Snatch);
+            button_snatch_Reset.Click += (s, e) => Step_ResetOverrides(s, e, LiftType.Snatch);
+            button_cj_AddStep.Click += (s, e) => Step_Add(s, e, LiftType.CleanAndJerk);
+            button_cj_Reset.Click += (s, e) => Step_ResetOverrides(s, e, LiftType.CleanAndJerk);
+            dataGridView_snatch_steps.AutoGenerateColumns = false;
+            dataGridView_cj_steps.AutoGenerateColumns = false;
         }
         private void buttonClose_Click(object sender, EventArgs e)
         {
@@ -688,10 +695,10 @@ namespace Weightlifting_Comp_Warmup.Main
         private (
             Func<List<Step>> getStepsPlan,
             Action<List<Step>> setStepsPlan,
-            Panel panel,
             Action stopLive,
             Func<bool> isLive,
-            Label stepCountLabel
+            Label stepCountLabel,
+            DataGridView dataGridViewSteps
         ) GetStepContext(LiftType liftType)
         {
             if (liftType == LiftType.Snatch)
@@ -699,10 +706,10 @@ namespace Weightlifting_Comp_Warmup.Main
                 return (
                     () => snatchStepsPLAN,
                     steps => snatchStepsPLAN = steps,
-                    panel_snatch_steps,
                     snatch_Stop_Live,
                     () => bool_snatch_Live,
-                    label_snatch_Setup_StepCount
+                    label_snatch_Setup_StepCount,
+                    dataGridView_snatch_steps
                 );
             }
             else // CleanAndJerk
@@ -710,10 +717,10 @@ namespace Weightlifting_Comp_Warmup.Main
                 return (
                     () => cjStepsPLAN,
                     steps => cjStepsPLAN = steps,
-                    panel_cj_steps,
                     cj_Stop_Live,
                     () => bool_cj_Live,
-                    label_cj_Setup_StepCount
+                    label_cj_Setup_StepCount,
+                    dataGridView_cj_steps
                 );
             }
         }
@@ -749,104 +756,29 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void PopulateSteps(LiftType liftType, bool preserveLifts)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Panel panel, Action stopLive, Func<bool> isLive, Label stepCountLabel) =
+            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) =
                 GetStepContext(liftType);
             stopLive();
-            panel.Controls.Clear();
 
             List<Step> newStepsPlan = GenerateStepsList(liftType, preserveLifts, getStepsPlan());
             setStepsPlan(newStepsPlan);
 
             List<Step> currentSteps = getStepsPlan();
-            if (currentSteps == null) return;
-
-            // This local function creates and adds all controls for a single step row
-            void Add_Step_IndividualControls(int y, Step step)
+            if (currentSteps == null)
             {
-                Label lblAction = new()
-                {
-                    Location = new Point(6, y),
-                    AutoSize = false,
-                    Size = new Size(150, 28),
-                    Text = step.Action, 
-                    Tag = step.Weight
-                };
-                Label lblLength = new() 
-                {
-                    Location = new Point(226, y),
-                    AutoSize = false,
-                    Size = new Size(90, 28),
-                    Text = Seconds_To_String(step.Length),
-                    Tag = step.Weight
-                };
-                Label lblTotalLength = new()
-                {
-                    Location = new Point(317, y),
-                    AutoSize = false,
-                    Size = new Size(90, 28),
-                    Text = Seconds_To_String(step.TotalLength),
-                    Tag = step.Weight 
-                };
-                panel.Controls.AddRange([lblAction, lblLength, lblTotalLength]);
-
-                if (step.Weight > 0)
-                {
-                    void overrideClickHandler(object s, EventArgs e) => Weight_Override_Click(s, e, liftType);
-                    lblAction.Click += overrideClickHandler;
-                    lblLength.Click += overrideClickHandler;
-                    lblTotalLength.Click += overrideClickHandler;
-
-                    Label lblWeight = new()
-                    {
-                        Location = new Point(152, y),
-                        AutoSize = false,
-                        Size = new Size(50, 28),
-                        Text = step.Weight.ToString(),
-                        Tag = step.Weight
-                    };
-                    lblWeight.Click += overrideClickHandler;
-                    panel.Controls.Add(lblWeight);
-
-                    if (step.Override)
-                    {
-                        Font boldFont = new("Gadugi", 10F, FontStyle.Bold);
-                        lblAction.Font = boldFont;
-                        lblWeight.Font = boldFont;
-                        lblLength.Font = boldFont;
-                        lblTotalLength.Font = boldFont;
-                    }
-                }
+                dataGridViewSteps.DataSource = null;
+                stepCountLabel.Text = "0 steps";
+                return;
             }
-
-            int yPos = 1;
-            bool hasOverrides = false;
-            foreach (Step step in currentSteps.OrderBy(r => r.Order))
-            {
-                if (!hasOverrides && step.Override) hasOverrides = true;
-                if (!step.PreStep)
-                {
-                    Add_Step_IndividualControls(yPos, step);
-                    yPos += 30;
-                }
-            }
-
-            // Add interactive buttons at the bottom
-            Button btnAdd = new() { Location = new Point(6, yPos), Size = new Size(50, 28), Text = "+" };
-            btnAdd.Click += (s, e) => Step_Add(s, e, liftType);
-            panel.Controls.Add(btnAdd);
-
-            if (hasOverrides)
-            {
-                Button btnReset = new() { Location = new Point(70, yPos), Size = new Size(100, 28), Text = "reset overrides" };
-                btnReset.Click += (s, e) => Step_ResetOverrides(s, e, liftType);
-                panel.Controls.Add(btnReset);
-            }
-
-            stepCountLabel.Text = $"{currentSteps.Count(s => !s.PreStep)} steps";
+            BindingList<Step> displaySteps = new([.. currentSteps.Where(s => !s.PreStep).OrderBy(r => r.Order)]);
+            dataGridViewSteps.DataSource = displaySteps;
+            bool hasOverrides = currentSteps.Any(s => s.Override);
+            button_snatch_Reset.Visible = hasOverrides;
+            stepCountLabel.Text = $"{displaySteps.Count} steps ({displaySteps.Count(r => r.Weight > 0)} lifts)";
         }
         private void Step_Add(object sender, EventArgs e, LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Panel panel, Action stopLive, Func<bool> isLive, Label stepCountLabel) = GetStepContext(liftType);
+            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(liftType);
             if (isLive()) stopLive();
 
             List<Step> stepsPlan = getStepsPlan();
@@ -869,13 +801,13 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void Step_ResetOverrides(object sender, EventArgs e, LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Panel panel, Action stopLive, Func<bool> isLive, Label stepCountLabel) = GetStepContext(liftType);
+            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan,Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(liftType);
             if (isLive()) stopLive();
             PopulateSteps(liftType, false);
         }
         private void Weight_Override_Click(object sender, EventArgs e, LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Panel panel, Action stopLive, Func<bool> isLive, Label stepCountLabel) = GetStepContext(liftType);
+            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(liftType);
             if (sender is not Label label || label.Tag is not int startWeight || startWeight <= 0) return;
 
             List<Step> stepsPlan = getStepsPlan();
@@ -1048,6 +980,7 @@ namespace Weightlifting_Comp_Warmup.Main
             }
         }
         #endregion
+
         #region snatch LIVE
         private void stopSnatchTimer()
         {
@@ -1620,6 +1553,87 @@ namespace Weightlifting_Comp_Warmup.Main
         private void splitContainer_snatch_DoubleClick(object sender, EventArgs e)
         {
             splitContainer_snatch.SplitterDistance = 0;
+        }
+        private void dataGridView_snatch_steps_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Ensure a valid row and column was clicked
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+            if (sender is not DataGridView dgv) return;
+
+            // Get the Step object associated with the clicked row
+            if (dgv.Rows[e.RowIndex].DataBoundItem is not Step clickedStep) return;
+
+            // Check if the clicked column is the Weight column and it's a lift step
+            // Using DataBoundItem is more robust than relying on Tag.
+            if (dgv.Columns[e.ColumnIndex].Name == "ColWeight" && clickedStep.Weight > 0)
+            {
+                // You'll need to know the LiftType here.
+                // If your form context always has a current LiftType, you can access it.
+                // Otherwise, you might need to pass it in when setting up the dgvSteps.
+                // For this example, let's assume it's available as 'currentLiftType'.
+                // You might need to retrieve LiftType from the DataGridView's Tag or a form's property.
+                // For demonstration, let's assume currentLiftType is available globally or passed in another way.
+                LiftType currentLiftType = LiftType.Snatch; // Placeholder, you need to get the actual liftType
+
+                (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(currentLiftType);
+
+                stopLive();
+
+                string newWeightStr = clickedStep.Weight.ToString();
+                if (ShowInputDialog(ref newWeightStr) == DialogResult.OK && int.TryParse(newWeightStr, out int newWeight))
+                {
+                    if (newWeight == clickedStep.Weight) return; // No change
+
+                    // Check against the full steps plan, not just the displayed ones
+                    List<Step> fullStepsPlan = getStepsPlan();
+                    if (fullStepsPlan.Any(s => s.Weight == newWeight && s != clickedStep)) // Ensure not comparing against itself
+                    {
+                        MessageBox.Show($"{newWeight} is already a step.");
+                    }
+                    else
+                    {
+                        clickedStep.Weight = newWeight;
+                        clickedStep.Override = true;
+
+                        // You might need to update other calculated properties for all steps
+                        // or just call GenerateStepsList again to recalculate everything
+                        PopulateSteps(currentLiftType, true);
+                        // Or if GenerateStepsList only updates the modified steps:
+                        // setStepsPlan(fullStepsPlan); // Update the underlying list
+                        // dgv.Refresh(); // Refresh the grid to reflect changes
+                    }
+                }
+            }
+        }
+        private void dataGridView_snatch_steps_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Ensure we have a valid row and a Step object
+            if (e.RowIndex < 0) return;
+
+            if (sender is not DataGridView dgv) return;
+
+            if (dgv.Rows[e.RowIndex].DataBoundItem is not Step step) return;
+
+            // If the step is overridden, apply bold font to all relevant cells in the row
+            if (step.Override)
+            {
+                Font boldFont = new("Gadugi", 10F, FontStyle.Bold); // Or whatever font you use
+                e.CellStyle.Font = boldFont;
+            }
+            else
+            {
+                // Important: Reset to default font if not overridden, otherwise bold will persist
+                // if a row was previously bolded and then un-overridden.
+                e.CellStyle.Font = new Font("Gadugi", 10F, FontStyle.Regular);
+            }
+
+            // Custom formatting for Weight column (e.g., if Weight is 0, show empty string)
+            if (dgv.Columns[e.ColumnIndex].Name == "ColWeight" && step.Weight == 0)
+            {
+                e.Value = string.Empty; // Hide 0 weight
+                e.FormattingApplied = true;
+            }
         }
         #endregion
 

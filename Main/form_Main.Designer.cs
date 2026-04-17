@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabControl_Competition = new System.Windows.Forms.TabControl();
             this.tabPage_snatch = new System.Windows.Forms.TabPage();
             this.splitContainer_snatch = new System.Windows.Forms.SplitContainer();
@@ -47,9 +49,11 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.button_snatch_Reset = new System.Windows.Forms.Button();
+            this.button_snatch_AddStep = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
-            this.panel_snatch_steps = new System.Windows.Forms.Panel();
+            this.dataGridView_snatch_steps = new System.Windows.Forms.DataGridView();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -97,6 +101,7 @@
             this.splitContainer_cj = new System.Windows.Forms.SplitContainer();
             this.label_cj_Setup_StepCount = new System.Windows.Forms.Label();
             this.panel_cj_Params = new System.Windows.Forms.Panel();
+            this.button_cj_SaveSettings = new System.Windows.Forms.Button();
             this.checkBox_cj_Param_OpenerWarmup = new System.Windows.Forms.CheckBox();
             this.panel_cj_Param_Opener = new System.Windows.Forms.Panel();
             this.numericUpDown_cj_time_PostWarmup = new System.Windows.Forms.NumericUpDown();
@@ -107,9 +112,11 @@
             this.label29 = new System.Windows.Forms.Label();
             this.label30 = new System.Windows.Forms.Label();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.button_cj_Reset = new System.Windows.Forms.Button();
+            this.button_cj_AddStep = new System.Windows.Forms.Button();
+            this.dataGridView_cj_steps = new System.Windows.Forms.DataGridView();
             this.label31 = new System.Windows.Forms.Label();
             this.label32 = new System.Windows.Forms.Label();
-            this.panel_cj_steps = new System.Windows.Forms.Panel();
             this.label33 = new System.Windows.Forms.Label();
             this.label34 = new System.Windows.Forms.Label();
             this.label35 = new System.Windows.Forms.Label();
@@ -172,7 +179,14 @@
             this.label_Battery_Percentage = new System.Windows.Forms.Label();
             this.progressBar_Battery = new System.Windows.Forms.ProgressBar();
             this.label_Battery = new System.Windows.Forms.Label();
-            this.button_cj_SaveSettings = new System.Windows.Forms.Button();
+            this.Column_Snatch_Step = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_Snatch_Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_Snatch_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_Snatch_TotalTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_CJ_Step = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_CJ_Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_CJ_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_CJ_TotalTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl_Competition.SuspendLayout();
             this.tabPage_snatch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_snatch)).BeginInit();
@@ -185,6 +199,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_snatch_weight_opener)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_snatch_time_stage)).BeginInit();
             this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_snatch_steps)).BeginInit();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -199,6 +214,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_cj_weight_opener)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_cj_time_stage)).BeginInit();
             this.panel7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_cj_steps)).BeginInit();
             this.panel9.SuspendLayout();
             this.panel11.SuspendLayout();
             this.panel13.SuspendLayout();
@@ -502,15 +518,39 @@
             this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel4.Controls.Add(this.button_snatch_Reset);
+            this.panel4.Controls.Add(this.button_snatch_AddStep);
             this.panel4.Controls.Add(this.label19);
             this.panel4.Controls.Add(this.label18);
-            this.panel4.Controls.Add(this.panel_snatch_steps);
+            this.panel4.Controls.Add(this.dataGridView_snatch_steps);
             this.panel4.Controls.Add(this.label16);
             this.panel4.Controls.Add(this.label17);
             this.panel4.Location = new System.Drawing.Point(1241, 40);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(425, 372);
             this.panel4.TabIndex = 14;
+            // 
+            // button_snatch_Reset
+            // 
+            this.button_snatch_Reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_snatch_Reset.ForeColor = System.Drawing.Color.Black;
+            this.button_snatch_Reset.Location = new System.Drawing.Point(66, 337);
+            this.button_snatch_Reset.Name = "button_snatch_Reset";
+            this.button_snatch_Reset.Size = new System.Drawing.Size(100, 28);
+            this.button_snatch_Reset.TabIndex = 14;
+            this.button_snatch_Reset.Text = "reset overrides";
+            this.button_snatch_Reset.UseVisualStyleBackColor = true;
+            // 
+            // button_snatch_AddStep
+            // 
+            this.button_snatch_AddStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_snatch_AddStep.ForeColor = System.Drawing.Color.Black;
+            this.button_snatch_AddStep.Location = new System.Drawing.Point(6, 337);
+            this.button_snatch_AddStep.Name = "button_snatch_AddStep";
+            this.button_snatch_AddStep.Size = new System.Drawing.Size(50, 28);
+            this.button_snatch_AddStep.TabIndex = 13;
+            this.button_snatch_AddStep.Text = "+";
+            this.button_snatch_AddStep.UseVisualStyleBackColor = true;
             // 
             // label19
             // 
@@ -530,16 +570,44 @@
             this.label18.TabIndex = 11;
             this.label18.Text = "time";
             // 
-            // panel_snatch_steps
+            // dataGridView_snatch_steps
             // 
-            this.panel_snatch_steps.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.dataGridView_snatch_steps.AllowUserToAddRows = false;
+            this.dataGridView_snatch_steps.AllowUserToDeleteRows = false;
+            this.dataGridView_snatch_steps.AllowUserToResizeColumns = false;
+            this.dataGridView_snatch_steps.AllowUserToResizeRows = false;
+            this.dataGridView_snatch_steps.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel_snatch_steps.AutoScroll = true;
-            this.panel_snatch_steps.Location = new System.Drawing.Point(0, 35);
-            this.panel_snatch_steps.Name = "panel_snatch_steps";
-            this.panel_snatch_steps.Size = new System.Drawing.Size(424, 335);
-            this.panel_snatch_steps.TabIndex = 10;
+            this.dataGridView_snatch_steps.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.dataGridView_snatch_steps.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView_snatch_steps.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dataGridView_snatch_steps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_snatch_steps.ColumnHeadersVisible = false;
+            this.dataGridView_snatch_steps.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column_Snatch_Step,
+            this.Column_Snatch_Weight,
+            this.Column_Snatch_Time,
+            this.Column_Snatch_TotalTime});
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Gadugi", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView_snatch_steps.DefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridView_snatch_steps.Location = new System.Drawing.Point(0, 35);
+            this.dataGridView_snatch_steps.MultiSelect = false;
+            this.dataGridView_snatch_steps.Name = "dataGridView_snatch_steps";
+            this.dataGridView_snatch_steps.ReadOnly = true;
+            this.dataGridView_snatch_steps.RowHeadersVisible = false;
+            this.dataGridView_snatch_steps.RowTemplate.Height = 28;
+            this.dataGridView_snatch_steps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_snatch_steps.Size = new System.Drawing.Size(424, 298);
+            this.dataGridView_snatch_steps.TabIndex = 10;
+            this.dataGridView_snatch_steps.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_snatch_steps_CellClick);
+            this.dataGridView_snatch_steps.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView_snatch_steps_CellFormatting);
             // 
             // label16
             // 
@@ -1079,6 +1147,19 @@
             this.panel_cj_Params.Size = new System.Drawing.Size(1199, 106);
             this.panel_cj_Params.TabIndex = 16;
             // 
+            // button_cj_SaveSettings
+            // 
+            this.button_cj_SaveSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_cj_SaveSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_cj_SaveSettings.Font = new System.Drawing.Font("Gadugi", 10F);
+            this.button_cj_SaveSettings.Location = new System.Drawing.Point(16, 78);
+            this.button_cj_SaveSettings.Name = "button_cj_SaveSettings";
+            this.button_cj_SaveSettings.Size = new System.Drawing.Size(141, 28);
+            this.button_cj_SaveSettings.TabIndex = 25;
+            this.button_cj_SaveSettings.Text = "save settings";
+            this.button_cj_SaveSettings.UseVisualStyleBackColor = true;
+            this.button_cj_SaveSettings.Click += new System.EventHandler(this.button_SaveSettings_Click);
+            // 
             // checkBox_cj_Param_OpenerWarmup
             // 
             this.checkBox_cj_Param_OpenerWarmup.AutoSize = true;
@@ -1204,15 +1285,76 @@
             this.panel7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel7.Controls.Add(this.button_cj_Reset);
+            this.panel7.Controls.Add(this.button_cj_AddStep);
+            this.panel7.Controls.Add(this.dataGridView_cj_steps);
             this.panel7.Controls.Add(this.label31);
             this.panel7.Controls.Add(this.label32);
-            this.panel7.Controls.Add(this.panel_cj_steps);
             this.panel7.Controls.Add(this.label33);
             this.panel7.Controls.Add(this.label34);
             this.panel7.Location = new System.Drawing.Point(1241, 40);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(425, 372);
             this.panel7.TabIndex = 14;
+            // 
+            // button_cj_Reset
+            // 
+            this.button_cj_Reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_cj_Reset.ForeColor = System.Drawing.Color.Black;
+            this.button_cj_Reset.Location = new System.Drawing.Point(66, 337);
+            this.button_cj_Reset.Name = "button_cj_Reset";
+            this.button_cj_Reset.Size = new System.Drawing.Size(100, 28);
+            this.button_cj_Reset.TabIndex = 16;
+            this.button_cj_Reset.Text = "reset overrides";
+            this.button_cj_Reset.UseVisualStyleBackColor = true;
+            // 
+            // button_cj_AddStep
+            // 
+            this.button_cj_AddStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_cj_AddStep.ForeColor = System.Drawing.Color.Black;
+            this.button_cj_AddStep.Location = new System.Drawing.Point(6, 337);
+            this.button_cj_AddStep.Name = "button_cj_AddStep";
+            this.button_cj_AddStep.Size = new System.Drawing.Size(50, 28);
+            this.button_cj_AddStep.TabIndex = 15;
+            this.button_cj_AddStep.Text = "+";
+            this.button_cj_AddStep.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView_cj_steps
+            // 
+            this.dataGridView_cj_steps.AllowUserToAddRows = false;
+            this.dataGridView_cj_steps.AllowUserToDeleteRows = false;
+            this.dataGridView_cj_steps.AllowUserToResizeColumns = false;
+            this.dataGridView_cj_steps.AllowUserToResizeRows = false;
+            this.dataGridView_cj_steps.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView_cj_steps.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(90)))));
+            this.dataGridView_cj_steps.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView_cj_steps.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dataGridView_cj_steps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_cj_steps.ColumnHeadersVisible = false;
+            this.dataGridView_cj_steps.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column_CJ_Step,
+            this.Column_CJ_Weight,
+            this.Column_CJ_Time,
+            this.Column_CJ_TotalTime});
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(90)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Gadugi", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(90)))));
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView_cj_steps.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dataGridView_cj_steps.Location = new System.Drawing.Point(0, 35);
+            this.dataGridView_cj_steps.MultiSelect = false;
+            this.dataGridView_cj_steps.Name = "dataGridView_cj_steps";
+            this.dataGridView_cj_steps.ReadOnly = true;
+            this.dataGridView_cj_steps.RowHeadersVisible = false;
+            this.dataGridView_cj_steps.RowTemplate.Height = 28;
+            this.dataGridView_cj_steps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_cj_steps.Size = new System.Drawing.Size(424, 298);
+            this.dataGridView_cj_steps.TabIndex = 13;
             // 
             // label31
             // 
@@ -1231,17 +1373,6 @@
             this.label32.Size = new System.Drawing.Size(35, 17);
             this.label32.TabIndex = 11;
             this.label32.Text = "time";
-            // 
-            // panel_cj_steps
-            // 
-            this.panel_cj_steps.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel_cj_steps.AutoScroll = true;
-            this.panel_cj_steps.Location = new System.Drawing.Point(0, 35);
-            this.panel_cj_steps.Name = "panel_cj_steps";
-            this.panel_cj_steps.Size = new System.Drawing.Size(424, 335);
-            this.panel_cj_steps.TabIndex = 10;
             // 
             // label33
             // 
@@ -1945,18 +2076,69 @@
             this.label_Battery.TabIndex = 0;
             this.label_Battery.Text = "battery";
             // 
-            // button_cj_SaveSettings
+            // Column_Snatch_Step
             // 
-            this.button_cj_SaveSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_cj_SaveSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button_cj_SaveSettings.Font = new System.Drawing.Font("Gadugi", 10F);
-            this.button_cj_SaveSettings.Location = new System.Drawing.Point(16, 78);
-            this.button_cj_SaveSettings.Name = "button_cj_SaveSettings";
-            this.button_cj_SaveSettings.Size = new System.Drawing.Size(141, 28);
-            this.button_cj_SaveSettings.TabIndex = 25;
-            this.button_cj_SaveSettings.Text = "save settings";
-            this.button_cj_SaveSettings.UseVisualStyleBackColor = true;
-            this.button_cj_SaveSettings.Click += new System.EventHandler(this.button_SaveSettings_Click);
+            this.Column_Snatch_Step.DataPropertyName = "Action";
+            this.Column_Snatch_Step.HeaderText = "Column_Snatch_Step";
+            this.Column_Snatch_Step.Name = "Column_Snatch_Step";
+            this.Column_Snatch_Step.ReadOnly = true;
+            this.Column_Snatch_Step.Width = 153;
+            // 
+            // Column_Snatch_Weight
+            // 
+            this.Column_Snatch_Weight.DataPropertyName = "FormattedWeight";
+            this.Column_Snatch_Weight.HeaderText = "Column_Snatch_Weight";
+            this.Column_Snatch_Weight.Name = "Column_Snatch_Weight";
+            this.Column_Snatch_Weight.ReadOnly = true;
+            this.Column_Snatch_Weight.Width = 74;
+            // 
+            // Column_Snatch_Time
+            // 
+            this.Column_Snatch_Time.DataPropertyName = "FormattedLength";
+            this.Column_Snatch_Time.HeaderText = "Column_Snatch_Time";
+            this.Column_Snatch_Time.Name = "Column_Snatch_Time";
+            this.Column_Snatch_Time.ReadOnly = true;
+            this.Column_Snatch_Time.Width = 92;
+            // 
+            // Column_Snatch_TotalTime
+            // 
+            this.Column_Snatch_TotalTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column_Snatch_TotalTime.DataPropertyName = "FormattedTotalLength";
+            this.Column_Snatch_TotalTime.HeaderText = "Column_Snatch_TotalTime";
+            this.Column_Snatch_TotalTime.Name = "Column_Snatch_TotalTime";
+            this.Column_Snatch_TotalTime.ReadOnly = true;
+            // 
+            // Column_CJ_Step
+            // 
+            this.Column_CJ_Step.DataPropertyName = "Action";
+            this.Column_CJ_Step.HeaderText = "Column_CJ_Step";
+            this.Column_CJ_Step.Name = "Column_CJ_Step";
+            this.Column_CJ_Step.ReadOnly = true;
+            this.Column_CJ_Step.Width = 153;
+            // 
+            // Column_CJ_Weight
+            // 
+            this.Column_CJ_Weight.DataPropertyName = "FormattedWeight";
+            this.Column_CJ_Weight.HeaderText = "Column_CJ_Weight";
+            this.Column_CJ_Weight.Name = "Column_CJ_Weight";
+            this.Column_CJ_Weight.ReadOnly = true;
+            this.Column_CJ_Weight.Width = 74;
+            // 
+            // Column_CJ_Time
+            // 
+            this.Column_CJ_Time.DataPropertyName = "FormattedLength";
+            this.Column_CJ_Time.HeaderText = "Column_CJ_Time";
+            this.Column_CJ_Time.Name = "Column_CJ_Time";
+            this.Column_CJ_Time.ReadOnly = true;
+            this.Column_CJ_Time.Width = 92;
+            // 
+            // Column_CJ_TotalTime
+            // 
+            this.Column_CJ_TotalTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column_CJ_TotalTime.DataPropertyName = "FormattedTotalLength";
+            this.Column_CJ_TotalTime.HeaderText = "Column_CJ_TotalTime";
+            this.Column_CJ_TotalTime.Name = "Column_CJ_TotalTime";
+            this.Column_CJ_TotalTime.ReadOnly = true;
             // 
             // form_Main
             // 
@@ -1995,6 +2177,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_snatch_time_stage)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_snatch_steps)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -2017,6 +2200,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_cj_time_stage)).EndInit();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_cj_steps)).EndInit();
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
             this.panel11.ResumeLayout(false);
@@ -2073,7 +2257,6 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Panel panel_snatch_steps;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Panel panel_snatch_Params;
@@ -2106,7 +2289,6 @@
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.Panel panel_cj_steps;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.Label label35;
@@ -2186,6 +2368,20 @@
         private System.Windows.Forms.Label label_Battery_Minutes;
         private System.Windows.Forms.Button button_snatch_SaveSettings;
         private System.Windows.Forms.Button button_cj_SaveSettings;
+        private System.Windows.Forms.DataGridView dataGridView_snatch_steps;
+        private System.Windows.Forms.Button button_snatch_AddStep;
+        private System.Windows.Forms.Button button_snatch_Reset;
+        private System.Windows.Forms.Button button_cj_Reset;
+        private System.Windows.Forms.Button button_cj_AddStep;
+        private System.Windows.Forms.DataGridView dataGridView_cj_steps;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column_Snatch_Step;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column_Snatch_Weight;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column_Snatch_Time;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column_Snatch_TotalTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column_CJ_Step;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column_CJ_Weight;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column_CJ_Time;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column_CJ_TotalTime;
     }
 }
 

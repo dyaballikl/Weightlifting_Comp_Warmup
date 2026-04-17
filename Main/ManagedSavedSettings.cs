@@ -598,7 +598,7 @@ namespace Weightlifting_Comp_Warmup.Main
             //  3   3 digit order
             //  6   5 digit length
             //  11  variable length string (action name)
-            if (setting.Length < 11 &&
+            if (setting.Length >= 11 &&
                 int.TryParse(setting.Substring(0, 3), out int extraId) && extraId > -1 &&
                 int.TryParse(setting.Substring(3, 3), out int order) && order > -1 &&
                 int.TryParse(setting.Substring(6, 5), out int length) && length > 0)
@@ -796,6 +796,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     int idNew = profiles.Max(r => r.Key) + 1;
                     Profile _profile_New = _profile_ToCopy.Clone(idNew: idNew);
+                    _profile_New.Name = _str_Name;
                     profiles[idNew] = _profile_New;
                     SaveSettings();
                 }
