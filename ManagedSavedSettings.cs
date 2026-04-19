@@ -272,27 +272,27 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             if (_profile.SnatchExtras.Count == 0)
             {
-                _profile.SnatchExtras = Defaults.default_snatchExtras();
+                _profile.SnatchExtras = Defaults.default_snatchExtras;
             }
             if (_profile.SnatchJumps.Count == 0)
             {
-                _profile.SnatchJumps = Defaults.default_snatchJumps();
+                _profile.SnatchJumps = Defaults.default_snatchJumps;
             }
             if (_profile.SnatchTimes.Count == 0)
             {
-                _profile.SnatchTimes = Defaults.default_snatchTimes();
+                _profile.SnatchTimes = Defaults.default_snatchTimes;
             }
             if (_profile.CJExtras.Count == 0)
             {
-                _profile.CJExtras = Defaults.default_cjExtras();
+                _profile.CJExtras = Defaults.default_cjExtras;
             }
             if (_profile.CJJumps.Count == 0)
             {
-                _profile.CJJumps = Defaults.default_cjJumps();
+                _profile.CJJumps = Defaults.default_cjJumps;
             }
             if (_profile.CJTimes.Count == 0)
             {
-                _profile.CJTimes = Defaults.default_cjTimes();
+                _profile.CJTimes = Defaults.default_cjTimes;
             }
             if (!_profile.SnatchJumps.TryGetValue(1, out _))
             {
@@ -321,8 +321,8 @@ namespace Weightlifting_Comp_Warmup.Main
             snatch_Stop_Live();
             cj_Stop_Live();
 
-            color_snatch_Live_BG = splitContainer_snatch.Panel2.BackColor;
-            color_cj_Live_BG = splitContainer_cj.Panel2.BackColor;
+            AppColors.Snatch_Live_BG = splitContainer_snatch.Panel2.BackColor;
+            AppColors.Cj_Live_BG = splitContainer_cj.Panel2.BackColor;
 
             if (profileActive.BarbellWeight < numericUpDown_snatch_weight_barbell.Minimum)
             {
@@ -415,86 +415,24 @@ namespace Weightlifting_Comp_Warmup.Main
             checkBox_snatch_Live_Beep.Checked = profileActive.Beep;
             checkBox_cj_Live_Beep.Checked = profileActive.Beep;
 
-            bool bool_AutoVals;
-
-            bool_AutoVals = true;
-            if (default_snatchExtras != null && default_snatchExtras.Count > 0)
-            {
-                profileActive.SnatchExtras = [.. default_snatchExtras];
-                bool_AutoVals = false;
-            }
-            if (bool_AutoVals)
-            {
-                profileActive.SnatchExtras = Defaults.default_snatchExtras();
-            }
+            profileActive.SnatchExtras ??= Defaults.default_snatchExtras;
             PopulateExtras(liftType: LiftType.Snatch);
 
-            bool_AutoVals = true;
-            if (default_snatchJumps != null && default_snatchJumps.Count > 0)
-            {
-                profileActive.SnatchJumps = new(default_snatchJumps);
-                bool_AutoVals = false;
-            }
-            if (bool_AutoVals)
-            {
-                profileActive.SnatchJumps = Defaults.default_snatchJumps();
-            }
+            profileActive.SnatchJumps ??= Defaults.default_snatchJumps;
             PopulateJumps(liftType: LiftType.Snatch);
 
-            bool_AutoVals = true;
-            if (default_snatchTimes != null && default_snatchTimes.Count > 0)
-            {
-                profileActive.SnatchTimes = new(default_snatchTimes);
-                bool_AutoVals = false;
-            }
-            if (bool_AutoVals)
-            {
-                profileActive.SnatchTimes = Defaults.default_snatchTimes();
-            }
+            profileActive.SnatchTimes ??= Defaults.default_snatchTimes;
             PopulateTimes(liftType: LiftType.Snatch);
 
             PopulateSteps(liftType: LiftType.Snatch, preserveLifts: false);
 
-            bool_AutoVals = true;
-            if (default_cjExtras != null && default_cjExtras.Count > 0)
-            {
-                profileActive.CJExtras = [.. default_cjExtras];
-                bool_AutoVals = false;
-            }
-            if (bool_AutoVals)
-            {
-                profileActive.CJExtras = Defaults.default_cjExtras();
-            }
+            profileActive.CJExtras ??= Defaults.default_cjExtras;
             PopulateExtras(liftType: LiftType.CleanAndJerk);
 
-            bool_AutoVals = true;
-            if (default_cjJumps != null)
-            {
-                if (default_cjJumps.Count > 0)
-                {
-                    profileActive.CJJumps = new(default_cjJumps);
-                    bool_AutoVals = false;
-                }
-            }
-            if (bool_AutoVals)
-            {
-                profileActive.CJJumps = Defaults.default_cjJumps();
-            }
+            profileActive.CJJumps ??= Defaults.default_cjJumps;
             PopulateJumps(liftType: LiftType.CleanAndJerk);
 
-            bool_AutoVals = true;
-            if (default_cjTimes != null)
-            {
-                if (default_cjTimes.Count > 0)
-                {
-                    profileActive.CJTimes = new(default_cjTimes);
-                    bool_AutoVals = false;
-                }
-            }
-            if (bool_AutoVals)
-            {
-                profileActive.CJTimes = Defaults.default_cjTimes();
-            }
+            profileActive.CJTimes ??= Defaults.default_cjTimes;
             PopulateTimes(liftType: LiftType.CleanAndJerk);
 
             PopulateSteps(liftType: LiftType.CleanAndJerk, preserveLifts: false);

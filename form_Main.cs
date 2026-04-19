@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -381,7 +380,7 @@ namespace Weightlifting_Comp_Warmup.Main
             Dictionary<int, int> jumps,
             Panel panel,
             Action stopLive,
-            Func<Dictionary<int, int>> getDefaultJumps) GetJumpContext(LiftType liftType)
+            Dictionary<int, int> getDefaultJumps) GetJumpContext(LiftType liftType)
         {
             if (liftType == LiftType.Snatch)
             {
@@ -402,15 +401,18 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void PopulateJumps(LiftType liftType)
         {
-            (Dictionary<int, int> jumps, Panel panel, Action stopLive, Func<Dictionary<int, int>> getDefaultJumps) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, Panel panel, Action stopLive, Dictionary<int, int> getDefaultJumps) = GetJumpContext(liftType);
             stopLive();
             panel.Controls.Clear();
 
             if (jumps.Count == 0)
             {
                 // This assignment requires the context.jumps to be a reference
-                if (liftType == LiftType.Snatch) profileActive.SnatchJumps = getDefaultJumps();
-                else profileActive.CJJumps = getDefaultJumps();
+                if (liftType == LiftType.Snatch)
+                {
+                    profileActive.SnatchJumps = getDefaultJumps;
+                }
+                else profileActive.CJJumps = getDefaultJumps;
             }
 
             // A local function to create the UI controls for each row
@@ -466,7 +468,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_jump_commit_click(object sender, EventArgs e, LiftType liftType)
         {
-            (Dictionary<int, int> jumps, Panel panel, Action stopLive, Func<Dictionary<int, int>> getDefaultJumps) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, Panel panel, Action stopLive, Dictionary<int, int> getDefaultJumps) = GetJumpContext(liftType);
 
             NumericUpDown fromWeightNmud = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
             NumericUpDown jumpNmud = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
@@ -538,7 +540,7 @@ namespace Weightlifting_Comp_Warmup.Main
             Dictionary<int, int> times,
             Panel panel,
             Action stopLive,
-            Func<Dictionary<int, int>> getDefaultTimes) GetTimeContext(LiftType liftType)
+            Dictionary<int, int> getDefaultTimes) GetTimeContext(LiftType liftType)
         {
             if (liftType == LiftType.Snatch)
             {
@@ -559,15 +561,15 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void PopulateTimes(LiftType liftType)
         {
-            (Dictionary<int, int> times, Panel panel, Action stopLive, Func<Dictionary<int, int>> getDefaultTimes) context = GetTimeContext(liftType);
+            (Dictionary<int, int> times, Panel panel, Action stopLive, Dictionary<int, int> getDefaultTimes) context = GetTimeContext(liftType);
             context.stopLive();
             context.panel.Controls.Clear();
 
             // Assign default times if the current list is empty
             if (context.times.Count == 0)
             {
-                if (liftType == LiftType.Snatch) profileActive.SnatchTimes = context.getDefaultTimes();
-                else profileActive.CJTimes = context.getDefaultTimes();
+                if (liftType == LiftType.Snatch) profileActive.SnatchTimes = context.getDefaultTimes;
+                else profileActive.CJTimes = context.getDefaultTimes;
                 // Re-fetch context to ensure we have the newly assigned dictionary
                 context = GetTimeContext(liftType);
             }
@@ -625,7 +627,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_time_commit_click(object sender, EventArgs e, LiftType liftType)
         {
-            (Dictionary<int, int> times, Panel panel, Action stopLive, Func<Dictionary<int, int>> getDefaultTimes) = GetTimeContext(liftType);
+            (Dictionary<int, int> times, Panel panel, Action stopLive, _) = GetTimeContext(liftType);
 
             NumericUpDown fromWeightNmud = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
             NumericUpDown timeNmud = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
@@ -801,7 +803,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void Step_ResetOverrides(object sender, EventArgs e, LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan,Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(liftType);
+            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(liftType);
             if (isLive()) stopLive();
             PopulateSteps(liftType, false);
         }
@@ -1002,7 +1004,7 @@ namespace Weightlifting_Comp_Warmup.Main
             label_snatch_Live_LiftsPassed.Text = String.Empty;
             Clear_snatch_Live_Steps();
             progressBar_snatch_Live_StageLift.Value = 0;
-            button_snatch_Live_StageAdvance.BackColor = color_snatch_Live_BG;
+            button_snatch_Live_StageAdvance.BackColor = AppColors.Snatch_Live_BG;
             button_snatch_Live_StageAdvance.Tag = 0;
             bool_snatch_LiveLifting = false;
             button_snatch_Live_StartStop.Text = "start";
@@ -1095,8 +1097,8 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     Size = new Size(_int_panel_Live_Step_Width, 80),
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    BackColor = color_snatch_Live_BG,
-                    ForeColor = color_Live_Default_FG,
+                    BackColor = AppColors.Snatch_Live_BG,
+                    ForeColor = AppColors.Live_Default_FG,
                     Location = new Point(1, intY)
                 };
                 Label label_Action = new()
@@ -1183,18 +1185,15 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     weightBoxGraphic = new()
                     {
-                        boolOpener = false,
-                        intWeightBar = profileActive.BarbellWeight,
-                        intWeight = (int)_step.Weight,
-                        intOutlineWidth = 1,
-                        intPlateGap = -1,
+                        isOpener = false,
+                        BarWeight = profileActive.BarbellWeight,
+                        Weight = (int)_step.Weight,
                         Size = new Size(120, 65),
                         BackColor = Color.FromArgb(196, 196, 196),
                         BorderStyle = BorderStyle.Fixed3D,
                         Location = new Point(10, 6),
                         Visible = true,
                     };
-                    weightBoxGraphic.Paint += Apply_Vector_Weight_Graphic;
                     panel_Live_Step.Controls.Add(weightBoxGraphic);
                 }
                 progressBar_Step.BringToFront();
@@ -1232,7 +1231,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 if ((int)button_snatch_Live_StageAdvance.Tag == 1)
                 {
                     button_snatch_Live_StageAdvance.Tag = 0;
-                    button_snatch_Live_StageAdvance.BackColor = color_snatch_Live_BG;
+                    button_snatch_Live_StageAdvance.BackColor = AppColors.Snatch_Live_BG;
                 }
                 label_snatch_Live_TimeTillStart.Text = Seconds_To_String(intSecondsToStart);
                 intSecondsToOpen = intSecondsToStart + (profileActive.Snatch_LiftsOut * profileActive.Snatch_SecondsStage);
@@ -1255,7 +1254,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     if ((int)button_snatch_Live_StageAdvance.Tag == 0)
                     {
                         button_snatch_Live_StageAdvance.Tag = 1;
-                        button_snatch_Live_StageAdvance.BackColor = color_AdvanceButton_Active;
+                        button_snatch_Live_StageAdvance.BackColor = AppColors.AdvanceButton_Active;
                     }
                     progressBar_snatch_Live_StageLift.PerformStep();
                     if (bool_snatch_AutoAdvance)
@@ -1273,7 +1272,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     if ((int)button_snatch_Live_StageAdvance.Tag == 1)
                     {
                         button_snatch_Live_StageAdvance.Tag = 0;
-                        button_snatch_Live_StageAdvance.BackColor = color_snatch_Live_BG;
+                        button_snatch_Live_StageAdvance.BackColor = AppColors.Snatch_Live_BG;
                     }
                 }
             }
@@ -1382,8 +1381,8 @@ namespace Weightlifting_Comp_Warmup.Main
 
                         if (bool_UpdateStepHighlights)
                         {
-                            panel_Live_Step.BackColor = color_Live_Highlight_BG;
-                            panel_Live_Step.ForeColor = color_Live_Highlight_FG;
+                            panel_Live_Step.BackColor = AppColors.Live_Highlight_BG;
+                            panel_Live_Step.ForeColor = AppColors.Live_Highlight_FG;
                         }
                         else
                         {
@@ -1393,8 +1392,8 @@ namespace Weightlifting_Comp_Warmup.Main
                     else if (bool_UpdateStepHighlights)
                     {
                         panel_Live_Step = _step.Controls.PanelLiveStep;
-                        panel_Live_Step.BackColor = color_snatch_Live_BG;
-                        panel_Live_Step.ForeColor = color_Live_Default_FG;
+                        panel_Live_Step.BackColor = AppColors.Snatch_Live_BG;
+                        panel_Live_Step.ForeColor = AppColors.Live_Default_FG;
                         label_Progress_Time = _step.Controls.LabelProgressTime;
                         label_Progress_Time.Visible = false;
                         progressBar_Step = _step.Controls.ProgressBarStep;
@@ -1661,9 +1660,9 @@ namespace Weightlifting_Comp_Warmup.Main
             progressBar_cj_Live_sn.Value = 0;
             progressBar_cj_Live_Break.Value = 0;
             label_cj_Live_Break.Text = String.Empty;
-            button_cj_Live_StageAdvance.BackColor = color_cj_Live_BG;
+            button_cj_Live_StageAdvance.BackColor = AppColors.Cj_Live_BG;
             button_cj_Live_StageAdvance.Tag = 0;
-            button_cj_Live_snStageAdvance.BackColor = color_cj_Live_BG;
+            button_cj_Live_snStageAdvance.BackColor = AppColors.Cj_Live_BG;
             button_cj_Live_snStageAdvance.Tag = 0;
             bool_cj_LiveLifting = false;
             bool_cj_BreakRunning = false;
@@ -1762,8 +1761,8 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     Size = new Size(_int_panel_Live_Step_Width, 80),
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    BackColor = color_cj_Live_BG,
-                    ForeColor = color_Live_Default_FG,
+                    BackColor = AppColors.Cj_Live_BG,
+                    ForeColor = AppColors.Live_Default_FG,
                     Location = new Point(1, intY)
                 };
                 Label label_Action = new()
@@ -1851,18 +1850,15 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     weightBoxGraphic = new()
                     {
-                        boolOpener = false,
-                        intWeightBar = profileActive.BarbellWeight,
-                        intWeight = _step.Weight ?? 0,
-                        intOutlineWidth = 1,
-                        intPlateGap = -1,
+                        isOpener = false,
+                        BarWeight = profileActive.BarbellWeight,
+                        Weight = _step.Weight ?? 0,
                         Size = new Size(120, 65),
                         BackColor = Color.FromArgb(196, 196, 196),
                         BorderStyle = BorderStyle.Fixed3D,
                         Location = new Point(10, 6),
                         Visible = true
                     };
-                    weightBoxGraphic.Paint += Apply_Vector_Weight_Graphic;
                     panel_Live_Step.Controls.Add(weightBoxGraphic);
                 }
                 progressBar_Step.BringToFront();
@@ -1999,7 +1995,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 if ((int)button_cj_Live_snStageAdvance.Tag == 0)
                 {
                     button_cj_Live_snStageAdvance.Tag = 1;
-                    button_cj_Live_snStageAdvance.BackColor = color_AdvanceButton_Active;
+                    button_cj_Live_snStageAdvance.BackColor = AppColors.AdvanceButton_Active;
                 }
             }
             else
@@ -2007,7 +2003,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 if ((int)button_cj_Live_snStageAdvance.Tag == 1)
                 {
                     button_cj_Live_snStageAdvance.Tag = 0;
-                    button_cj_Live_snStageAdvance.BackColor = color_cj_Live_BG;
+                    button_cj_Live_snStageAdvance.BackColor = AppColors.Cj_Live_BG;
                 }
             }
 
@@ -2016,7 +2012,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 if ((int)button_cj_Live_StageAdvance.Tag == 0)
                 {
                     button_cj_Live_StageAdvance.Tag = 1;
-                    button_cj_Live_StageAdvance.BackColor = color_AdvanceButton_Active;
+                    button_cj_Live_StageAdvance.BackColor = AppColors.AdvanceButton_Active;
                 }
             }
             else
@@ -2024,7 +2020,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 if ((int)button_cj_Live_StageAdvance.Tag == 1)
                 {
                     button_cj_Live_StageAdvance.Tag = 0;
-                    button_cj_Live_StageAdvance.BackColor = color_cj_Live_BG;
+                    button_cj_Live_StageAdvance.BackColor = AppColors.Cj_Live_BG;
                 }
             }
 
@@ -2149,8 +2145,8 @@ namespace Weightlifting_Comp_Warmup.Main
 
                         if (bool_UpdateStepHighlights)
                         {
-                            _panel_Live_Step.BackColor = color_Live_Highlight_BG;
-                            _panel_Live_Step.ForeColor = color_Live_Highlight_FG;
+                            _panel_Live_Step.BackColor = AppColors.Live_Highlight_BG;
+                            _panel_Live_Step.ForeColor = AppColors.Live_Highlight_FG;
                         }
                         else
                         {
@@ -2160,8 +2156,8 @@ namespace Weightlifting_Comp_Warmup.Main
                     else if (bool_UpdateStepHighlights)
                     {
                         Panel _panel_Live_Step = _step.Controls.PanelLiveStep;
-                        _panel_Live_Step.BackColor = color_cj_Live_BG;
-                        _panel_Live_Step.ForeColor = color_Live_Default_FG;
+                        _panel_Live_Step.BackColor = AppColors.Cj_Live_BG;
+                        _panel_Live_Step.ForeColor = AppColors.Live_Default_FG;
                         label_Progress_Time = _step.Controls.LabelProgressTime;
                         label_Progress_Time.Visible = false;
                         progressBar_Step = _step.Controls.ProgressBarStep;
@@ -2462,11 +2458,427 @@ namespace Weightlifting_Comp_Warmup.Main
     }
     public class WeightBox : PictureBox
     {
-        public bool boolOpener; //is opener vs is warmup
-        public int intWeightBar;
-        public int intWeight;
-        public int intOutlineWidth;
-        public int intPlateGap;
+        // Your properties remain the same for now
+        private bool _isOpener;
+        public bool isOpener
+        {
+            get => _isOpener;
+            set { _isOpener = value; this.Invalidate(); }
+        }
+        private int _barWeight;
+        public int BarWeight
+        {
+            get => _barWeight;
+            set { _barWeight = value; this.Invalidate(); }
+        }
+        private int _weight;
+        public int Weight
+        {
+            get => _weight;
+            set { _weight = value; this.Invalidate(); }
+        }
+        private int _outlineWidth = 1;
+        public int OutlineWidth
+        {
+            get => _outlineWidth;
+            set { _outlineWidth = value; this.Invalidate(); }
+        }
+        private int _plateGap = -1;
+        public int PlateGap
+        {
+            get => _plateGap;
+            set { _plateGap = value; this.Invalidate(); }
+        }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            // It's good practice to call the base method first
+            base.OnPaint(e);
+
+
+            int _int_WeightBar = this.BarWeight;
+            int _int_Weight = this.Weight;
+            int _int_Outline_Width = this.OutlineWidth;
+            int _int_PlateGap = this.PlateGap;
+            bool _bool_Opener = this.isOpener;
+
+            int _int_LBuffer;
+            int _int_TBuffer;
+            int _int_BBuffer;
+            bool _bool_Collars;
+            bool _bool_5KGCollars;
+            if (_bool_Opener)
+            {
+                _bool_Collars = _int_Weight - 5 > _int_WeightBar;
+                _bool_5KGCollars = ((_int_Weight - 15) >= _int_WeightBar);
+                _int_LBuffer = 0;
+                _int_TBuffer = 0;
+                _int_BBuffer = 0;
+            }
+            else
+            {
+                _bool_Collars = _int_Weight > _int_WeightBar;
+                _bool_5KGCollars = false;
+                _int_TBuffer = 1;
+                _int_LBuffer = _int_TBuffer;
+                _int_BBuffer = _int_TBuffer + 4;
+            }
+
+            Dictionary<decimal, int> _plates = Plates_Count_For_Weight(
+                _int_WeightBar: _int_WeightBar,
+                _bool_5KGCollar: _bool_5KGCollars,
+                _int_WeightLift: _int_Weight);
+
+            int _int_Full_Height = this.Height - _int_TBuffer - _int_BBuffer;
+            Dictionary<decimal, PlateParameter> _plateParameters = new()
+            {
+                [25m] = new PlateParameter(width: 16, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Red)),
+                [20m] = new PlateParameter(width: 15, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Blue)),
+                [15m] = new PlateParameter(width: 13, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Yellow)),
+                [10m] = new PlateParameter(width: 11, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Green)),
+            };
+            // 5.0s
+            int _int_Plate_Height = Convert.ToInt32(_int_Full_Height * .75);
+            if (_plates.Any() && _plates.Where(r => r.Value > 0).Max(r => r.Key) == 5.0m)
+            {
+                _plateParameters[5.0m] = new PlateParameter(width: _plateParameters[25m].Width * 2, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_White));
+            }
+            else
+            {
+                _plateParameters[5.0m] = new PlateParameter(width: 9, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_White));
+            }
+            // 2.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .85);
+            if (_plates.Any() && _plates.Where(r => r.Value > 0).Max(r => r.Key) == 2.5m)
+            {
+                _plateParameters[2.5m] = new PlateParameter(width: _plateParameters[25m].Width * 2, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_White));
+            }
+            else
+            {
+                _plateParameters[2.5m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Red));
+            }
+            // 2.0s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[2.0m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Blue));
+            // 1.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[1.5m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Yellow));
+            // 1.0s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[1.0m] = new PlateParameter(width: 7, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Green));
+            // 0.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[0.5m] = new PlateParameter(width: 6, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_White));
+
+            int _int_Collar_Height = _bool_5KGCollars ? 18 : 18;
+            int _int_Collar_Width = _bool_5KGCollars ? 8 : 6;
+            int _int_MainBar_Width = (
+                    _bool_Opener ?
+                    Math.Min(400, this.Width - _int_LBuffer - (2 * _int_Outline_Width)) :
+                    10);
+            int _int_Sleeve_Width =
+                (
+                    _bool_Opener ?
+                    (
+                        _int_Weight > 229 ?
+                        125 :
+                        (
+                            _int_Weight > 149 ?
+                            100 :
+                            75
+                        )
+                    ) :
+                    75
+                );
+            int _int_SleeveKnuckle_Width = 9;
+            bool _bool_Outline = (_int_Outline_Width > 0);
+
+            SolidBrush _brush_BarOutline = new(color: Color.Black);
+            SolidBrush _brush_PlateOutline = new(color: Color.Black);
+            SolidBrush _brush_CollarSilver = new(color: Color.Gainsboro);
+            SolidBrush _brush_BarGrey = new(color: AppColors.Bar_Grey);
+
+            //add bar
+            //add bar Outline
+            Rectangle _rect_MainBar;
+            Rectangle _rectOutline_MainBar;
+            Rectangle _rect_SleeveKnuckle_Right;
+            Rectangle _rectOutline_SleeveKnuckle_Right;
+            Rectangle _rect_Sleeve_Right, _rectOutline_Sleeve_Right;
+            Rectangle _rect_SleeveKnuckle_Left;
+            Rectangle _rectOutline_SleeveKnuckle_Left;
+            Rectangle _rect_Sleeve_Left;
+            Rectangle _rectOutline_Sleeve_Left;
+
+            _rect_MainBar = new(
+                x: _int_LBuffer + _int_Outline_Width,
+                y: 0,
+                width: _int_MainBar_Width,
+                height: 6);
+            _rect_MainBar.Y = (_int_Full_Height / 2) - (_rect_MainBar.Height / 2) + _int_TBuffer;
+            if (_bool_Opener)
+            {
+                _rect_Sleeve_Right = new(
+                    x: _rect_MainBar.X + _rect_MainBar.Width - _int_Sleeve_Width,
+                    y: 0,
+                    width: _int_Sleeve_Width,
+                    height: 10);
+                _rect_SleeveKnuckle_Right = new(
+                    x: _rect_Sleeve_Right.X - _int_SleeveKnuckle_Width,
+                    y: 0,
+                    width: _int_SleeveKnuckle_Width,
+                    height: 16);
+                _rect_Sleeve_Left = new(
+                    x: _int_LBuffer + _int_Outline_Width,
+                    y: 0,
+                    width: _int_Sleeve_Width,
+                    height: 10);
+                _rect_SleeveKnuckle_Left = new(
+                    x: _rect_Sleeve_Left.X + _rect_Sleeve_Left.Width - 1,
+                    y: 0,
+                    width: _int_SleeveKnuckle_Width,
+                    height: 16);
+            }
+            else
+            {
+                _rect_SleeveKnuckle_Right = new(
+                    x: _rect_MainBar.X + _rect_MainBar.Width - 1,
+                    y: 0,
+                    width: _int_SleeveKnuckle_Width,
+                    height: 16);
+                _rect_Sleeve_Right = new(
+                    x: _rect_SleeveKnuckle_Right.X + _rect_SleeveKnuckle_Right.Width - 1,
+                    y: 0,
+                    width: _int_Sleeve_Width,
+                    height: 10);
+                _rect_Sleeve_Left = new();
+                _rect_SleeveKnuckle_Left = new();
+            }
+            _rect_SleeveKnuckle_Right.Y = (_int_Full_Height / 2) - (_rect_SleeveKnuckle_Right.Height / 2) + _int_TBuffer;
+            _rect_Sleeve_Right.Y = (_int_Full_Height / 2) - (_rect_Sleeve_Right.Height / 2) + _int_TBuffer;
+            _rect_SleeveKnuckle_Left.Y = _rect_SleeveKnuckle_Right.Y;
+            _rect_Sleeve_Left.Y = _rect_Sleeve_Right.Y;
+            if (_bool_Outline)
+            {
+                _rectOutline_MainBar = _rect_MainBar;
+                _rectOutline_MainBar.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                _rectOutline_SleeveKnuckle_Right = _rect_SleeveKnuckle_Right;
+                _rectOutline_SleeveKnuckle_Right.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                _rectOutline_Sleeve_Right = _rect_Sleeve_Right;
+                _rectOutline_Sleeve_Right.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarOutline,
+                    rect: _rectOutline_MainBar);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarOutline,
+                    rect: _rectOutline_SleeveKnuckle_Right);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarOutline,
+                    rect: _rectOutline_Sleeve_Right);
+                if (_bool_Opener)
+                {
+                    _rectOutline_SleeveKnuckle_Left = _rect_SleeveKnuckle_Left;
+                    _rectOutline_SleeveKnuckle_Left.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                    _rectOutline_Sleeve_Left = _rect_Sleeve_Left;
+                    _rectOutline_Sleeve_Left.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                    e.Graphics.FillRectangle(
+                        brush: _brush_BarOutline,
+                        rect: _rectOutline_MainBar);
+                    e.Graphics.FillRectangle(
+                        brush: _brush_BarOutline,
+                        rect: _rectOutline_SleeveKnuckle_Left);
+                    e.Graphics.FillRectangle(
+                        brush: _brush_BarOutline,
+                        rect: _rectOutline_Sleeve_Left);
+                }
+            }
+            e.Graphics.FillRectangle(
+                brush: _brush_BarGrey,
+                rect: _rect_MainBar);
+            e.Graphics.FillRectangle(
+                brush: _brush_BarGrey,
+                rect: _rect_SleeveKnuckle_Right);
+            e.Graphics.FillRectangle(
+                brush: _brush_BarGrey,
+                rect: _rect_Sleeve_Right);
+            if (_bool_Opener)
+            {
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarGrey,
+                    rect: _rect_MainBar);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarGrey,
+                    rect: _rect_SleeveKnuckle_Left);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarGrey,
+                    rect: _rect_Sleeve_Left);
+            }
+
+            // add plates
+            int _int_Left = _rect_SleeveKnuckle_Right.X + _int_SleeveKnuckle_Width + _int_Outline_Width;
+            int _int_Right = _rect_SleeveKnuckle_Left.X - _int_Outline_Width;
+            bool _bool_CollarsDone = !_bool_Collars; // if not doing collar, mark them already done
+            void doCollars()
+            {
+                Rectangle _rect = new(
+                    x: _int_Left,
+                    y: (_int_Full_Height / 2) - (_int_Collar_Height / 2) + _int_TBuffer,
+                    width: _int_Collar_Width,
+                    height: _int_Collar_Height);
+                Rectangle _rect_Outline = _rect;
+                if (_bool_Outline)
+                {
+                    _rect_Outline.Width += _int_Outline_Width * 2;
+                    _rect.X += _int_Outline_Width;
+                    _rect.Inflate(width: 0, height: -_int_Outline_Width);
+                    e.Graphics.FillRectangle(
+                        brush: _brush_BarOutline,
+                        rect: _rect_Outline);
+                }
+                Brush b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
+                e.Graphics.FillRectangle(
+                    brush: b,
+                    rect: _rect);
+                if (_bool_5KGCollars) // add adjusting arm
+                {
+                    Rectangle _rect_Arm = new(
+                        x: _int_Left + _int_Collar_Width / 2 - 1,
+                        y: _rect.Top - 5,
+                        width: 2,
+                        height: 8);
+                    Rectangle _rect_Arm_Outline = _rect_Arm;
+                    if (_bool_Outline)
+                    {
+                        _rect_Arm_Outline.Width += _int_Outline_Width * 2;
+                        _rect_Arm.X += _int_Outline_Width;
+                        _rect_Arm.Inflate(width: 0, height: -_int_Outline_Width);
+                        e.Graphics.FillRectangle(
+                            brush: _brush_BarOutline,
+                            rect: _rect_Arm_Outline);
+                    }
+                    b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
+                    e.Graphics.FillRectangle(
+                        brush: b,
+                        rect: _rect_Arm);
+                }
+                _int_Left += _rect_Outline.Width + _int_PlateGap;
+                if (_bool_Opener) // must do both sides of the bar
+                {
+                    _int_Right -= _rect_Outline.Width;
+                    _rect.X = _int_Right;
+                    if (_bool_Outline)
+                    {
+                        _rect_Outline.X = _rect.X;
+                        _rect.X += _int_Outline_Width;
+                        e.Graphics.FillRectangle(
+                            brush: _brush_PlateOutline,
+                            rect: _rect_Outline);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: b,
+                        rect: _rect);
+                    if (_bool_5KGCollars) // add adjusting arm
+                    {
+                        Rectangle _rect_Arm = new(
+                            x: _int_Right + _int_Collar_Width / 2 - 1,
+                            y: _rect.Top - 5,
+                            width: 2,
+                            height: 8);
+                        Rectangle _rect_Arm_Outline = _rect_Arm;
+                        if (_bool_Outline)
+                        {
+                            _rect_Arm_Outline.Width += _int_Outline_Width * 2;
+                            _rect_Arm.X += _int_Outline_Width;
+                            _rect_Arm.Inflate(width: 0, height: -_int_Outline_Width);
+                            e.Graphics.FillRectangle(
+                                brush: _brush_BarOutline,
+                                rect: _rect_Arm_Outline);
+                        }
+                        b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
+                        e.Graphics.FillRectangle(
+                            brush: b,
+                            rect: _rect_Arm);
+                    }
+                    _int_Right -= _int_PlateGap;
+                }
+            }
+            foreach (KeyValuePair<decimal, int> _plate in _plates.OrderByDescending(r => r.Key).Where(r => r.Value > 0))
+            {
+                if (!_bool_CollarsDone && _plate.Key < 2.5m)
+                {
+                    doCollars();
+                    _bool_CollarsDone = true;
+                }
+                if (_plateParameters.TryGetValue(_plate.Key, out PlateParameter _parameter))
+                {
+                    for (int _int_Plate = 1; _int_Plate <= _plate.Value; _int_Plate++)
+                    {
+                        Rectangle _rect = new(
+                            x: _int_Left,
+                            y: (_int_Full_Height / 2) - (_parameter.Height / 2) + _int_TBuffer,
+                            width: _parameter.Width,
+                            height: _parameter.Height);
+                        Rectangle _rect_Outline = _rect;
+                        if (_bool_Outline)
+                        {
+                            _rect_Outline.Width += _int_Outline_Width * 2;
+                            _rect.X += _int_Outline_Width;
+                            _rect.Inflate(width: 0, height: -_int_Outline_Width);
+                            e.Graphics.FillRectangle(
+                                brush: _brush_PlateOutline,
+                                rect: _rect_Outline);
+                        }
+                        e.Graphics.FillRectangle(
+                            brush: _parameter.Brush,
+                            rect: _rect);
+                        _int_Left += _rect_Outline.Width + _int_PlateGap;
+                        if (_bool_Opener)
+                        {
+                            _int_Right -= _rect_Outline.Width;
+                            _rect.X = _int_Right;
+                            if (_bool_Outline)
+                            {
+                                _rect_Outline.X = _rect.X;
+                                _rect.X += _int_Outline_Width;
+                                e.Graphics.FillRectangle(
+                                    brush: _brush_PlateOutline,
+                                    rect: _rect_Outline);
+                            }
+                            e.Graphics.FillRectangle(
+                                brush: _parameter.Brush,
+                                rect: _rect);
+                            _int_Right -= _int_PlateGap;
+                        }
+                    }
+                }
+            }
+            if (!_bool_CollarsDone)
+            {
+                doCollars();
+            }
+        }
+        private Dictionary<decimal, int> Plates_Count_For_Weight(
+            int _int_WeightBar,
+            bool _bool_5KGCollar,
+            int _int_WeightLift)
+        {
+            Dictionary<decimal, int> _plates = [];
+            if (_bool_5KGCollar) { _int_WeightBar += 5; }
+            if (_int_WeightLift > _int_WeightBar)
+            {
+                decimal _decToGo = Convert.ToDecimal(_int_WeightLift - _int_WeightBar) / 2m;
+                decimal[] _decPlateWeights = [25m, 20m, 15m, 10m, 5.0m, 2.5m, 2.0m, 1.5m, 1.0m, 0.5m];
+                foreach (decimal _decPlateWeight in _decPlateWeights)
+                {
+                    int _int = Convert.ToInt32((_decToGo - _decToGo % _decPlateWeight) / _decPlateWeight);
+                    if (_int > 0)
+                    {
+                        _plates[_decPlateWeight] = _int;
+                        _decToGo -= Convert.ToDecimal(_int) * _decPlateWeight;
+                    }
+                }
+            }
+            return _plates;
+        }
     }
 }

@@ -80,34 +80,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main\DataTypes.cs" />
-    <Compile Include="Main\Defaults.cs" />
-    <Compile Include="Main\form_Main.cs">
+    <Compile Include="AppColors.cs" />
+    <Compile Include="DataTypes.cs" />
+    <Compile Include="Defaults.cs" />
+    <Compile Include="form_Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main\form_Main.Designer.cs">
+    <Compile Include="form_Main.Designer.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="Main\ManagedSavedSettings.cs">
-      <DependentUpon>form_Main.cs</DependentUpon>
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Main\SaveSettings.cs">
+    <Compile Include="ManagedSavedSettings.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main\Utilities.cs">
+    <Compile Include="SaveSettings.cs">
+      <DependentUpon>form_Main.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Utilities.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Main\Variables.cs">
+    <Compile Include="Variables.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="Main\form_Main.resx">
+    <EmbeddedResource Include="form_Main.resx">
       <DependentUpon>form_Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

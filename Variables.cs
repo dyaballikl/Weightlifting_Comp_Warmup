@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Management;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -26,13 +24,6 @@ namespace Weightlifting_Comp_Warmup.Main
         private List<Step> snatchStepsPLAN = null;
         private List<Step> cjStepsLIVE = null;
         private List<Step> cjStepsPLAN = null;
-
-        private List<Extra> default_snatchExtras = null;
-        private Dictionary<int /*from weight*/, int /*jump size*/> default_snatchJumps = null;
-        private Dictionary<int /*from weight*/, int /*time length*/> default_snatchTimes = null;
-        private List<Extra> default_cjExtras = null;
-        private Dictionary<int /*from weight*/, int /*jump size*/> default_cjJumps = null;
-        private Dictionary<int /*from weight*/, int /*time length*/> default_cjTimes = null;
 
         private const string str_buttontext_up = "^";
         private const string str_buttontext_down = "v";
@@ -77,20 +68,6 @@ namespace Weightlifting_Comp_Warmup.Main
         private Timer timer_cj_Live;
         private Timer timer_Battery;
 
-        private readonly Color color_Live_Default_FG = Color.FromArgb(240, 240, 240);
-        private readonly Color color_Live_Highlight_BG = Color.Yellow;
-        private readonly Color color_Live_Highlight_FG = Color.Black;
-        private readonly Color color_AdvanceButton_Active = Color.FromArgb(32, 150, 32);
-        private readonly Color color_Plate_Red = Color.FromArgb(251, 13, 27);
-        private readonly Color color_Plate_Blue = Color.FromArgb(10, 100, 255);
-        private readonly Color color_Plate_Yellow = Color.FromArgb(255, 253, 56);
-        private readonly Color color_Plate_Green = Color.FromArgb(15, 127, 18);
-        private readonly Color color_Plate_White = Color.FromArgb(255, 255, 255);
-        private readonly Color color_BarGrey = Color.LightSteelBlue;
-
-        private Color color_snatch_Live_BG;
-        private Color color_cj_Live_BG;
-
-        readonly Properties.Settings savedSettings = Properties.Settings.Default;
+        private readonly Properties.Settings savedSettings = Properties.Settings.Default;
     }
 }
