@@ -14,10 +14,10 @@ namespace Weightlifting_Comp_Warmup.Main
         #region Form Level
         public form_Main()
         {
-            if (Debugger.IsAttached)
-            {
-                savedSettings.Reset();
-            }
+            //if (Debugger.IsAttached)
+            //{
+            //    savedSettings.Reset();
+            //}
             LoadSettings();
             SaveSettings();
 
@@ -55,10 +55,6 @@ namespace Weightlifting_Comp_Warmup.Main
             numericUpDown_cj_weight_opener.ValueChanged += (s, ev) => Opener_Set(LiftType.CleanAndJerk);
             checkBox_cj_Param_OpenerWarmup.CheckedChanged += (s, ev) => Opener_Set(LiftType.CleanAndJerk);
             numericUpDown_cj_time_PostWarmup.ValueChanged += (s, ev) => numericUpDown_time_PostWarmup_ValueChanged(s, ev, LiftType.CleanAndJerk);
-            button_snatch_AddStep.Click += (s, e) => Step_Add(s, e, LiftType.Snatch);
-            button_snatch_Reset.Click += (s, e) => Step_ResetOverrides(s, e, LiftType.Snatch);
-            button_cj_AddStep.Click += (s, e) => Step_Add(s, e, LiftType.CleanAndJerk);
-            button_cj_Reset.Click += (s, e) => Step_ResetOverrides(s, e, LiftType.CleanAndJerk);
             dataGridView_snatch_steps.AutoGenerateColumns = false;
             dataGridView_cj_steps.AutoGenerateColumns = false;
         }
@@ -113,7 +109,8 @@ namespace Weightlifting_Comp_Warmup.Main
             numericUpDown_cj_weight_opener.Minimum = _int_Barbell;
             ApplyOpener(liftType: LiftType.Snatch);
             ApplyOpener(liftType: LiftType.CleanAndJerk);
-            PopulateSteps(LiftType.Snatch, preserveLifts: false);
+            PopulateSteps(LiftType.Snatch);
+            PopulateSteps(LiftType.CleanAndJerk);
         }
         private void Snatch_CJ_TabSwitch()
         {
@@ -209,16 +206,6 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             splitContainer_snatch_DoubleClick();
         }
-        private void dataGridView_snatch_steps_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (sender is not DataGridView dgv) return;
-            dataGridView_snatch_steps_CellClick(dgv: dgv, e: e);
-        }
-        private void dataGridView_snatch_steps_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            if (sender is not DataGridView dgv) return;
-            dataGridView_snatch_steps_CellFormatting(dgv: dgv, e: e);
-        }
         #endregion
         #region CJ controls
         private void button_cj_Live_StartStop_Click(object sender, EventArgs e)
@@ -308,16 +295,6 @@ namespace Weightlifting_Comp_Warmup.Main
         private void splitContainer_cj_DoubleClick(object sender, EventArgs e)
         {
             Cj_Splitter_DoubleClick();
-        }
-        private void dataGridView_cj_steps_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (sender is not DataGridView dgv) return;
-            dataGridView_cj_steps_CellClick(dgv: dgv, e: e);
-        }
-        private void dataGridView_cj_steps_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            if (sender is not DataGridView dgv) return;
-            dataGridView_cj_steps_CellFormatting(dgv: dgv, e: e);
         }
         #endregion
         #region Save Settings buttons
@@ -428,19 +405,6 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         #endregion
         #region steps
-        private void Step_Add(object sender, EventArgs e, LiftType liftType)
-        {
-            Step_Add(liftType: liftType);
-        }
-        private void Step_ResetOverrides(object sender, EventArgs e, LiftType liftType)
-        {
-            Step_ResetOverrides(liftType: liftType);
-        }
-        private void Weight_Override_Click(object sender, EventArgs e, LiftType liftType)
-        {
-            if (sender is not Label label) return;
-            Weight_Override_Click(label: label, liftType: liftType);
-        }
         #endregion
         #endregion
 
@@ -448,30 +412,26 @@ namespace Weightlifting_Comp_Warmup.Main
         private (
             List<Extra> extras,
             Panel panelExtra,
-            Action populateExtras,
-            Action stopLive) GetContext_Extras(LiftType liftType)
+            Action populateExtras) GetContext_Extras(LiftType liftType)
         {
             if (liftType == LiftType.Snatch)
             {
                 return (
                     profileActive.SnatchExtras,
                     panel_snatch_extra,
-                    () => PopulateExtras(LiftType.Snatch),
-                    snatch_Stop_Live);
+                    () => PopulateExtras(LiftType.Snatch));
             }
             else
             {
                 return (
                     profileActive.CJExtras,
                     panel_cj_extra,
-                    () => PopulateExtras(LiftType.CleanAndJerk),
-                    cj_Stop_Live);
+                    () => PopulateExtras(LiftType.CleanAndJerk));
             }
         }
         private void PopulateExtras(LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, _, Action stopLive) = GetContext_Extras(liftType);
-            stopLive();
+            (List<Extra> extras, Panel panelExtra, _) = GetContext_Extras(liftType);
             int intY = 1;
             panelExtra.Controls.Clear();
 
@@ -528,7 +488,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_extra_up_click(int id, LiftType liftType)
         {
-            (List<Extra> extras, _, Action populateExtras, _) = GetContext_Extras(liftType);
+            (List<Extra> extras, _, Action populateExtras) = GetContext_Extras(liftType);
             Extra extra = extras.FirstOrDefault(r => r.id == id);
 
             if (extra.id < 1 || extra.Order < 1) return;
@@ -551,11 +511,11 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
             populateExtras();
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private void button_extra_down_click(int id, LiftType liftType)
         {
-            (List<Extra> extras, _, Action populateExtras, _) = GetContext_Extras(liftType);
+            (List<Extra> extras, _, Action populateExtras) = GetContext_Extras(liftType);
             Extra extra = extras.FirstOrDefault(r => r.id == id);
 
             if (extra.id < 1) return;
@@ -581,22 +541,22 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
             populateExtras();
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private void button_extra_delete_click(int id, LiftType liftType)
         {
-            (List<Extra> extras, _, Action populateExtras, _) = GetContext_Extras(liftType);
+            (List<Extra> extras, _, Action populateExtras) = GetContext_Extras(liftType);
 
             List<Extra> extrasList = extras;
             extrasList.RemoveAll(r => r.id == id);
             Extras_Reassign_Order(ref extrasList);
 
             populateExtras();
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private void button_extra_commit_click(LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, Action populateExtras, _) = GetContext_Extras(liftType);
+            (List<Extra> extras, Panel panelExtra, Action populateExtras) = GetContext_Extras(liftType);
             string action = string.Empty;
             int length = -1;
 
@@ -623,11 +583,11 @@ namespace Weightlifting_Comp_Warmup.Main
             Extras_Reassign_Order(ref extrasList);
 
             populateExtras();
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private void textBox_extra_TextChanged(TextBox textBox, LiftType liftType)
         {
-            (List<Extra> extras, _, _, _) = GetContext_Extras(liftType);
+            (List<Extra> extras, _, _) = GetContext_Extras(liftType);
             int id = (int)textBox.Tag;
 
             if (id < 1) return;
@@ -645,11 +605,11 @@ namespace Weightlifting_Comp_Warmup.Main
                     break;
                 }
             }
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private void numericUpDown_extra_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, _, _) = GetContext_Extras(liftType);
+            (List<Extra> extras, Panel panelExtra, _) = GetContext_Extras(liftType);
             int id = (int)numericUpDown.Tag;
 
             if (id < 1) return;
@@ -674,7 +634,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 labelToUpdate.Text = Seconds_To_String(newLength);
             }
 
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private int Extras_Max_Order(List<Extra> extras)
         {
@@ -697,7 +657,7 @@ namespace Weightlifting_Comp_Warmup.Main
         private (
             Dictionary<int, int> jumps,
             Panel panel,
-            Action stopLive,
+            //Action stopLive,
             Dictionary<int, int> getDefaultJumps) GetJumpContext(LiftType liftType)
         {
             if (liftType == LiftType.Snatch)
@@ -705,7 +665,6 @@ namespace Weightlifting_Comp_Warmup.Main
                 return (
                     profileActive.SnatchJumps,
                     panel_snatch_jump,
-                    snatch_Stop_Live,
                     Defaults.default_snatchJumps);
             }
             else // CleanAndJerk
@@ -713,14 +672,12 @@ namespace Weightlifting_Comp_Warmup.Main
                 return (
                     profileActive.CJJumps,
                     panel_cj_jump,
-                    cj_Stop_Live,
                     Defaults.default_cjJumps);
             }
         }
         private void PopulateJumps(LiftType liftType)
         {
-            (Dictionary<int, int> jumps, Panel panel, Action stopLive, Dictionary<int, int> getDefaultJumps) = GetJumpContext(liftType);
-            stopLive();
+            (Dictionary<int, int> jumps, Panel panel, Dictionary<int, int> getDefaultJumps) = GetJumpContext(liftType);
             panel.Controls.Clear();
 
             if (jumps.Count == 0)
@@ -772,7 +729,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_jump_delete_click(int id, LiftType liftType)
         {
-            (Dictionary<int, int> jumps, _, _, _) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, _,  _) = GetJumpContext(liftType);
 
             if (jumps.ContainsKey(id))
             {
@@ -780,11 +737,11 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
             PopulateJumps(liftType);
-            PopulateSteps(liftType: liftType, preserveLifts: false);
+            PopulateSteps(liftType: liftType);
         }
         private void button_jump_commit_click(LiftType liftType)
         {
-            (Dictionary<int, int> jumps, Panel panel, _, _) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, Panel panel,  _) = GetJumpContext(liftType);
 
             NumericUpDown fromWeightnumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
             NumericUpDown jumpnumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
@@ -806,11 +763,11 @@ namespace Weightlifting_Comp_Warmup.Main
 
             jumps[fromWeight] = jump;
             PopulateJumps(liftType);
-            PopulateSteps(liftType: liftType, preserveLifts: false);
+            PopulateSteps(liftType: liftType);
         }
         private void numericUpDown_jump_FromWeight_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
-            (Dictionary<int, int> jumps, _, _, _) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, _, _) = GetJumpContext(liftType);
             int oldFromWeightKey = (int)numericUpDown.Tag;
 
             if (oldFromWeightKey == -1) return; // Ignore the 'add new' row
@@ -832,11 +789,11 @@ namespace Weightlifting_Comp_Warmup.Main
 
             // Repopulate to re-sort and update tags
             PopulateJumps(liftType);
-            PopulateSteps(liftType: liftType, preserveLifts: false);
+            PopulateSteps(liftType: liftType);
         }
         private void numericUpDown_jump_Jump_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
-            (Dictionary<int, int> jumps, _, _, _) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, _, _) = GetJumpContext(liftType);
             int fromWeightKey = (int)numericUpDown.Tag;
 
             if (fromWeightKey == -1) return; // Ignore the 'add new' row
@@ -844,7 +801,7 @@ namespace Weightlifting_Comp_Warmup.Main
             if (jumps.ContainsKey(fromWeightKey))
             {
                 jumps[fromWeightKey] = (int)numericUpDown.Value;
-                PopulateSteps(liftType: liftType, preserveLifts: false);
+                PopulateSteps(liftType: liftType);
             }
         }
         #endregion
@@ -853,7 +810,6 @@ namespace Weightlifting_Comp_Warmup.Main
         private (
             Dictionary<int, int> times,
             Panel panel,
-            Action stopLive,
             Dictionary<int, int> getDefaultTimes) GetTimeContext(LiftType liftType)
         {
             if (liftType == LiftType.Snatch)
@@ -861,7 +817,6 @@ namespace Weightlifting_Comp_Warmup.Main
                 return (
                     profileActive.SnatchTimes,
                     panel_snatch_time,
-                    snatch_Stop_Live,
                     Defaults.default_snatchTimes);
             }
             else // CleanAndJerk
@@ -869,14 +824,12 @@ namespace Weightlifting_Comp_Warmup.Main
                 return (
                     profileActive.CJTimes,
                     panel_cj_time,
-                    cj_Stop_Live,
                     Defaults.default_cjTimes);
             }
         }
         private void PopulateTimes(LiftType liftType)
         {
-            (Dictionary<int, int> times, Panel panel, Action stopLive, Dictionary<int, int> getDefaultTimes) context = GetTimeContext(liftType);
-            context.stopLive();
+            (Dictionary<int, int> times, Panel panel,  Dictionary<int, int> getDefaultTimes) context = GetTimeContext(liftType);
             context.panel.Controls.Clear();
 
             // Assign default times if the current list is empty
@@ -934,7 +887,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_time_delete_click(int id, LiftType liftType)
         {
-            (Dictionary<int, int> times, _, _, _) = GetTimeContext(liftType);
+            (Dictionary<int, int> times, _, _) = GetTimeContext(liftType);
 
             if (times.ContainsKey(id))
             {
@@ -942,11 +895,11 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
             PopulateTimes(liftType);
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private void button_time_commit_click(LiftType liftType)
         {
-            (Dictionary<int, int> times, Panel panel, _, _) = GetTimeContext(liftType);
+            (Dictionary<int, int> times, Panel panel, _) = GetTimeContext(liftType);
 
             NumericUpDown fromWeightnumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
             NumericUpDown timenumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
@@ -968,11 +921,11 @@ namespace Weightlifting_Comp_Warmup.Main
 
             times[fromWeight] = time;
             PopulateTimes(liftType);
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private void numericUpDown_time_FromWeight_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
-            (Dictionary<int, int> times, _, _, _) = GetTimeContext(liftType);
+            (Dictionary<int, int> times, _, _) = GetTimeContext(liftType);
             int oldFromWeightKey = (int)numericUpDown.Tag;
 
             if (oldFromWeightKey == -1) return; // Ignore the 'add new' row
@@ -993,11 +946,11 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
             PopulateTimes(liftType); // Repopulate to re-sort and update control tags
-            PopulateSteps(liftType: liftType, preserveLifts: true);
+            PopulateSteps(liftType: liftType);
         }
         private void numericUpDown_time_Time_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
-            (Dictionary<int, int> times, _, _, _) = GetTimeContext(liftType);
+            (Dictionary<int, int> times, _, _) = GetTimeContext(liftType);
             int fromWeightKey = (int)numericUpDown.Tag;
 
             if (fromWeightKey == -1) return; // Ignore the 'add new' row
@@ -1005,7 +958,7 @@ namespace Weightlifting_Comp_Warmup.Main
             if (times.ContainsKey(fromWeightKey))
             {
                 times[fromWeightKey] = (int)numericUpDown.Value;
-                PopulateSteps(liftType: liftType, preserveLifts: true);
+                PopulateSteps(liftType: liftType);
             }
         }
         #endregion
@@ -1014,7 +967,6 @@ namespace Weightlifting_Comp_Warmup.Main
         private (
             Func<List<Step>> getStepsPlan,
             Action<List<Step>> setStepsPlan,
-            Action stopLive,
             Func<bool> isLive,
             Label stepCountLabel,
             DataGridView dataGridViewSteps
@@ -1025,7 +977,6 @@ namespace Weightlifting_Comp_Warmup.Main
                 return (
                     () => snatchStepsPLAN,
                     steps => snatchStepsPLAN = steps,
-                    snatch_Stop_Live,
                     () => bool_snatch_Live,
                     label_snatch_Setup_StepCount,
                     dataGridView_snatch_steps
@@ -1034,52 +985,46 @@ namespace Weightlifting_Comp_Warmup.Main
             else // CleanAndJerk
             {
                 return (
-                    () => cjStepsPLAN,
-                    steps => cjStepsPLAN = steps,
-                    cj_Stop_Live,
+                     () => cjStepsPLAN,
+                     steps => cjStepsPLAN = steps,
                     () => bool_cj_Live,
                     label_cj_Setup_StepCount,
                     dataGridView_cj_steps
                 );
             }
         }
-        private List<Step> GenerateStepsList(LiftType liftType, bool preserveLifts, List<Step> stepsIn = null)
+        private List<Step> GenerateStepsList(LiftType liftType)
         {
             // Based on the liftType, select the appropriate data sources and parameters
             if (liftType == LiftType.Snatch)
             {
                 return x_Steps(
-                    _bool_PreserveLifts: preserveLifts,
                     _extras: profileActive.SnatchExtras,
                     _jumps: profileActive.SnatchJumps,
                     _times: profileActive.SnatchTimes,
                     _int_x_Sec_End: profileActive.Snatch_SecondsEnd,
                     _int_x_Wgt_Opener: profileActive.Snatch_OpenerWeight,
-                    _bool_Opener_in_Warmup: profileActive.Snatch_OpenerInWarmup,
-                    _stepsIn: stepsIn
+                    _bool_Opener_in_Warmup: profileActive.Snatch_OpenerInWarmup
                 );
             }
             else // CleanAndJerk
             {
                 return x_Steps(
-                    _bool_PreserveLifts: preserveLifts,
                     _extras: profileActive.CJExtras,
                     _jumps: profileActive.CJJumps,
                     _times: profileActive.CJTimes,
                     _int_x_Sec_End: profileActive.CJ_SecondsEnd,
                     _int_x_Wgt_Opener: profileActive.CJ_OpenerWeight,
-                    _bool_Opener_in_Warmup: profileActive.CJ_OpenerInWarmup,
-                    _stepsIn: stepsIn
+                    _bool_Opener_in_Warmup: profileActive.CJ_OpenerInWarmup
                 );
             }
         }
-        private void PopulateSteps(LiftType liftType, bool preserveLifts)
+        private void PopulateSteps(LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, _, Label stepCountLabel, DataGridView dataGridViewSteps) =
+            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan,  _, Label stepCountLabel, DataGridView dataGridViewSteps) =
                 GetStepContext(liftType);
-            stopLive();
 
-            List<Step> newStepsPlan = GenerateStepsList(liftType, preserveLifts, getStepsPlan());
+            List<Step> newStepsPlan = GenerateStepsList(liftType);
             setStepsPlan(newStepsPlan);
 
             List<Step> currentSteps = getStepsPlan();
@@ -1091,65 +1036,14 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             BindingList<Step> displaySteps = new([.. currentSteps.Where(s => !s.PreStep).OrderBy(r => r.Order)]);
             dataGridViewSteps.DataSource = displaySteps;
-            bool hasOverrides = currentSteps.Any(s => s.Override);
-            button_snatch_Reset.Visible = hasOverrides;
             stepCountLabel.Text = $"{displaySteps.Count} steps ({displaySteps.Count(r => r.Weight > 0)} lifts)";
-        }
-        private void Step_Add(LiftType liftType)
-        {
-            (Func<List<Step>> getStepsPlan, _, Action stopLive, Func<bool> isLive, _, _) = GetStepContext(liftType);
-            if (isLive()) stopLive();
-
-            List<Step> stepsPlan = getStepsPlan();
-            Step lastStep = stepsPlan?.LastOrDefault(s => s.Weight > 0);
-            if (lastStep == null) return;
-
-            string newWeightStr = lastStep.Weight.ToString();
-            if (ShowInputDialog(ref newWeightStr) == DialogResult.OK && int.TryParse(newWeightStr, out int newWeight))
+            if (liftType == LiftType.Snatch && bool_snatch_Live)
             {
-                if (stepsPlan.Any(r => r.Weight == newWeight))
-                {
-                    MessageBox.Show($"{newWeight} is already a step.");
-                }
-                else
-                {
-                    stepsPlan.Add(new Step(action: "Lift", weight: newWeight, @override: true));
-                    PopulateSteps(liftType, true);
-                }
+                Populate_snatch_Live_Steps();
             }
-        }
-        private void Step_ResetOverrides(LiftType liftType)
-        {
-            (_, _, Action stopLive, Func<bool> isLive, _, _) = GetStepContext(liftType);
-            if (isLive()) stopLive();
-            PopulateSteps(liftType, false);
-        }
-        private void Weight_Override_Click(Label label, LiftType liftType)
-        {
-            (Func<List<Step>> getStepsPlan, _, Action stopLive, Func<bool> isLive, _, _) = GetStepContext(liftType);
-            if (label.Tag is not int startWeight || startWeight <= 0) return;
-
-            List<Step> stepsPlan = getStepsPlan();
-            Step stepToModify = stepsPlan?.FirstOrDefault(r => r.Weight == startWeight);
-            if (stepToModify == null) return;
-
-            if (isLive()) stopLive();
-
-            string newWeightStr = startWeight.ToString();
-            if (ShowInputDialog(ref newWeightStr) == DialogResult.OK && int.TryParse(newWeightStr, out int newWeight))
+            else if (liftType == LiftType.CleanAndJerk && bool_cj_Live)
             {
-                if (newWeight == startWeight) return; // No change
-
-                if (stepsPlan.Any(r => r.Weight == newWeight))
-                {
-                    MessageBox.Show($"{newWeight} is already a step.");
-                }
-                else
-                {
-                    stepToModify.Weight = newWeight;
-                    stepToModify.Override = true;
-                    PopulateSteps(liftType, true);
-                }
+                Populate_cj_Live_Steps();
             }
         }
         #endregion
@@ -1215,7 +1109,7 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 setSecStage(secStage);
                 numSecStage.BackColor = Color.White;
-                PopulateSteps(liftType, preserveLifts: true);
+                PopulateSteps(liftType);
             }
             else
             {
@@ -1246,7 +1140,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 numWgtOpener.BackColor = Color.White;
 
                 applyOpenerGraphic(profileActive.BarbellWeight, wgtOpener, liftType == LiftType.Snatch);
-                PopulateSteps(liftType, preserveLifts: false);
+                PopulateSteps(liftType);
             }
             else
             {
@@ -1264,7 +1158,7 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 setSecEnd(secEnd);
                 numSecEnd.BackColor = Color.White;
-                PopulateSteps(liftType, preserveLifts: true);
+                PopulateSteps(liftType);
             }
             else
             {
@@ -1395,7 +1289,7 @@ namespace Weightlifting_Comp_Warmup.Main
 
             if (snatchStepsPLAN is null)
             {
-                PopulateSteps(LiftType.Snatch, preserveLifts: false);
+                PopulateSteps(LiftType.Snatch);
             }
             if (snatchStepsPLAN is null)
             {
@@ -1469,17 +1363,8 @@ namespace Weightlifting_Comp_Warmup.Main
                         Anchor = AnchorStyles.Top | AnchorStyles.Right,
                     };
                     label_Weight.Text = "lift " + _step.Weight.ToString();
-
-                    if (_step.Override)
-                    {
-                        label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Italic);
-                        label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold | FontStyle.Italic);
-                    }
-                    else
-                    {
-                        label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Regular);
-                        label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold);
-                    }
+                    label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Regular);
+                    label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold);
                 }
                 Label label_Time = new()
                 {
@@ -1881,84 +1766,6 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             splitContainer_snatch.SplitterDistance = 0;
         }
-        private void dataGridView_snatch_steps_CellClick(DataGridView dgv, DataGridViewCellEventArgs e)
-        {
-            // Ensure a valid row and column was clicked
-            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
-
-
-            // Get the Step object associated with the clicked row
-            if (dgv.Rows[e.RowIndex].DataBoundItem is not Step clickedStep) return;
-
-            // Check if the clicked column is the Weight column and it's a lift step
-            // Using DataBoundItem is more robust than relying on Tag.
-            if (dgv.Columns[e.ColumnIndex].Name == "ColWeight" && clickedStep.Weight > 0)
-            {
-                // You'll need to know the LiftType here.
-                // If your form context always has a current LiftType, you can access it.
-                // Otherwise, you might need to pass it in when setting up the dgvSteps.
-                // For this example, let's assume it's available as 'currentLiftType'.
-                // You might need to retrieve LiftType from the DataGridView's Tag or a form's property.
-                // For demonstration, let's assume currentLiftType is available globally or passed in another way.
-                LiftType currentLiftType = LiftType.Snatch; // Placeholder, you need to get the actual liftType
-
-                (Func<List<Step>> getStepsPlan, _, Action stopLive, _, _, _) = GetStepContext(currentLiftType);
-
-                stopLive();
-
-                string newWeightStr = clickedStep.Weight.ToString();
-                if (ShowInputDialog(ref newWeightStr) == DialogResult.OK && int.TryParse(newWeightStr, out int newWeight))
-                {
-                    if (newWeight == clickedStep.Weight) return; // No change
-
-                    // Check against the full steps plan, not just the displayed ones
-                    List<Step> fullStepsPlan = getStepsPlan();
-                    if (fullStepsPlan.Any(s => s.Weight == newWeight && s != clickedStep)) // Ensure not comparing against itself
-                    {
-                        MessageBox.Show($"{newWeight} is already a step.");
-                    }
-                    else
-                    {
-                        clickedStep.Weight = newWeight;
-                        clickedStep.Override = true;
-
-                        // You might need to update other calculated properties for all steps
-                        // or just call GenerateStepsList again to recalculate everything
-                        PopulateSteps(currentLiftType, true);
-                        // Or if GenerateStepsList only updates the modified steps:
-                        // setStepsPlan(fullStepsPlan); // Update the underlying list
-                        // dgv.Refresh(); // Refresh the grid to reflect changes
-                    }
-                }
-            }
-        }
-        private void dataGridView_snatch_steps_CellFormatting(DataGridView dgv, DataGridViewCellFormattingEventArgs e)
-        {
-            // Ensure we have a valid row and a Step object
-            if (e.RowIndex < 0) return;
-
-            if (dgv.Rows[e.RowIndex].DataBoundItem is not Step step) return;
-
-            // If the step is overridden, apply bold font to all relevant cells in the row
-            if (step.Override)
-            {
-                Font boldFont = new("Gadugi", 10F, FontStyle.Bold); // Or whatever font you use
-                e.CellStyle.Font = boldFont;
-            }
-            else
-            {
-                // Important: Reset to default font if not overridden, otherwise bold will persist
-                // if a row was previously bolded and then un-overridden.
-                e.CellStyle.Font = new Font("Gadugi", 10F, FontStyle.Regular);
-            }
-
-            // Custom formatting for Weight column (e.g., if Weight is 0, show empty string)
-            if (dgv.Columns[e.ColumnIndex].Name == "ColWeight" && step.Weight == 0)
-            {
-                e.Value = string.Empty; // Hide 0 weight
-                e.FormattingApplied = true;
-            }
-        }
         #endregion
 
         #region cj LIVE
@@ -2053,7 +1860,7 @@ namespace Weightlifting_Comp_Warmup.Main
 
             if (cjStepsPLAN is null)
             {
-                PopulateSteps(LiftType.CleanAndJerk, preserveLifts: false);
+                PopulateSteps(LiftType.CleanAndJerk);
             }
             if (cjStepsPLAN is null)
             {
@@ -2127,17 +1934,8 @@ namespace Weightlifting_Comp_Warmup.Main
                         Anchor = AnchorStyles.Top | AnchorStyles.Right,
                     };
                     label_Weight.Text = "lift " + _step.Weight.ToString();
-
-                    if (_step.Override)
-                    {
-                        label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Italic);
-                        label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold | FontStyle.Italic);
-                    }
-                    else
-                    {
-                        label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Regular);
-                        label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold);
-                    }
+                    label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Regular);
+                    label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold);
                 }
                 Label label_Time = new()
                 {
@@ -2778,52 +2576,6 @@ namespace Weightlifting_Comp_Warmup.Main
         private void Cj_Splitter_DoubleClick()
         {
             splitContainer_cj.SplitterDistance = 0;
-        }
-        private void dataGridView_cj_steps_CellClick(DataGridView dgv, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
-            if (dgv.Rows[e.RowIndex].DataBoundItem is not Step clickedStep) return;
-            if (dgv.Columns[e.ColumnIndex].Name == "ColWeight" && clickedStep.Weight > 0)
-            {
-                LiftType currentLiftType = LiftType.CleanAndJerk;
-                (Func<List<Step>> getStepsPlan, _, Action stopLive, _, _, _) = GetStepContext(currentLiftType);
-                stopLive();
-                string newWeightStr = clickedStep.Weight.ToString();
-                if (ShowInputDialog(ref newWeightStr) == DialogResult.OK && int.TryParse(newWeightStr, out int newWeight))
-                {
-                    if (newWeight == clickedStep.Weight) return; // No change
-                    List<Step> fullStepsPlan = getStepsPlan();
-                    if (fullStepsPlan.Any(s => s.Weight == newWeight && s != clickedStep)) // Ensure not comparing against itself
-                    {
-                        MessageBox.Show($"{newWeight} is already a step.");
-                    }
-                    else
-                    {
-                        clickedStep.Weight = newWeight;
-                        clickedStep.Override = true;
-                        PopulateSteps(currentLiftType, true);
-                    }
-                }
-            }
-        }
-        private void dataGridView_cj_steps_CellFormatting(DataGridView dgv, DataGridViewCellFormattingEventArgs e)
-        {
-            if (e.RowIndex < 0) return;
-            if (dgv.Rows[e.RowIndex].DataBoundItem is not Step step) return;
-            if (step.Override)
-            {
-                Font boldFont = new("Gadugi", 10F, FontStyle.Bold); // Or whatever font you use
-                e.CellStyle.Font = boldFont;
-            }
-            else
-            {
-                e.CellStyle.Font = new Font("Gadugi", 10F, FontStyle.Regular);
-            }
-            if (dgv.Columns[e.ColumnIndex].Name == "ColWeight" && step.Weight == 0)
-            {
-                e.Value = string.Empty; // Hide 0 weight
-                e.FormattingApplied = true;
-            }
         }
         #endregion
     }

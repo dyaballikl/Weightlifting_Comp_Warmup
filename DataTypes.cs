@@ -94,13 +94,12 @@ namespace Weightlifting_Comp_Warmup.Main
         public int TotalLengthReverse { get; set; }
         public int Order { get; set; }
         public bool PreStep { get; set; }
-        public bool Override { get; set; }
         public LiveStepControls Controls { get; set; }
         public string FormattedWeight => (this.Weight ?? 0) == 0 ? "" : $"{this.Weight}"; // for datagridview
         public string FormattedLength => Seconds_To_String(this.Length); // for datagridview
         public string FormattedTotalLength => Seconds_To_String(this.TotalLength); // for datagridview
 
-        public Step(string action, int weight, int length, int totalLength, int order, bool preStep, bool @override)
+        public Step(string action, int weight, int length, int totalLength, int order, bool preStep)
         { // extras
             Action = action;
             Weight = weight;
@@ -108,11 +107,10 @@ namespace Weightlifting_Comp_Warmup.Main
             TotalLength = totalLength;
             Order = order;
             PreStep = preStep;
-            Override = @override;
             Controls = new();
         }
 
-        public Step(string action, int length, int totalLength, /*int totalLengthReverse, */int order, bool @override)
+        public Step(string action, int length, int totalLength, /*int totalLengthReverse, */int order)
         { // non-lift
             Action = action;
             Weight = null;
@@ -121,18 +119,16 @@ namespace Weightlifting_Comp_Warmup.Main
             //TotalLengthReverse = totalLengthReverse;
             Order = order;
             PreStep = true;
-            Override = @override;
             Controls = new();
         }
-        public Step(string action, int weight, bool @override) // add step phase
+        public Step(string action, int weight) // add step phase
         { // is lift
             Action = action;
             Weight = weight;
             PreStep = false;
-            Override = @override;
             Controls = new();
         }
-        public Step(string action, int? weight, int length, int totalLength, int totalLengthReverse, int order, bool preStep, bool @override)
+        public Step(string action, int? weight, int length, int totalLength, int totalLengthReverse, int order, bool preStep)
         {
             Action = action;
             Weight = weight;
@@ -141,7 +137,6 @@ namespace Weightlifting_Comp_Warmup.Main
             TotalLengthReverse = totalLengthReverse;
             Order = order;
             PreStep = preStep;
-            Override = @override;
             Controls = new();
         }
         public Step Clone()

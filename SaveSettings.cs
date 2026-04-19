@@ -33,7 +33,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 [.. profiles.Values
                 .SelectMany(
                     p => p.SnatchExtras,
-                    (p, x) => $"{p.id:D3}{x.Order:D3}{x.Length:D5}{x.Action}")];
+                    (p, x) => $"{p.id:D3}{x.id:D3}{x.Order:D3}{x.Length:D5}{x.Action}")];
             savedSettings.ii_strings_SnatchJumps =
                 [.. profiles.Values
                 .SelectMany(
@@ -48,7 +48,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 [.. profiles.Values
                 .SelectMany(
                     p => p.CJExtras,
-                    (p, x) => $"{p.id:D3}{x.Order:D3}{x.Length:D5}{x.Action}")];
+                    (p, x) => $"{p.id:D3}{x.id:D3}{x.Order:D3}{x.Length:D5}{x.Action}")];
             savedSettings.ii_strings_CJJumps =
                 [.. profiles.Values
                 .SelectMany(

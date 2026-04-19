@@ -39,12 +39,12 @@ namespace Weightlifting_Comp_Warmup.Main
                 return $"{_timeSpan.Hours}h{_timeSpan.Minutes}m{_timeSpan.Seconds}s";
             }
         }
-        private void Smooth_Last_Jumps(Dictionary<int, bool> _weights, int _int_Opener)
+        private void Smooth_Last_Jumps(HashSet<int> _weights, int _int_Opener)
         {
             IEnumerable<int> topThreeWeights = _weights
-                .Where(r => r.Key > 0)
-                .OrderByDescending(r => r.Key)
-                .Select(r => r.Key);
+                .Where(r => r > 0)
+                .OrderByDescending(r => r)
+                .Select(r => r);
             int _int_FinalWarmup = topThreeWeights.ElementAtOrDefault(0);
             int _int_SecondToFinalWarmup = topThreeWeights.ElementAtOrDefault(1);
             int _int_ThirdToFinalWarmup = topThreeWeights.ElementAtOrDefault(2);
@@ -59,54 +59,33 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
                 if ((_int_FinalWarmup > 0 & _int_SecondToFinalWarmup > 0 & _int_ThirdToFinalWarmup > 0) && // 3+ warmups
                     (_int_FinalWarmup - _int_ThirdToFinalWarmup > 3) && // last 3 warmups span more than 3kg
-                    (((int)(decimal)(_int_FinalWarmup - _int_ThirdToFinalWarmup) / 2m + _int_ThirdToFinalWarmup) != _int_SecondToFinalWarmup) && // 2nd to last warmup not right in the middle (already smoothed)
-                    !_weights[_int_SecondToFinalWarmup]) // not an override
+                    (((int)(decimal)(_int_FinalWarmup - _int_ThirdToFinalWarmup) / 2m + _int_ThirdToFinalWarmup) != _int_SecondToFinalWarmup)) // 2nd to last warmup not right in the middle (already smoothed)
                 {
                     _weights.Remove(_int_SecondToFinalWarmup);
                     _int_SecondToFinalWarmup = (int)Math.Floor((_int_FinalWarmup - _int_ThirdToFinalWarmup) / 2m + _int_ThirdToFinalWarmup);
-                    _weights[_int_SecondToFinalWarmup] = false;
                 }
             }
         }
         private List<Step> x_Steps(
-            bool _bool_PreserveLifts,
             List<Extra> _extras,
             Dictionary<int, int> _jumps,
             Dictionary<int, int> _times,
             int _int_x_Sec_End,
             int _int_x_Wgt_Opener,
-            bool _bool_Opener_in_Warmup,
-            List<Step> _stepsIn = null
+            bool _bool_Opener_in_Warmup
             )
         {
             if (_extras == null | _jumps == null | _times == null) { return null; }
-            Dictionary<int, bool> _weightInputs = [];
-            Dictionary<int, bool> _weights = [];
+            HashSet<int> _weights = [];
             List<Step> _steps = [];
-            if (_bool_PreserveLifts && _stepsIn != null)
-            {
-                foreach (Step _step in _stepsIn)
-                {
-                    if ((_step.Weight ?? 0) > 0)
-                    {
-                        _weightInputs[(int)_step.Weight] = _step.Override;
-                    }
-                }
-                //remove final auto populated weights
-                int _max = _weightInputs.Keys.Max();
-                if (_max > 0)
-                {
-                    foreach (int key in _weightInputs.Keys.Where(r => r > _max))
-                    {
-                        _weightInputs.Remove(key);
-                    }
-                }
-            }
-            _weights = dictionary_Weights(
+            _weights = hashSet_Weights(
                 _jumps: _jumps,
-                _weightInputs: _weightInputs,
                 bool_Opener_in_Warmup: _bool_Opener_in_Warmup,
                 _int_Weight_Opener: _int_x_Wgt_Opener);
+            if (_weights.Count == 0)
+            {
+                _weights.Add(profileActive.BarbellWeight);
+            }
             Smooth_Last_Jumps(_weights: _weights, _int_Opener: _int_x_Wgt_Opener);
 
             int _int_TotalSeconds = _extras.Sum(r => r.Length);
@@ -119,32 +98,29 @@ namespace Weightlifting_Comp_Warmup.Main
                     length: _extra.Length,
                     totalLength: _int_TotalSeconds,
                     order: _int_Order,
-                    preStep: false,
-                    @override: false
-                    ));
+                    preStep: false));
                 _int_Order++;
             }
 
-            int _int_Weight_Last = _weights.Last().Key;
-            foreach (KeyValuePair<int, bool> _kvp_Weight in _weights)
+            int _int_Weight_Last = _weights.Max();
+            foreach (int _int_Weight in _weights)
             {
                 int intTime = _times
-                    .Where(r => r.Key <= _kvp_Weight.Key)
+                    .Where(r => r.Key <= _int_Weight)
                     .OrderByDescending(r => r.Key)
                     .FirstOrDefault().Value;
-                if (_kvp_Weight.Key == _int_Weight_Last)
+                if (_int_Weight == _int_Weight_Last)
                 {
                     intTime += _int_x_Sec_End;
                 }
                 _int_TotalSeconds += intTime;
                 _steps.Add(new Step(
                     action: "Lift",
-                    weight: _kvp_Weight.Key,
+                    weight: _int_Weight,
                     length: intTime,
                     totalLength: _int_TotalSeconds,
                     order: _int_Order,
-                    preStep: false,
-                    @override: _kvp_Weight.Value));
+                    preStep: false));
                 _int_Order++;
             }
 
@@ -162,8 +138,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 totalLength: 0,
                 totalLengthReverse: _int_TotalSeconds,
                 order: 0,
-                preStep: true,
-                @override: false));
+                preStep: true));
             return _steps;
         }
         private int GetJumpForWeight(Dictionary<int, int> _jumps, int _int_Weight)
@@ -193,34 +168,23 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             return baseJumpKvp.Value;
         }
-        private Dictionary<int, bool> dictionary_Weights(
+        private HashSet<int> hashSet_Weights(
             Dictionary<int, int> _jumps,
-            Dictionary<int, bool> _weightInputs,
             int _int_Weight_Opener,
             bool bool_Opener_in_Warmup
             )
         {
-            List<KeyValuePair<int, bool>> _weightInputs_List = [.. _weightInputs.OrderBy(r => r.Key)];
-            Dictionary<int, bool> _weights = [];
+            HashSet<int> _weights = [];
             int _int_Weight = 0;
-            int _int_Lift = 0;
-            bool _bool_Override;
             do
             {
-                int _int_Jump = 0;
-                if (_int_Lift < _weightInputs_List.Count)
-                {
-                    _int_Jump = _weightInputs_List[_int_Lift].Key - _int_Weight;
-                    _bool_Override = _weightInputs_List[_int_Lift].Value;
-                }
-                else if (_int_Weight == 0)
+                int _int_Jump;
+                if (_int_Weight == 0)
                 {
                     _int_Jump = profileActive.BarbellWeight;
-                    _bool_Override = false;
                 }
                 else
                 {
-                    _bool_Override = false;
                     _int_Jump = GetJumpForWeight(_jumps, _int_Weight);
                 }
                 if (_int_Jump < 1 || (_int_Weight + _int_Jump >= _int_Weight_Opener))
@@ -230,14 +194,12 @@ namespace Weightlifting_Comp_Warmup.Main
                 else
                 {
                     _int_Weight += _int_Jump;
-                    _weights[_int_Weight] = _bool_Override;
-                    _int_Lift++;
+                    _weights.Add(_int_Weight);
                 }
             } while (_int_Weight < _int_Weight_Opener);
-            if (bool_Opener_in_Warmup && _weights.Count > 0 &&
-                _weights.Max(r => r.Key) < _int_Weight_Opener)
+            if (bool_Opener_in_Warmup && !_weights.Contains(_int_Weight_Opener))
             {
-                _weights[_int_Weight_Opener] = _bool_Override;
+                _weights.Add(_int_Weight_Opener);
             }
 
             return _weights;

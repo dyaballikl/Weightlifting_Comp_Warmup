@@ -49,8 +49,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.button_snatch_Reset = new System.Windows.Forms.Button();
-            this.button_snatch_AddStep = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.dataGridView_snatch_steps = new System.Windows.Forms.DataGridView();
@@ -116,8 +114,6 @@
             this.label29 = new System.Windows.Forms.Label();
             this.label30 = new System.Windows.Forms.Label();
             this.panel7 = new System.Windows.Forms.Panel();
-            this.button_cj_Reset = new System.Windows.Forms.Button();
-            this.button_cj_AddStep = new System.Windows.Forms.Button();
             this.dataGridView_cj_steps = new System.Windows.Forms.DataGridView();
             this.Column_CJ_Step = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column_CJ_Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -518,8 +514,6 @@
             this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel4.Controls.Add(this.button_snatch_Reset);
-            this.panel4.Controls.Add(this.button_snatch_AddStep);
             this.panel4.Controls.Add(this.label19);
             this.panel4.Controls.Add(this.label18);
             this.panel4.Controls.Add(this.dataGridView_snatch_steps);
@@ -529,28 +523,6 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(425, 372);
             this.panel4.TabIndex = 14;
-            // 
-            // button_snatch_Reset
-            // 
-            this.button_snatch_Reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_snatch_Reset.ForeColor = System.Drawing.Color.Black;
-            this.button_snatch_Reset.Location = new System.Drawing.Point(66, 337);
-            this.button_snatch_Reset.Name = "button_snatch_Reset";
-            this.button_snatch_Reset.Size = new System.Drawing.Size(100, 28);
-            this.button_snatch_Reset.TabIndex = 14;
-            this.button_snatch_Reset.Text = "reset overrides";
-            this.button_snatch_Reset.UseVisualStyleBackColor = true;
-            // 
-            // button_snatch_AddStep
-            // 
-            this.button_snatch_AddStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_snatch_AddStep.ForeColor = System.Drawing.Color.Black;
-            this.button_snatch_AddStep.Location = new System.Drawing.Point(6, 337);
-            this.button_snatch_AddStep.Name = "button_snatch_AddStep";
-            this.button_snatch_AddStep.Size = new System.Drawing.Size(50, 28);
-            this.button_snatch_AddStep.TabIndex = 13;
-            this.button_snatch_AddStep.Text = "+";
-            this.button_snatch_AddStep.UseVisualStyleBackColor = true;
             // 
             // label19
             // 
@@ -604,10 +576,8 @@
             this.dataGridView_snatch_steps.RowHeadersVisible = false;
             this.dataGridView_snatch_steps.RowTemplate.Height = 28;
             this.dataGridView_snatch_steps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_snatch_steps.Size = new System.Drawing.Size(421, 298);
+            this.dataGridView_snatch_steps.Size = new System.Drawing.Size(421, 331);
             this.dataGridView_snatch_steps.TabIndex = 10;
-            this.dataGridView_snatch_steps.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_snatch_steps_CellClick);
-            this.dataGridView_snatch_steps.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView_snatch_steps_CellFormatting);
             // 
             // Column_Snatch_Step
             // 
@@ -1317,8 +1287,6 @@
             this.panel7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel7.Controls.Add(this.button_cj_Reset);
-            this.panel7.Controls.Add(this.button_cj_AddStep);
             this.panel7.Controls.Add(this.dataGridView_cj_steps);
             this.panel7.Controls.Add(this.label31);
             this.panel7.Controls.Add(this.label32);
@@ -1328,28 +1296,6 @@
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(425, 372);
             this.panel7.TabIndex = 14;
-            // 
-            // button_cj_Reset
-            // 
-            this.button_cj_Reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_cj_Reset.ForeColor = System.Drawing.Color.Black;
-            this.button_cj_Reset.Location = new System.Drawing.Point(66, 337);
-            this.button_cj_Reset.Name = "button_cj_Reset";
-            this.button_cj_Reset.Size = new System.Drawing.Size(100, 28);
-            this.button_cj_Reset.TabIndex = 16;
-            this.button_cj_Reset.Text = "reset overrides";
-            this.button_cj_Reset.UseVisualStyleBackColor = true;
-            // 
-            // button_cj_AddStep
-            // 
-            this.button_cj_AddStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_cj_AddStep.ForeColor = System.Drawing.Color.Black;
-            this.button_cj_AddStep.Location = new System.Drawing.Point(6, 337);
-            this.button_cj_AddStep.Name = "button_cj_AddStep";
-            this.button_cj_AddStep.Size = new System.Drawing.Size(50, 28);
-            this.button_cj_AddStep.TabIndex = 15;
-            this.button_cj_AddStep.Text = "+";
-            this.button_cj_AddStep.UseVisualStyleBackColor = true;
             // 
             // dataGridView_cj_steps
             // 
@@ -1385,10 +1331,8 @@
             this.dataGridView_cj_steps.RowHeadersVisible = false;
             this.dataGridView_cj_steps.RowTemplate.Height = 28;
             this.dataGridView_cj_steps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_cj_steps.Size = new System.Drawing.Size(421, 298);
+            this.dataGridView_cj_steps.Size = new System.Drawing.Size(421, 331);
             this.dataGridView_cj_steps.TabIndex = 13;
-            this.dataGridView_cj_steps.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_cj_steps_CellClick);
-            this.dataGridView_cj_steps.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView_cj_steps_CellFormatting);
             // 
             // Column_CJ_Step
             // 
@@ -2370,10 +2314,6 @@
         private System.Windows.Forms.Button button_snatch_SaveSettings;
         private System.Windows.Forms.Button button_cj_SaveSettings;
         private System.Windows.Forms.DataGridView dataGridView_snatch_steps;
-        private System.Windows.Forms.Button button_snatch_AddStep;
-        private System.Windows.Forms.Button button_snatch_Reset;
-        private System.Windows.Forms.Button button_cj_Reset;
-        private System.Windows.Forms.Button button_cj_AddStep;
         private System.Windows.Forms.DataGridView dataGridView_cj_steps;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column_Snatch_Step;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column_Snatch_Weight;

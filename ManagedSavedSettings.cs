@@ -493,7 +493,7 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             PopulateTimes(liftType: LiftType.Snatch);
 
-            PopulateSteps(liftType: LiftType.Snatch, preserveLifts: false);
+            PopulateSteps(liftType: LiftType.Snatch);
 
             profileActive.CJExtras ??= Defaults.default_cjExtras;
             PopulateExtras(liftType: LiftType.CleanAndJerk);
@@ -512,7 +512,7 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             PopulateTimes(liftType: LiftType.CleanAndJerk);
 
-            PopulateSteps(liftType: LiftType.CleanAndJerk, preserveLifts: false);
+            PopulateSteps(liftType: LiftType.CleanAndJerk);
 
             ApplyOpener(liftType: LiftType.Snatch);
             ApplyOpener(liftType: LiftType.CleanAndJerk);
@@ -529,14 +529,22 @@ namespace Weightlifting_Comp_Warmup.Main
         private bool ParseOutSetting(string record, out int id, out int setting)
         {
             setting = default;
-            return ParseOutSetting(record: record, id: out id, setting: out string _setting) &&
+            bool b =  ParseOutSetting(record: record, id: out id, setting: out string _setting) &&
                 int.TryParse(_setting, out setting);
+            Console.WriteLine(b ?
+                $"Loaded {setting.GetType().Name} - record: {record} - id: {id} - value out: {setting}" :
+                $"Failed to load {setting.GetType().Name} - record: {record} - id: {id}");
+            return b;
         }
         private bool ParseOutSetting(string record, out int id, out bool setting)
         {
             setting = default;
-            return ParseOutSetting(record: record, id: out id, setting: out string _setting) &&
+            bool b = ParseOutSetting(record: record, id: out id, setting: out string _setting) &&
                 bool.TryParse(_setting, out setting);
+            Console.WriteLine(b ?
+                $"Loaded {setting.GetType().Name} - record: {record} - id: {id} - value out: {setting}" :
+                $"Failed to load {setting.GetType().Name} - record: {record} - id: {id}");
+            return b;
         }
         private bool ParseOutSetting(string record, out int id, out TimeSpan setting)
         {
@@ -546,9 +554,11 @@ namespace Weightlifting_Comp_Warmup.Main
                     hours: int.Parse(_setting.Substring(0, 2)),
                     minutes: int.Parse(_setting.Substring(2, 2)),
                     seconds: 0);
+                Console.WriteLine($"Loaded {setting.GetType().Name} - record: {record} - id: {id} - value out: {setting}");
                 return true;
             }
             setting = default;
+            Console.WriteLine($"Failed to load {setting.GetType().Name} - record: {record} - id: {id}");
             return false;
         }
         private bool ParseOutSetting(string record, out int id, out string setting)
@@ -558,11 +568,13 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 id = -1;
                 setting = default;
+                Console.WriteLine($"Failed to load {setting.GetType().Name} - record: {record} - id: {id}");
                 return false;
             }
             else
             {
                 setting = (record.Length > 3 ? record.Substring(3) : string.Empty);
+                Console.WriteLine($"Loaded {setting.GetType().Name} - record: {record} - id: {id} - value out: {setting}");
                 return true;
             }
         }
@@ -586,10 +598,12 @@ namespace Weightlifting_Comp_Warmup.Main
                 int.TryParse(setting.Substring(3, 3), out int order) && order > -1 &&
                 int.TryParse(setting.Substring(6, 5), out int length) && length > 0)
             {
-                string action = (record.Length == 11 ? string.Empty : record.Substring(11, record.Length - 11));
+                string action = (setting.Length == 11 ? string.Empty : setting.Substring(11, setting.Length - 11));
+                Console.WriteLine($"Loaded Extra - record: {record} - profileId: {profileId} - id: {extraId} - order: {order} - length: {length} - action: {action}");
                 extra = new(id: extraId, action: action, length: length, order: order);
                 return true;
             }
+                Console.WriteLine($"Failed to load Extra - record: {record}");
             return false;
         }
         private bool TryParseJumpTime(string record, out int profileId, out int fromWeight, out int stepValue)
@@ -604,14 +618,18 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 return false;
             }
-            return int.TryParse(record.Substring(0, 3), out fromWeight) &&
-                   int.TryParse(record.Substring(3, 3), out stepValue) && stepValue > 0;
+            bool b = int.TryParse(setting.Substring(0, 3), out fromWeight) &&
+                int.TryParse(setting.Substring(3, 3), out stepValue) && stepValue > 0;
+            Console.WriteLine(b ? 
+                $"Loaded Extra - record: {record} - profileId: {profileId} - fromWeight: {fromWeight} - stepValue: {stepValue}" :
+                $"Failed to load Extra - record: {record}");
+            return b;
         }
         private void ClearSettings()
         {
             if (MessageBox.Show($"This will erase all profiles and restore all defaults.{Environment.NewLine}{Environment.NewLine}Continue?",
                 "Reset settings?", buttons: MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
-            {
+             {
                 savedSettings.Reset();
                 savedSettings.Save();
                 profiles.Clear();
@@ -621,6 +639,8 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     MessageBox.Show("An error occurred and the profile could not be loaded. Please reopen and try again.", "Profile Loading Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+                Populate_MenuStrip();
+                Load_Profile_Values_To_Controls();
             }
         }
         private void Populate_MenuStrip()
