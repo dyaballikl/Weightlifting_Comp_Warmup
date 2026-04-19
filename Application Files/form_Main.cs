@@ -1187,7 +1187,7 @@ namespace Weightlifting_Comp_Warmup.Main
             timer.Stop();
             if (liftType == LiftType.Snatch)
             {
-                if (bool_snatch_Live) 
+                if (bool_snatch_Live)
                 {
                     sim_timer_snatch_Live_Tick();
                 }

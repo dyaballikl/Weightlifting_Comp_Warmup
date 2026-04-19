@@ -80,35 +80,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppColors.cs" />
-    <Compile Include="DataTypes.cs" />
-    <Compile Include="Defaults.cs" />
-    <Compile Include="form_Main.cs">
+    <Compile Include="Application Files\AppColors.cs" />
+    <Compile Include="Application Files\DataTypes.cs" />
+    <Compile Include="Application Files\Defaults.cs" />
+    <Compile Include="Application Files\form_Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="form_Main.Designer.cs">
+    <Compile Include="Application Files\form_Main.Designer.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="ManagedSavedSettings.cs">
-      <DependentUpon>form_Main.cs</DependentUpon>
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SaveSettings.cs">
+    <Compile Include="Application Files\ManagedSavedSettings.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Utilities.cs">
+    <Compile Include="Application Files\SaveSettings.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Application Files\Utilities.cs">
+      <DependentUpon>form_Main.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Application Files\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Variables.cs">
+    <Compile Include="Application Files\Settings.cs" />
+    <Compile Include="Application Files\Variables.cs">
       <DependentUpon>form_Main.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="form_Main.resx">
+    <EmbeddedResource Include="Application Files\form_Main.resx">
       <DependentUpon>form_Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -132,7 +132,7 @@
     <None Include="Weightlifting_Comp_Warmup_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="Application Files\App.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
