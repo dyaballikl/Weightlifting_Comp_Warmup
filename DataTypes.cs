@@ -94,12 +94,13 @@ namespace Weightlifting_Comp_Warmup.Main
         public int TotalLengthReverse { get; set; }
         public int Order { get; set; }
         public bool PreStep { get; set; }
+        public bool isOpener { get; set; }
         public LiveStepControls Controls { get; set; }
         public string FormattedWeight => (this.Weight ?? 0) == 0 ? "" : $"{this.Weight}"; // for datagridview
         public string FormattedLength => Seconds_To_String(this.Length); // for datagridview
         public string FormattedTotalLength => Seconds_To_String(this.TotalLength); // for datagridview
 
-        public Step(string action, int weight, int length, int totalLength, int order, bool preStep)
+        public Step(string action, int weight, int length, int totalLength, int order, bool preStep, bool isOpener)
         { // extras
             Action = action;
             Weight = weight;
@@ -108,9 +109,9 @@ namespace Weightlifting_Comp_Warmup.Main
             Order = order;
             PreStep = preStep;
             Controls = new();
+            this.isOpener = isOpener;
         }
-
-        public Step(string action, int length, int totalLength, /*int totalLengthReverse, */int order)
+        public Step(string action, int length, int totalLength, /*int totalLengthReverse, */int order, bool isOpener)
         { // non-lift
             Action = action;
             Weight = null;
@@ -120,15 +121,17 @@ namespace Weightlifting_Comp_Warmup.Main
             Order = order;
             PreStep = true;
             Controls = new();
+            this.isOpener = isOpener;
         }
-        public Step(string action, int weight) // add step phase
+        public Step(string action, int weight, bool isOpener) // add step phase
         { // is lift
             Action = action;
             Weight = weight;
             PreStep = false;
             Controls = new();
+            this.isOpener = isOpener;
         }
-        public Step(string action, int? weight, int length, int totalLength, int totalLengthReverse, int order, bool preStep)
+        public Step(string action, int? weight, int length, int totalLength, int totalLengthReverse, int order, bool preStep, bool isOpener)
         {
             Action = action;
             Weight = weight;
@@ -138,6 +141,7 @@ namespace Weightlifting_Comp_Warmup.Main
             Order = order;
             PreStep = preStep;
             Controls = new();
+            this.isOpener = isOpener;
         }
         public Step Clone()
         {

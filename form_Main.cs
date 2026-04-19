@@ -729,7 +729,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_jump_delete_click(int id, LiftType liftType)
         {
-            (Dictionary<int, int> jumps, _,  _) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, _, _) = GetJumpContext(liftType);
 
             if (jumps.ContainsKey(id))
             {
@@ -741,7 +741,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_jump_commit_click(LiftType liftType)
         {
-            (Dictionary<int, int> jumps, Panel panel,  _) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, Panel panel, _) = GetJumpContext(liftType);
 
             NumericUpDown fromWeightnumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
             NumericUpDown jumpnumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
@@ -829,7 +829,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void PopulateTimes(LiftType liftType)
         {
-            (Dictionary<int, int> times, Panel panel,  Dictionary<int, int> getDefaultTimes) context = GetTimeContext(liftType);
+            (Dictionary<int, int> times, Panel panel, Dictionary<int, int> getDefaultTimes) context = GetTimeContext(liftType);
             context.panel.Controls.Clear();
 
             // Assign default times if the current list is empty
@@ -1021,7 +1021,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void PopulateSteps(LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan,  _, Label stepCountLabel, DataGridView dataGridViewSteps) =
+            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, _, Label stepCountLabel, DataGridView dataGridViewSteps) =
                 GetStepContext(liftType);
 
             List<Step> newStepsPlan = GenerateStepsList(liftType);
@@ -1187,11 +1187,25 @@ namespace Weightlifting_Comp_Warmup.Main
             timer.Stop();
             if (liftType == LiftType.Snatch)
             {
-                if (bool_snatch_Live) sim_timer_snatch_Live_Tick();
+                if (bool_snatch_Live) 
+                {
+                    sim_timer_snatch_Live_Tick();
+                }
+                else
+                {
+                    snatch_Stop_Live();
+                }
             }
             else // CleanAndJerk
             {
-                if (bool_cj_Live) sim_timer_cj_Live_Tick();
+                if (bool_cj_Live)
+                {
+                    sim_timer_cj_Live_Tick();
+                }
+                else
+                {
+                    cj_Stop_Live();
+                }
             }
             timer.Interval = timerInterval;
             timer.Start();
@@ -1291,19 +1305,31 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 PopulateSteps(LiftType.Snatch);
             }
-            if (snatchStepsPLAN is null)
+            if (snatchStepsPLAN is null || !snatchStepsPLAN.Any())
             {
                 MessageBox.Show("An error has occurred. Step plan could not be determined.");
                 this.Close();
                 return;
             }
             snatchStepsLIVE = [.. snatchStepsPLAN.Select(r => r.Clone())];
+            Step _stepLast = snatchStepsLIVE.Last();
+            snatchStepsLIVE.Add(new(
+                action: $"open at {profileActive.Snatch_OpenerWeight}",
+                weight: profileActive.Snatch_OpenerWeight,
+                length: 0,
+                totalLength: _stepLast.TotalLength,
+                totalLengthReverse: 0,
+                order: _stepLast.Order + 1,
+                preStep: false,
+                isOpener: true));
 
             int intY = 1;
             int _int_panel_Live_Step_Width = panel_snatch_Live_Steps.Width - 4;
             int _int_progressBar_Step_Width_NoScroll = _int_panel_Live_Step_Width - 350;
             int _int_progressBar_Step_Width_Scroll = _int_progressBar_Step_Width_NoScroll - SystemInformation.VerticalScrollBarWidth;
+            int _int_progressBar_Step_Height = 65;
             int _int_progressBar_Step_Width;
+            int _int_label_Weight_Width = 105;
             Point _point_progressBar_Step_Location = new(300, 6);
 
             SuspendLayout();
@@ -1311,11 +1337,11 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 if (panel_snatch_Live_Steps.VerticalScroll.Visible)
                 {
-                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_Scroll;
+                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_Scroll - _int_label_Weight_Width;
                 }
                 else
                 {
-                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_NoScroll;
+                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_NoScroll - _int_label_Weight_Width;
                 }
                 bool _isLift = (_step.Weight > 0);
                 string strActionText = ActionTextString(_step: _step, _isFuture: true);
@@ -1337,12 +1363,12 @@ namespace Weightlifting_Comp_Warmup.Main
                 };
                 ProgressBar progressBar_Step = new()
                 {
-                    Size = new Size(_int_progressBar_Step_Width, 65),
+                    Size = new Size(_int_progressBar_Step_Width, _int_progressBar_Step_Height),
                     Location = _point_progressBar_Step_Location,
                     Maximum = _step.Length,
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 };
-                if (progressBar_Step.Maximum == 0)
+                if (progressBar_Step.Maximum < 1)
                 {
                     progressBar_Step.Maximum = 1;
                     progressBar_Step.Value = 1;
@@ -1355,23 +1381,22 @@ namespace Weightlifting_Comp_Warmup.Main
                         BorderStyle = BorderStyle.FixedSingle,
                         BackColor = Color.Black,
                         AutoSize = false,
-                        Size = new Size(105, 30),
-                        Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
+                        Size = new Size(_int_label_Weight_Width, _int_progressBar_Step_Height),
+                        Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width, _point_progressBar_Step_Location.Y),
                         ForeColor = SystemColors.Window,
-                        Text = "lift " + _step.Weight.ToString(),
+                        Text = $"{(_step.isOpener ? "open at" : "lift")} {_step.Weight}",
                         TextAlign = ContentAlignment.MiddleCenter,
                         Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                        Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
                     };
-                    label_Weight.Text = "lift " + _step.Weight.ToString();
                     label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Regular);
-                    label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold);
                 }
                 Label label_Time = new()
                 {
                     Text = String.Empty,
                     BorderStyle = BorderStyle.FixedSingle,
                     AutoSize = false,
-                    Size = new Size(120, 30),
+                    Size = new Size(160, 30),
                     Location = _point_progressBar_Step_Location,
                     Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
                     Visible = false,
@@ -1383,8 +1408,8 @@ namespace Weightlifting_Comp_Warmup.Main
                     Text = String.Empty,
                     BorderStyle = BorderStyle.FixedSingle,
                     AutoSize = false,
-                    Size = new Size(105, 30),
-                    Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
+                    Size = new Size(_int_label_Weight_Width, _int_progressBar_Step_Height),
+                    Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width, _point_progressBar_Step_Location.Y),
                     Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
                     Visible = false,
                     TextAlign = ContentAlignment.MiddleCenter,
@@ -1400,11 +1425,13 @@ namespace Weightlifting_Comp_Warmup.Main
                 WeightBox weightBoxGraphic = null;
                 if (_isLift)
                 {
-                    weightBoxGraphic = new()
+                    weightBoxGraphic = new(
+                        isOpener: false,
+                        isCompCollars: _step.isOpener,
+                        barWeight: profileActive.BarbellWeight,
+                        weight: (int)_step.Weight
+                    )
                     {
-                        isOpener = false,
-                        BarWeight = profileActive.BarbellWeight,
-                        Weight = (int)_step.Weight,
                         Size = new Size(120, 65),
                         BackColor = Color.FromArgb(196, 196, 196),
                         BorderStyle = BorderStyle.Fixed3D,
@@ -1495,16 +1522,17 @@ namespace Weightlifting_Comp_Warmup.Main
             }
 
 
-            DateTime _dateTime_Open = _dateTime_Now.AddSeconds(intSecondsToOpen);
+            TimeSpan _timeSpan_Open = TimeSpan.FromSeconds(intSecondsToOpen);
             if (intSecondsToOpen > 0)
             {
                 label_snatch_Live_TimeTillOpener.Text = Seconds_To_String(intSecondsToOpen);
-                label_snatch_Live_OpenTime.Text = _dateTime_Open.ToString("HH:mm:ss");
+                label_cj_Live_OpenTime.Text = _now.Add(_timeSpan_Open).ToString(@"HH\:mm\:ss");
             }
             else
             {
                 label_snatch_Live_TimeTillOpener.Text = "-";
                 label_snatch_Live_OpenTime.Text = "passed";
+                bool_snatch_Live = false;
             }
 
             int _intStep = -1;
@@ -1571,7 +1599,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     if (_int_Order > _intStep)
                     {
                         label_Time.Visible = true;
-                        label_Time.Text = _dateTime_Open.AddSeconds(-_step.TotalLengthReverse).ToString("HH:mm:ss");
+                        label_Time.Text = $"in {Seconds_To_String((int)_timeSpan_Open.Add(TimeSpan.FromSeconds(-_step.TotalLengthReverse)).TotalSeconds)}";
                     }
                     else
                     {
@@ -1600,10 +1628,6 @@ namespace Weightlifting_Comp_Warmup.Main
                         {
                             panel_Live_Step.BackColor = AppColors.Live_Highlight_BG;
                             panel_Live_Step.ForeColor = AppColors.Live_Highlight_FG;
-                        }
-                        else
-                        {
-                            break;
                         }
                     }
                     else if (bool_UpdateStepHighlights)
@@ -1929,7 +1953,7 @@ namespace Weightlifting_Comp_Warmup.Main
                         Size = new Size(105, 30),
                         Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
                         ForeColor = SystemColors.Window,
-                        Text = "lift " + _step.Weight.ToString(),
+                        Text = $"{(_step.isOpener ? "open at" : "lift")} {_step.Weight}",
                         TextAlign = ContentAlignment.MiddleCenter,
                         Anchor = AnchorStyles.Top | AnchorStyles.Right,
                     };
@@ -1971,11 +1995,12 @@ namespace Weightlifting_Comp_Warmup.Main
                 WeightBox weightBoxGraphic = null;
                 if (boolIsLift)
                 {
-                    weightBoxGraphic = new()
+                    weightBoxGraphic = new(
+                        isOpener: false,
+                        isCompCollars: _step.isOpener,
+                        barWeight: profileActive.BarbellWeight,
+                        weight: _step.Weight ?? 0)
                     {
-                        isOpener = false,
-                        BarWeight = profileActive.BarbellWeight,
-                        Weight = _step.Weight ?? 0,
                         Size = new Size(120, 65),
                         BackColor = Color.FromArgb(196, 196, 196),
                         BorderStyle = BorderStyle.Fixed3D,
@@ -2176,6 +2201,7 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 label_cj_Live_TimeTillOpener.Text = "-";
                 label_cj_Live_OpenTime.Text = "passed";
+                bool_cj_Live = false;
             }
 
             int _intStep = -1;
@@ -2241,7 +2267,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     if (_int_Order > _intStep)
                     {
                         label_Time.Visible = true;
-                        label_Time.Text = _timeSpan_Open.Add(TimeSpan.FromSeconds(-_step.TotalLengthReverse)).ToString(@"hh\:mm\:ss"); ;
+                        label_Time.Text = $"in {Seconds_To_String((int)_timeSpan_Open.Add(TimeSpan.FromSeconds(-_step.TotalLengthReverse)).TotalSeconds)}";
                     }
                     else
                     {
@@ -2270,10 +2296,6 @@ namespace Weightlifting_Comp_Warmup.Main
                         {
                             _panel_Live_Step.BackColor = AppColors.Live_Highlight_BG;
                             _panel_Live_Step.ForeColor = AppColors.Live_Highlight_FG;
-                        }
-                        else
-                        {
-                            break;
                         }
                     }
                     else if (bool_UpdateStepHighlights)

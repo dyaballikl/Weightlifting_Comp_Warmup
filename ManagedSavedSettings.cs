@@ -529,7 +529,7 @@ namespace Weightlifting_Comp_Warmup.Main
         private bool ParseOutSetting(string record, out int id, out int setting)
         {
             setting = default;
-            bool b =  ParseOutSetting(record: record, id: out id, setting: out string _setting) &&
+            bool b = ParseOutSetting(record: record, id: out id, setting: out string _setting) &&
                 int.TryParse(_setting, out setting);
             Console.WriteLine(b ?
                 $"Loaded {setting.GetType().Name} - record: {record} - id: {id} - value out: {setting}" :
@@ -603,7 +603,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 extra = new(id: extraId, action: action, length: length, order: order);
                 return true;
             }
-                Console.WriteLine($"Failed to load Extra - record: {record}");
+            Console.WriteLine($"Failed to load Extra - record: {record}");
             return false;
         }
         private bool TryParseJumpTime(string record, out int profileId, out int fromWeight, out int stepValue)
@@ -620,7 +620,7 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             bool b = int.TryParse(setting.Substring(0, 3), out fromWeight) &&
                 int.TryParse(setting.Substring(3, 3), out stepValue) && stepValue > 0;
-            Console.WriteLine(b ? 
+            Console.WriteLine(b ?
                 $"Loaded Extra - record: {record} - profileId: {profileId} - fromWeight: {fromWeight} - stepValue: {stepValue}" :
                 $"Failed to load Extra - record: {record}");
             return b;
@@ -629,7 +629,7 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             if (MessageBox.Show($"This will erase all profiles and restore all defaults.{Environment.NewLine}{Environment.NewLine}Continue?",
                 "Reset settings?", buttons: MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
-             {
+            {
                 savedSettings.Reset();
                 savedSettings.Save();
                 profiles.Clear();
