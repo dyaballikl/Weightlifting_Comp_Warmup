@@ -1,9 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Weightlifting_Comp_Warmup.Main
 {
     internal static class Defaults
     {
+        internal const int int_default_Barbell = 20;
+        internal const int int_default_snatch_SecondsStage = 55;
+        internal const int int_default_snatch_OpenerWeight = 85;
+        internal const int int_default_snatch_SecondsEnd = 60;
+        internal const int int_default_snatch_LiftsOut = 3;
+        internal const int int_default_cj_SecondsStage = 62;
+        internal const int int_default_cj_OpenerWeight = 110;
+        internal const int int_default_cj_SecondsEnd = 75;
+        internal const int int_default_cj_LiftsOut = 3;
+        internal const int int_default_cJ_SnatchLifts_Out = 0;
+        internal const int int_default_cJ_SecondsBreak = 600;
+        internal static TimeSpan timeSpan_default_Start = new(9, 0, 0);
+        internal const bool bool_default_snatch_OpenerInWarmup = true;
+        internal const bool bool_default_cj_OpenerInWarmup = false;
+        internal const bool bool_default_Beep = false;
+
         private static List<Extra> _default_snatchExtras = null;
         internal static List<Extra> default_snatchExtras
         {
@@ -79,90 +96,141 @@ namespace Weightlifting_Comp_Warmup.Main
 
         private static void populate_default_snatchExtras()
         {
-            int intOrder = 0;
-            _default_snatchExtras =
-            [
-                new(
+            _default_snatchExtras = [];
+        }
+        private static void populate_default_snatchJumps()
+        {
+            _default_snatchJumps = new() { [1] = 20 };
+        }
+        private static void populate_default_snatchTimes()
+        {
+            _default_snatchTimes = new() { [1] = 140 };
+        }
+        private static void populate_default_cjExtras()
+        {
+            _default_cjExtras = [];
+        }
+        private static void populate_default_cjJumps()
+        {
+            _default_cjJumps = new() { [1] = 30 };
+        }
+        private static void populate_default_cjTimes()
+        {
+            _default_cjTimes = new() { [1] = 160 };
+        }
+
+        #region demonstration values
+        internal static List<Extra> demo_snatchExtras
+        {
+            get
+            {
+                int intOrder = 0;
+                List<Extra> _demo_snatchExtras =
+                [
+                    new(
                     action: "Ibuprofen, Coffee, Pre",
                     length: 20 * 60,
                     order: intOrder
                 ),
             ];
-            intOrder++;
+                intOrder++;
 
-            _default_snatchExtras.Add(new(
-                action: "Foam Roll",
-                length: 5 * 60,
-                order: intOrder));
-            intOrder++;
+                _demo_snatchExtras.Add(new(
+                    action: "Foam Roll",
+                    length: 5 * 60,
+                    order: intOrder));
+                intOrder++;
 
-            _default_snatchExtras.Add(new(
-                action: "Shoes, tape, etc.",
-                length: 5 * 60,
-                order: intOrder));
-            intOrder++;
+                _demo_snatchExtras.Add(new(
+                    action: "Shoes, tape, etc.",
+                    length: 5 * 60,
+                    order: intOrder));
+                intOrder++;
 
-            _default_snatchExtras.Add(new(
-                action: "Stretch",
-                length: 10 * 60,
-                order: intOrder));
-            intOrder++;
+                _demo_snatchExtras.Add(new(
+                    action: "Stretch",
+                    length: 10 * 60,
+                    order: intOrder));
+                intOrder++;
 
-            _default_snatchExtras.Add(new(
-                action: "Empty bar stretch",
-                length: 5 * 60,
-                order: intOrder));
+                _demo_snatchExtras.Add(new(
+                    action: "Empty bar stretch",
+                    length: 5 * 60,
+                    order: intOrder));
+                return _demo_snatchExtras;
+            }
         }
-        private static void populate_default_snatchJumps()
+        internal static Dictionary<int /*from weight*/, int /*jump size*/> demo_snatchJumps
         {
-            _default_snatchJumps = new()
+            get
             {
-                [1] = 20,
-                [40] = 10,
-                [50] = 5,
-                [80] = 4,
-                [89] = 3
-            };
+                Dictionary<int /*from weight*/, int /*jump size*/> _demo_snatchJumps = new()
+                {
+                    [1] = 20,
+                    [40] = 10,
+                    [50] = 5,
+                    [80] = 4,
+                    [89] = 3
+                };
+                return _demo_snatchJumps;
+            }
         }
-        private static void populate_default_snatchTimes()
+        internal static Dictionary<int /*from weight*/, int /*jump size*/> demo_snatchTimes
         {
-            _default_snatchTimes = new()
+            get
             {
-                [1] = 210,
-                [41] = 150
-            };
+                Dictionary<int /*from weight*/, int /*jump size*/> _demo_snatchTimes = new()
+                {
+                    [1] = 210,
+                    [41] = 150
+                };
+                return _demo_snatchTimes;
+            }
         }
-        private static void populate_default_cjExtras()
+        internal static List<Extra> demo_cjExtras
         {
-            int intOrder = 0;
-            _default_cjExtras =
-            [
-                new(
+            get
+            {
+                int intOrder = 0;
+                List<Extra> _demo_cjExtras =
+                [
+                    new(
                     action: "Stretch",
                     length: 5 * 60,
                     order: intOrder
                 ),
             ];
+                return _demo_cjExtras;
+            }
         }
-        private static void populate_default_cjJumps()
+        internal static Dictionary<int /*from weight*/, int /*jump size*/> demo_cjJumps
         {
-            _default_cjJumps = new()
+            get
             {
-                [1] = 30,
-                [50] = 10,
-                [90] = 7,
-                [100] = 5,
-                [105] = 4
-            };
+                Dictionary<int /*from weight*/, int /*jump size*/> _demo_cjJumps = new()
+                {
+                    [1] = 30,
+                    [50] = 10,
+                    [90] = 7,
+                    [100] = 5,
+                    [105] = 4
+                };
+                return _demo_cjJumps;
+            }
         }
-        private static void populate_default_cjTimes()
+        internal static Dictionary<int /*from weight*/, int /*jump size*/> demo_cjTimes
         {
-            _default_cjTimes = new()
+            get
             {
-                [1] = 5 * 60,
-                [21] = 140,
-                [100] = 150
-            };
+                Dictionary<int /*from weight*/, int /*jump size*/> _demo_cjTimes = new()
+                {
+                    [1] = 5 * 60,
+                    [21] = 140,
+                    [100] = 150
+                };
+                return _demo_cjTimes;
+            }
         }
+        #endregion
     }
 }

@@ -6,10 +6,6 @@ namespace Weightlifting_Comp_Warmup.Main
 {
     public partial class form_Main
     {
-        private void button_SaveSettings_Click(object sender, EventArgs eventArgs)
-        {
-            SaveSettings();
-        }
         private void SaveSettings()
         {
             Stopwatch stopwatch = new();
@@ -18,7 +14,6 @@ namespace Weightlifting_Comp_Warmup.Main
             savedSettings.int_ProfileId = profileActive?.id ?? 0;
             savedSettings.ii_int_ProfileIds = [.. profiles.Select(r => $"{r.Key:D3}")];
             savedSettings.ii_string_ProfileName = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Name}")];
-            savedSettings.ii_int_BarbellWeight = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.BarbellWeight}")];
             savedSettings.ii_int_BarbellWeight = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.BarbellWeight}")];
             savedSettings.ii_hhmm_Start = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Start:hhmm}")];
             savedSettings.ii_int_Snatch_SecondsStage = [.. profiles.Select(r => $"{r.Key:D3}{r.Value.Snatch_SecondsStage}")];

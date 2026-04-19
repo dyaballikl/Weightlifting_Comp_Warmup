@@ -14,7 +14,10 @@ namespace Weightlifting_Comp_Warmup.Main
         #region Form Level
         public form_Main()
         {
-            //savedSettings.Reset();
+            if (Debugger.IsAttached)
+            {
+                savedSettings.Reset();
+            }
             LoadSettings();
             SaveSettings();
 
@@ -59,17 +62,6 @@ namespace Weightlifting_Comp_Warmup.Main
             dataGridView_snatch_steps.AutoGenerateColumns = false;
             dataGridView_cj_steps.AutoGenerateColumns = false;
         }
-        private void buttonClose_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-        private void buttonRestore_Click(object sender, EventArgs e)
-        {
-            buttonRestore.Dispose();
-            buttonClose.Dispose();
-            FormBorderStyle = FormBorderStyle.Sizable;
-            WindowState = FormWindowState.Normal;
-        }
         private void Form_WL_Comp_Warmup_Load(object sender, EventArgs e)
         {
             Bounds = Screen.PrimaryScreen.Bounds;
@@ -85,11 +77,18 @@ namespace Weightlifting_Comp_Warmup.Main
             buttonClose.BringToFront();
             bool_Loading = false;
         }
+        private void Restore()
+        {
+            buttonRestore.Dispose();
+            buttonClose.Dispose();
+            FormBorderStyle = FormBorderStyle.Sizable;
+            WindowState = FormWindowState.Normal;
+        }
         private void Form_WL_Comp_Warmup_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveSettings();
         }
-        private void numericUpDown_snatch_weight_barbell_ValueChanged(object sender, EventArgs e)
+        private void snatch_weight_barbell_ValueChanged()
         {
             if (bool_Loading) { return; }
             int _int_Barbell;
@@ -116,7 +115,7 @@ namespace Weightlifting_Comp_Warmup.Main
             ApplyOpener(liftType: LiftType.CleanAndJerk);
             PopulateSteps(LiftType.Snatch, preserveLifts: false);
         }
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        private void Snatch_CJ_TabSwitch()
         {
             snatch_Stop_Live();
             cj_Stop_Live();
@@ -129,6 +128,320 @@ namespace Weightlifting_Comp_Warmup.Main
         {
             SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         }
+        #endregion
+
+        #region Control Handlers
+        #region Form level controls
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+        private void buttonRestore_Click(object sender, EventArgs e)
+        {
+            Restore();
+        }
+        private void tabControl_SnatchCJ_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Snatch_CJ_TabSwitch();
+        }
+        #endregion
+        #region Live Timers
+        private void timer_Battery_Tick(object sender, EventArgs e)
+        {
+            UpdateBattery();
+        }
+        private void timer_Live_Tick(object sender, EventArgs e, LiftType liftType)
+        {
+            Timer timer = (sender as Timer);
+            timer_Live_Tick(timer: timer, liftType: liftType);
+        }
+        #endregion
+        #region Snatch controls
+        private void numericUpDown_snatch_weight_barbell_ValueChanged(object sender, EventArgs e)
+        {
+            snatch_weight_barbell_ValueChanged();
+        }
+        private void button_snatch_Live_StartStop_Click(object sender, EventArgs e)
+        {
+            button_snatch_Live_StartStop_Click();
+        }
+        private void progressBar_snatch_Live_StageLift_MouseClick(object sender, MouseEventArgs e)
+        {
+            progressBar_snatch_Live_StageLift_MouseClick(e: e);
+        }
+        private void button_snatch_Live_LiftsDecr_Click(object sender, EventArgs e)
+        {
+            button_snatch_Live_LiftsDecr_Click();
+        }
+        private void button_snatch_Live_LiftsIncr_Click(object sender, EventArgs e)
+        {
+            button_snatch_Live_LiftsIncr_Click();
+        }
+        private void button_snatch_Live_StageAdvance_Click(object sender, EventArgs e)
+        {
+            button_snatch_Live_StageAdvance_Click();
+        }
+        private void label_snatch_Live_LiftsOut_Click(object sender, EventArgs e)
+        {
+            label_snatch_Live_LiftsOut_Click();
+        }
+        private void textBox_snatch_Live_LiftsOut_TextChanged(object sender, EventArgs e)
+        {
+            textBox_snatch_Live_LiftsOut_TextChanged();
+        }
+        private void textBox_snatch_Live_LiftsOut_Leave(object sender, EventArgs e)
+        {
+            textBox_snatch_Live_LiftsOut_Leave();
+        }
+        private void dateTimePicker_snatch_Start_ValueChanged(object sender, EventArgs e)
+        {
+            dateTimePicker_snatch_Start_ValueChanged();
+        }
+        private void checkBox_snatch_Live_Auto_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBox_snatch_Live_Auto_CheckedChanged();
+        }
+        private void checkBox_Live_Beep_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBox_Live_Beep_CheckedChanged(checkBox: (CheckBox)sender);
+        }
+        private void splitContainer_snatch_DoubleClick(object sender, EventArgs e)
+        {
+            splitContainer_snatch_DoubleClick();
+        }
+        private void dataGridView_snatch_steps_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (sender is not DataGridView dgv) return;
+            dataGridView_snatch_steps_CellClick(dgv: dgv, e: e);
+        }
+        private void dataGridView_snatch_steps_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (sender is not DataGridView dgv) return;
+            dataGridView_snatch_steps_CellFormatting(dgv: dgv, e: e);
+        }
+        #endregion
+        #region CJ controls
+        private void button_cj_Live_StartStop_Click(object sender, EventArgs e)
+        {
+            button_cj_Live_StartStop_Click();
+        }
+        private void progressBar_cj_Live_StageLift_MouseClick(object sender, MouseEventArgs e)
+        {
+            progressBar_cj_Live_StageLift_MouseClick(e: e);
+        }
+        private void progressBar_cj_Live_sn_MouseClick(object sender, MouseEventArgs e)
+        {
+            progressBar_cj_Live_sn_MouseClick(e: e);
+        }
+        private void progressBar_cj_Live_Break_MouseClick(object sender, MouseEventArgs e)
+        {
+            progressBar_cj_Live_Break_MouseClick(e: e);
+        }
+        private void button_cj_Live_LiftsDecr_Click(object sender, EventArgs e)
+        {
+            button_cj_Live_LiftsDecr_Click();
+        }
+        private void button_cj_Live_LiftsIncr_Click(object sender, EventArgs e)
+        {
+            button_cj_Live_LiftsIncr_Click();
+        }
+        private void label_cj_Live_LiftsOut_Click(object sender, EventArgs e)
+        {
+            label_cj_Live_LiftsOut_Click();
+        }
+        private void textBox_cj_Live_LiftsOut_TextChanged(object sender, EventArgs e)
+        {
+            textBox_cj_Live_LiftsOut_TextChanged();
+        }
+        private void textBox_cj_Live_LiftsOut_Leave(object sender, EventArgs e)
+        {
+            textBox_cj_Live_LiftsOut_Leave();
+        }
+        private void button_cj_Live_StageAdvance_Click(object sender, EventArgs e)
+        {
+            button_cj_Live_StageAdvance_Click();
+        }
+        private void checkBox_cj_Live_Auto_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBox_cj_Live_Auto_CheckedChanged();
+        }
+        private void numericUpDown_cj_Live_Break_ValueChanged(object sender, EventArgs e)
+        {
+            numericUpDown_cj_Live_Break_ValueChanged();
+        }
+        private void button_cj_Live_snDecr_Click(object sender, EventArgs e)
+        {
+            button_cj_Live_snDecr_Click();
+        }
+        private void button_cj_Live_snIncr_Click(object sender, EventArgs e)
+        {
+            button_cj_Live_snIncr_Click();
+        }
+        private void label_cj_Live_snLeft_Click(object sender, EventArgs e)
+        {
+            label_cj_Live_snLeft_Click();
+        }
+        private void textBox_cj_Live_snLeft_TextChanged(object sender, EventArgs e)
+        {
+            textBox_cj_Live_snLeft_TextChanged();
+        }
+        private void textBox_cj_Live_snLeft_Leave(object sender, EventArgs e)
+        {
+            textBox_cj_Live_snLeft_Leave();
+        }
+        private void label_cj_Live_Break_Click(object sender, EventArgs e)
+        {
+            label_cj_Live_Break_Click();
+        }
+        private void textBox_cj_Live_Break_TextChanged(object sender, EventArgs e)
+        {
+            textBox_cj_Live_Break_TextChanged();
+        }
+        private void textBox_cj_Live_Break_Leave(object sender, EventArgs e)
+        {
+            textBox_cj_Live_Break_Leave();
+        }
+        private void button_cj_Live_snStageAdvance_Click(object sender, EventArgs e)
+        {
+            Cj_Advance_SnatchLift();
+        }
+        private void splitContainer_cj_DoubleClick(object sender, EventArgs e)
+        {
+            Cj_Splitter_DoubleClick();
+        }
+        private void dataGridView_cj_steps_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (sender is not DataGridView dgv) return;
+            dataGridView_cj_steps_CellClick(dgv: dgv, e: e);
+        }
+        private void dataGridView_cj_steps_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (sender is not DataGridView dgv) return;
+            dataGridView_cj_steps_CellFormatting(dgv: dgv, e: e);
+        }
+        #endregion
+        #region Save Settings buttons
+        private void button_SaveSettings_Click(object sender, EventArgs eventArgs)
+        {
+            SaveSettings();
+        }
+        private void button_snatch_ClearSettings_Click(object sender, EventArgs e)
+        {
+            ClearSettings();
+        }
+        #endregion
+        #region ToolStripMenu buttons
+        private void ToolStripMenu_Load_Profile(object sender, EventArgs e)
+        {
+            Load_Profile(toolStripButton: (ToolStripButton)sender);
+        }
+        private void ToolStripMenu_Delete_Profile(object sender, EventArgs e)
+        {
+            Delete_Profile(toolStripButton: (ToolStripButton)sender);
+        }
+        private void ToolStripMenu_AddNew_Profile(object sender, EventArgs e)
+        {
+            AddNew_Profile();
+        }
+        private void ToolStripMenu_Rename_Profile(object sender, EventArgs e)
+        {
+            Rename_Profile(toolStripButton: (ToolStripButton)sender);
+        }
+        private void ToolStripMenu_Duplicate_Profile(object sender, EventArgs e)
+        {
+            Duplicate_Profile(toolStripButton: (ToolStripButton)sender);
+        }
+        #endregion
+        #region extras
+        private void button_extra_up_click(object sender, EventArgs e, LiftType liftType)
+        {
+            int id = (int)((Button)sender).Tag;
+            button_extra_up_click(id: id, liftType: liftType);
+        }
+        private void button_extra_down_click(object sender, EventArgs e, LiftType liftType)
+        {
+            int id = (int)((Button)sender).Tag;
+            button_extra_down_click(id: id, liftType: liftType);
+        }
+        private void button_extra_delete_click(object sender, EventArgs e, LiftType liftType)
+        {
+            int id = (int)((Button)sender).Tag;
+            button_extra_delete_click(id: id, liftType: liftType);
+        }
+        private void button_extra_commit_click(object sender, EventArgs e, LiftType liftType)
+        {
+            button_extra_commit_click(liftType: liftType);
+        }
+        private void textBox_extra_TextChanged(object sender, EventArgs e, LiftType liftType)
+        {
+            TextBox textBox = (TextBox)sender;
+            textBox_extra_TextChanged(textBox: textBox, liftType: liftType);
+        }
+        private void numericUpDown_extra_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        {
+            NumericUpDown numericUpDown = (NumericUpDown)sender;
+            numericUpDown_extra_ValueChanged(numericUpDown: numericUpDown, liftType: liftType);
+        }
+        #endregion
+
+        #region jumps
+        private void button_jump_delete_click(object sender, EventArgs e, LiftType liftType)
+        {
+            int id = (int)((Button)sender).Tag;
+            button_jump_delete_click(id: id, liftType: liftType);
+        }
+        private void button_jump_commit_click(object sender, EventArgs e, LiftType liftType)
+        {
+            button_jump_commit_click(liftType: liftType);
+        }
+        private void numericUpDown_jump_FromWeight_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        {
+            NumericUpDown numericUpDown = (NumericUpDown)sender;
+            numericUpDown_jump_FromWeight_ValueChanged(numericUpDown: numericUpDown, liftType: liftType);
+        }
+        private void numericUpDown_jump_Jump_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        {
+            NumericUpDown numericUpDown = (NumericUpDown)sender;
+            numericUpDown_jump_Jump_ValueChanged(numericUpDown: numericUpDown, liftType: liftType);
+        }
+        #endregion
+
+        #region times
+        private void button_time_delete_click(object sender, EventArgs e, LiftType liftType)
+        {
+            int id = (int)((Button)sender).Tag;
+            button_time_delete_click(id: id, liftType: liftType);
+        }
+        private void button_time_commit_click(object sender, EventArgs e, LiftType liftType)
+        {
+            button_time_commit_click(liftType: liftType);
+        }
+        private void numericUpDown_time_FromWeight_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        {
+            NumericUpDown numericUpDown = (NumericUpDown)sender;
+            numericUpDown_time_FromWeight_ValueChanged(numericUpDown: numericUpDown, liftType: liftType);
+        }
+        private void numericUpDown_time_Time_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        {
+            NumericUpDown numericUpDown = (NumericUpDown)sender;
+            numericUpDown_time_Time_ValueChanged(numericUpDown: numericUpDown, liftType: liftType);
+        }
+        #endregion
+        #region steps
+        private void Step_Add(object sender, EventArgs e, LiftType liftType)
+        {
+            Step_Add(liftType: liftType);
+        }
+        private void Step_ResetOverrides(object sender, EventArgs e, LiftType liftType)
+        {
+            Step_ResetOverrides(liftType: liftType);
+        }
+        private void Weight_Override_Click(object sender, EventArgs e, LiftType liftType)
+        {
+            if (sender is not Label label) return;
+            Weight_Override_Click(label: label, liftType: liftType);
+        }
+        #endregion
         #endregion
 
         #region extras
@@ -157,7 +470,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void PopulateExtras(LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, Action populateExtras, Action stopLive) = GetContext_Extras(liftType);
+            (List<Extra> extras, Panel panelExtra, _, Action stopLive) = GetContext_Extras(liftType);
             stopLive();
             int intY = 1;
             panelExtra.Controls.Clear();
@@ -166,12 +479,22 @@ namespace Weightlifting_Comp_Warmup.Main
             void Add_Extra_IndividualControls(int y, int id, string tbText, int length, bool isAddBlankRow)
             {
                 TextBox tb = new() { Text = tbText, Location = new Point(6, y), Size = new Size(157, 25), Tag = id, BackColor = Color.White };
-                NumericUpDown nmud = new() { Location = new Point(169, y), Maximum = 9999, Minimum = 1, Size = new Size(72, 25), TextAlign = HorizontalAlignment.Center, Value = length, Tag = id, BackColor = Color.White };
+                NumericUpDown numericUpDown = new()
+                {
+                    Location = new Point(169, y),
+                    Maximum = 9999,
+                    Minimum = 1,
+                    Size = new Size(72, 25),
+                    TextAlign = HorizontalAlignment.Center,
+                    Value = length,
+                    Tag = id,
+                    BackColor = Color.White
+                };
                 Label lbl = new() { Location = new Point(250, y + 3), Text = Seconds_To_String(length), Tag = id };
 
                 tb.TextChanged += (sender, e) => textBox_extra_TextChanged(sender, e, liftType);
-                nmud.ValueChanged += (sender, e) => numericUpDown_extra_ValueChanged(sender, e, liftType);
-                panelExtra.Controls.AddRange([tb, nmud, lbl]);
+                numericUpDown.ValueChanged += (sender, e) => numericUpDown_extra_ValueChanged(sender, e, liftType);
+                panelExtra.Controls.AddRange([tb, numericUpDown, lbl]);
 
                 if (isAddBlankRow)
                 {
@@ -203,10 +526,9 @@ namespace Weightlifting_Comp_Warmup.Main
             // Add the final blank row for new entries
             Add_Extra_IndividualControls(intY, -1, string.Empty, 60, true);
         }
-        private void button_extra_up_click(object sender, EventArgs e, LiftType liftType)
+        private void button_extra_up_click(int id, LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, Action populateExtras, Action stopLive) = GetContext_Extras(liftType);
-            int id = (int)((Button)sender).Tag;
+            (List<Extra> extras, _, Action populateExtras, _) = GetContext_Extras(liftType);
             Extra extra = extras.FirstOrDefault(r => r.id == id);
 
             if (extra.id < 1 || extra.Order < 1) return;
@@ -231,10 +553,9 @@ namespace Weightlifting_Comp_Warmup.Main
             populateExtras();
             PopulateSteps(liftType: liftType, preserveLifts: true);
         }
-        private void button_extra_down_click(object sender, EventArgs e, LiftType liftType)
+        private void button_extra_down_click(int id, LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, Action populateExtras, Action stopLive) = GetContext_Extras(liftType);
-            int id = (int)((Button)sender).Tag;
+            (List<Extra> extras, _, Action populateExtras, _) = GetContext_Extras(liftType);
             Extra extra = extras.FirstOrDefault(r => r.id == id);
 
             if (extra.id < 1) return;
@@ -262,10 +583,9 @@ namespace Weightlifting_Comp_Warmup.Main
             populateExtras();
             PopulateSteps(liftType: liftType, preserveLifts: true);
         }
-        private void button_extra_delete_click(object sender, EventArgs e, LiftType liftType)
+        private void button_extra_delete_click(int id, LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, Action populateExtras, Action stopLive) = GetContext_Extras(liftType);
-            int id = (int)((Button)sender).Tag;
+            (List<Extra> extras, _, Action populateExtras, _) = GetContext_Extras(liftType);
 
             List<Extra> extrasList = extras;
             extrasList.RemoveAll(r => r.id == id);
@@ -274,17 +594,17 @@ namespace Weightlifting_Comp_Warmup.Main
             populateExtras();
             PopulateSteps(liftType: liftType, preserveLifts: true);
         }
-        private void button_extra_commit_click(object sender, EventArgs e, LiftType liftType)
+        private void button_extra_commit_click(LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, Action populateExtras, Action stopLive) = GetContext_Extras(liftType);
+            (List<Extra> extras, Panel panelExtra, Action populateExtras, _) = GetContext_Extras(liftType);
             string action = string.Empty;
             int length = -1;
 
             TextBox newActionTb = panelExtra.Controls.OfType<TextBox>().FirstOrDefault(c => (int)c.Tag == -1);
-            NumericUpDown newLengthNmud = panelExtra.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1);
+            NumericUpDown newLengthnumericUpDown = panelExtra.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1);
 
             if (newActionTb != null) action = newActionTb.Text;
-            if (newLengthNmud != null) length = (int)newLengthNmud.Value;
+            if (newLengthnumericUpDown != null) length = (int)newLengthnumericUpDown.Value;
 
             if (string.IsNullOrWhiteSpace(action))
             {
@@ -305,10 +625,9 @@ namespace Weightlifting_Comp_Warmup.Main
             populateExtras();
             PopulateSteps(liftType: liftType, preserveLifts: true);
         }
-        private void textBox_extra_TextChanged(object sender, EventArgs e, LiftType liftType)
+        private void textBox_extra_TextChanged(TextBox textBox, LiftType liftType)
         {
             (List<Extra> extras, _, _, _) = GetContext_Extras(liftType);
-            TextBox textBox = (TextBox)sender;
             int id = (int)textBox.Tag;
 
             if (id < 1) return;
@@ -328,15 +647,14 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             PopulateSteps(liftType: liftType, preserveLifts: true);
         }
-        private void numericUpDown_extra_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        private void numericUpDown_extra_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
-            (List<Extra> extras, Panel panelExtra, Action populateExtras, Action stopLive) = GetContext_Extras(liftType);
-            NumericUpDown nmud = (NumericUpDown)sender;
-            int id = (int)nmud.Tag;
+            (List<Extra> extras, Panel panelExtra, _, _) = GetContext_Extras(liftType);
+            int id = (int)numericUpDown.Tag;
 
             if (id < 1) return;
 
-            int newLength = (int)nmud.Value;
+            int newLength = (int)numericUpDown.Value;
             if (newLength < 1) return;
 
             for (int i = 0; i < extras.Count; i++)
@@ -407,7 +725,6 @@ namespace Weightlifting_Comp_Warmup.Main
 
             if (jumps.Count == 0)
             {
-                // This assignment requires the context.jumps to be a reference
                 if (liftType == LiftType.Snatch)
                 {
                     profileActive.SnatchJumps = getDefaultJumps;
@@ -453,34 +770,33 @@ namespace Weightlifting_Comp_Warmup.Main
             int lastJump = jumps.Any() ? jumps.Last().Value : 1;
             Add_Jump_IndividualControls(yPos, nextWeight, lastJump, true);
         }
-        private void button_jump_delete_click(object sender, EventArgs e, LiftType liftType)
+        private void button_jump_delete_click(int id, LiftType liftType)
         {
             (Dictionary<int, int> jumps, _, _, _) = GetJumpContext(liftType);
-            int fromWeightKey = (int)((Button)sender).Tag;
 
-            if (jumps.ContainsKey(fromWeightKey))
+            if (jumps.ContainsKey(id))
             {
-                jumps.Remove(fromWeightKey);
+                jumps.Remove(id);
             }
 
             PopulateJumps(liftType);
             PopulateSteps(liftType: liftType, preserveLifts: false);
         }
-        private void button_jump_commit_click(object sender, EventArgs e, LiftType liftType)
+        private void button_jump_commit_click(LiftType liftType)
         {
-            (Dictionary<int, int> jumps, Panel panel, Action stopLive, Dictionary<int, int> getDefaultJumps) = GetJumpContext(liftType);
+            (Dictionary<int, int> jumps, Panel panel, _, _) = GetJumpContext(liftType);
 
-            NumericUpDown fromWeightNmud = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
-            NumericUpDown jumpNmud = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
+            NumericUpDown fromWeightnumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
+            NumericUpDown jumpnumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
 
-            if (fromWeightNmud == null || jumpNmud == null)
+            if (fromWeightnumericUpDown == null || jumpnumericUpDown == null)
             {
                 MessageBox.Show("Failed to find input controls.");
                 return;
             }
 
-            int fromWeight = (int)fromWeightNmud.Value;
-            int jump = (int)jumpNmud.Value;
+            int fromWeight = (int)fromWeightnumericUpDown.Value;
+            int jump = (int)jumpnumericUpDown.Value;
 
             if (jumps.ContainsKey(fromWeight))
             {
@@ -492,10 +808,9 @@ namespace Weightlifting_Comp_Warmup.Main
             PopulateJumps(liftType);
             PopulateSteps(liftType: liftType, preserveLifts: false);
         }
-        private void numericUpDown_jump_FromWeight_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        private void numericUpDown_jump_FromWeight_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
             (Dictionary<int, int> jumps, _, _, _) = GetJumpContext(liftType);
-            NumericUpDown numericUpDown = (NumericUpDown)sender;
             int oldFromWeightKey = (int)numericUpDown.Tag;
 
             if (oldFromWeightKey == -1) return; // Ignore the 'add new' row
@@ -519,10 +834,9 @@ namespace Weightlifting_Comp_Warmup.Main
             PopulateJumps(liftType);
             PopulateSteps(liftType: liftType, preserveLifts: false);
         }
-        private void numericUpDown_jump_Jump_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        private void numericUpDown_jump_Jump_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
             (Dictionary<int, int> jumps, _, _, _) = GetJumpContext(liftType);
-            NumericUpDown numericUpDown = (NumericUpDown)sender;
             int fromWeightKey = (int)numericUpDown.Tag;
 
             if (fromWeightKey == -1) return; // Ignore the 'add new' row
@@ -568,8 +882,14 @@ namespace Weightlifting_Comp_Warmup.Main
             // Assign default times if the current list is empty
             if (context.times.Count == 0)
             {
-                if (liftType == LiftType.Snatch) profileActive.SnatchTimes = context.getDefaultTimes;
-                else profileActive.CJTimes = context.getDefaultTimes;
+                if (liftType == LiftType.Snatch)
+                {
+                    profileActive.SnatchTimes = context.getDefaultTimes;
+                }
+                else
+                {
+                    profileActive.CJTimes = context.getDefaultTimes;
+                }
                 // Re-fetch context to ensure we have the newly assigned dictionary
                 context = GetTimeContext(liftType);
             }
@@ -612,34 +932,33 @@ namespace Weightlifting_Comp_Warmup.Main
             int lastTime = context.times.Any() ? context.times.Last().Value : 60; // Default to 60s
             Add_Time_IndividualControls(yPos, nextWeight, lastTime, true);
         }
-        private void button_time_delete_click(object sender, EventArgs e, LiftType liftType)
+        private void button_time_delete_click(int id, LiftType liftType)
         {
             (Dictionary<int, int> times, _, _, _) = GetTimeContext(liftType);
-            int fromWeightKey = (int)((Button)sender).Tag;
 
-            if (times.ContainsKey(fromWeightKey))
+            if (times.ContainsKey(id))
             {
-                times.Remove(fromWeightKey);
+                times.Remove(id);
             }
 
             PopulateTimes(liftType);
             PopulateSteps(liftType: liftType, preserveLifts: true);
         }
-        private void button_time_commit_click(object sender, EventArgs e, LiftType liftType)
+        private void button_time_commit_click(LiftType liftType)
         {
-            (Dictionary<int, int> times, Panel panel, Action stopLive, _) = GetTimeContext(liftType);
+            (Dictionary<int, int> times, Panel panel, _, _) = GetTimeContext(liftType);
 
-            NumericUpDown fromWeightNmud = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
-            NumericUpDown timeNmud = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
+            NumericUpDown fromWeightnumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left < 50);
+            NumericUpDown timenumericUpDown = panel.Controls.OfType<NumericUpDown>().FirstOrDefault(c => (int)c.Tag == -1 && c.Left > 50);
 
-            if (fromWeightNmud == null || timeNmud == null)
+            if (fromWeightnumericUpDown == null || timenumericUpDown == null)
             {
                 MessageBox.Show("Failed to find input controls.");
                 return;
             }
 
-            int fromWeight = (int)fromWeightNmud.Value;
-            int time = (int)timeNmud.Value;
+            int fromWeight = (int)fromWeightnumericUpDown.Value;
+            int time = (int)timenumericUpDown.Value;
 
             if (times.ContainsKey(fromWeight))
             {
@@ -651,10 +970,9 @@ namespace Weightlifting_Comp_Warmup.Main
             PopulateTimes(liftType);
             PopulateSteps(liftType: liftType, preserveLifts: true);
         }
-        private void numericUpDown_time_FromWeight_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        private void numericUpDown_time_FromWeight_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
             (Dictionary<int, int> times, _, _, _) = GetTimeContext(liftType);
-            NumericUpDown numericUpDown = (NumericUpDown)sender;
             int oldFromWeightKey = (int)numericUpDown.Tag;
 
             if (oldFromWeightKey == -1) return; // Ignore the 'add new' row
@@ -677,10 +995,9 @@ namespace Weightlifting_Comp_Warmup.Main
             PopulateTimes(liftType); // Repopulate to re-sort and update control tags
             PopulateSteps(liftType: liftType, preserveLifts: true);
         }
-        private void numericUpDown_time_Time_ValueChanged(object sender, EventArgs e, LiftType liftType)
+        private void numericUpDown_time_Time_ValueChanged(NumericUpDown numericUpDown, LiftType liftType)
         {
             (Dictionary<int, int> times, _, _, _) = GetTimeContext(liftType);
-            NumericUpDown numericUpDown = (NumericUpDown)sender;
             int fromWeightKey = (int)numericUpDown.Tag;
 
             if (fromWeightKey == -1) return; // Ignore the 'add new' row
@@ -758,7 +1075,7 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void PopulateSteps(LiftType liftType, bool preserveLifts)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) =
+            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, _, Label stepCountLabel, DataGridView dataGridViewSteps) =
                 GetStepContext(liftType);
             stopLive();
 
@@ -778,9 +1095,9 @@ namespace Weightlifting_Comp_Warmup.Main
             button_snatch_Reset.Visible = hasOverrides;
             stepCountLabel.Text = $"{displaySteps.Count} steps ({displaySteps.Count(r => r.Weight > 0)} lifts)";
         }
-        private void Step_Add(object sender, EventArgs e, LiftType liftType)
+        private void Step_Add(LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(liftType);
+            (Func<List<Step>> getStepsPlan, _, Action stopLive, Func<bool> isLive, _, _) = GetStepContext(liftType);
             if (isLive()) stopLive();
 
             List<Step> stepsPlan = getStepsPlan();
@@ -801,16 +1118,16 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void Step_ResetOverrides(object sender, EventArgs e, LiftType liftType)
+        private void Step_ResetOverrides(LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(liftType);
+            (_, _, Action stopLive, Func<bool> isLive, _, _) = GetStepContext(liftType);
             if (isLive()) stopLive();
             PopulateSteps(liftType, false);
         }
-        private void Weight_Override_Click(object sender, EventArgs e, LiftType liftType)
+        private void Weight_Override_Click(Label label, LiftType liftType)
         {
-            (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(liftType);
-            if (sender is not Label label || label.Tag is not int startWeight || startWeight <= 0) return;
+            (Func<List<Step>> getStepsPlan, _, Action stopLive, Func<bool> isLive, _, _) = GetStepContext(liftType);
+            if (label.Tag is not int startWeight || startWeight <= 0) return;
 
             List<Step> stepsPlan = getStepsPlan();
             Step stepToModify = stepsPlan?.FirstOrDefault(r => r.Weight == startWeight);
@@ -885,7 +1202,15 @@ namespace Weightlifting_Comp_Warmup.Main
         // Generic event handlers
         private void numericUpDown_time_stage_ValueChanged(object sender, EventArgs e, LiftType liftType)
         {
-            (Action<int> setSecStage, Action<int> setWgtOpener, Action<bool> setOpenerWarmup, Action<int> setSecEnd, NumericUpDown numSecStage, NumericUpDown numWgtOpener, CheckBox chkOpenerWarmup, NumericUpDown numSecEnd, Action<int, int, bool> applyOpenerGraphic) = GetSetupContext(liftType);
+            (Action<int> setSecStage,
+                _,
+                _,
+                _,
+                NumericUpDown numSecStage,
+                _,
+                _,
+                _,
+                _) = GetSetupContext(liftType);
             if (int.TryParse(numSecStage.Value.ToString(), out int secStage) && secStage >= 1)
             {
                 setSecStage(secStage);
@@ -904,7 +1229,15 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void ApplyOpener(LiftType liftType)
         {
-            (Action<int> setSecStage, Action<int> setWgtOpener, Action<bool> setOpenerWarmup, Action<int> setSecEnd, NumericUpDown numSecStage, NumericUpDown numWgtOpener, CheckBox chkOpenerWarmup, NumericUpDown numSecEnd, Action<int, int, bool> applyOpenerGraphic) = GetSetupContext(liftType);
+            (_,
+                Action<int> setWgtOpener,
+                Action<bool> setOpenerWarmup,
+                _,
+                _,
+                NumericUpDown numWgtOpener,
+                CheckBox chkOpenerWarmup,
+                _,
+                Action<int, int, bool> applyOpenerGraphic) = GetSetupContext(liftType);
 
             if (int.TryParse(numWgtOpener.Value.ToString(), out int wgtOpener) && wgtOpener >= 1)
             {
@@ -922,7 +1255,11 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void numericUpDown_time_PostWarmup_ValueChanged(object sender, EventArgs e, LiftType liftType)
         {
-            (Action<int> setSecStage, Action<int> setWgtOpener, Action<bool> setOpenerWarmup, Action<int> setSecEnd, NumericUpDown numSecStage, NumericUpDown numWgtOpener, CheckBox chkOpenerWarmup, NumericUpDown numSecEnd, Action<int, int, bool> applyOpenerGraphic) = GetSetupContext(liftType);
+            if (bool_Loading)
+            {
+                return;
+            }
+            (_, _, _, Action<int> setSecEnd, _, _, _, NumericUpDown numSecEnd, _) = GetSetupContext(liftType);
             if (int.TryParse(numSecEnd.Value.ToString(), out int secEnd) && secEnd >= 0)
             {
                 setSecEnd(secEnd);
@@ -937,10 +1274,6 @@ namespace Weightlifting_Comp_Warmup.Main
         #endregion
 
         #region Live Timer
-        private void timer_Battery_Tick(object sender, EventArgs e)
-        {
-            UpdateBattery();
-        }
         private int timerInterval
         {
             get
@@ -953,11 +1286,10 @@ namespace Weightlifting_Comp_Warmup.Main
                 return delayUntilNextSecond;
             }
         }
-        private void timer_Live_Tick(object sender, EventArgs e, LiftType liftType)
+        private void timer_Live_Tick(Timer timer, LiftType liftType)
         {
             Stopwatch stopwatch = new();
             stopwatch.Start();
-            Timer timer = (sender as Timer);
             timer.Stop();
             if (liftType == LiftType.Snatch)
             {
@@ -1041,7 +1373,7 @@ namespace Weightlifting_Comp_Warmup.Main
             button_snatch_Live_StageAdvance.Select();
             PreventMonitorPowerdown();
         }
-        private void button_snatch_Live_StartStop_Click(object sender, EventArgs e)
+        private void button_snatch_Live_StartStop_Click()
         {
             if (bool_snatch_Live)
             {
@@ -1419,11 +1751,7 @@ namespace Weightlifting_Comp_Warmup.Main
 
             label_snatch_Live_CurrentTime.Text = _dateTime_Now.ToString("HH:mm:ss");
         }
-        private void menuStrip_Profile_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
-        private void progressBar_snatch_Live_StageLift_MouseClick(object sender, MouseEventArgs e)
+        private void progressBar_snatch_Live_StageLift_MouseClick(MouseEventArgs e)
         {
             if (bool_snatch_Live & bool_snatch_LiveLifting)
             {
@@ -1434,7 +1762,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void button_snatch_Live_LiftsDecr_Click(object sender, EventArgs e)
+        private void button_snatch_Live_LiftsDecr_Click()
         {
             if (profileActive.Snatch_LiftsOut > 0)
             {
@@ -1450,7 +1778,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void button_snatch_Live_LiftsIncr_Click(object sender, EventArgs e)
+        private void button_snatch_Live_LiftsIncr_Click()
         {
             if (profileActive.Snatch_LiftsOut < 99)
             {
@@ -1458,7 +1786,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
             }
         }
-        private void button_snatch_Live_StageAdvance_Click(object sender, EventArgs e)
+        private void button_snatch_Live_StageAdvance_Click()
         {
             if (profileActive.Snatch_LiftsOut >= 0 & bool_snatch_LiveLifting)
             {
@@ -1469,7 +1797,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 snatch_Start_Live();
             }
         }
-        private void label_snatch_Live_LiftsOut_Click(object sender, EventArgs e)
+        private void label_snatch_Live_LiftsOut_Click()
         {
             bool_Loading = true;
             textBox_snatch_Live_LiftsOut.Location = label_snatch_Live_LiftsOut.Location;
@@ -1480,7 +1808,7 @@ namespace Weightlifting_Comp_Warmup.Main
             textBox_snatch_Live_LiftsOut.Select();
             bool_Loading = false;
         }
-        private void textBox_snatch_Live_LiftsOut_TextChanged(object sender, EventArgs e)
+        private void textBox_snatch_Live_LiftsOut_TextChanged()
         {
             if (bool_Loading) { return; }
             string _str_Input = textBox_snatch_Live_LiftsOut.Text;
@@ -1493,7 +1821,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
             }
         }
-        private void textBox_snatch_Live_LiftsOut_Leave(object sender, EventArgs e)
+        private void textBox_snatch_Live_LiftsOut_Leave()
         {
             if (bool_Loading) { return; }
             string _str_Input = textBox_snatch_Live_LiftsOut.Text;
@@ -1525,7 +1853,7 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             progressBar_snatch_Live_StageLift.Value = 0;
         }
-        private void dateTimePicker_snatch_Start_ValueChanged(object sender, EventArgs e)
+        private void dateTimePicker_snatch_Start_ValueChanged()
         {
             datetime_snatch_Start = DateTime.Today.AddHours(dateTimePicker_snatch_Start.Value.Hour).AddMinutes(dateTimePicker_snatch_Start.Value.Minute);
             if (datetime_snatch_Start > DateTime.Now && int_snatch_Lifts_Passed != 0)
@@ -1534,31 +1862,30 @@ namespace Weightlifting_Comp_Warmup.Main
                 label_snatch_Live_LiftsPassed.Text = (bool_snatch_Live ? int_snatch_Lifts_Passed.ToString() : string.Empty);
             }
         }
-        private void checkBox_snatch_Live_Auto_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_snatch_Live_Auto_CheckedChanged()
         {
             bool_snatch_AutoAdvance = checkBox_snatch_Live_Auto.Checked;
         }
-        private void checkBox_Live_Beep_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_Live_Beep_CheckedChanged(CheckBox checkBox)
         {
             if (!bool_Loading)
             {
                 bool_Loading = true;
-                profileActive.Beep = ((CheckBox)sender).Checked;
+                profileActive.Beep = checkBox.Checked;
                 checkBox_snatch_Live_Beep.Checked = profileActive.Beep;
                 checkBox_cj_Live_Beep.Checked = profileActive.Beep;
                 bool_Loading = false;
             }
         }
-        private void splitContainer_snatch_DoubleClick(object sender, EventArgs e)
+        private void splitContainer_snatch_DoubleClick()
         {
             splitContainer_snatch.SplitterDistance = 0;
         }
-        private void dataGridView_snatch_steps_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView_snatch_steps_CellClick(DataGridView dgv, DataGridViewCellEventArgs e)
         {
             // Ensure a valid row and column was clicked
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
-            if (sender is not DataGridView dgv) return;
 
             // Get the Step object associated with the clicked row
             if (dgv.Rows[e.RowIndex].DataBoundItem is not Step clickedStep) return;
@@ -1575,7 +1902,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 // For demonstration, let's assume currentLiftType is available globally or passed in another way.
                 LiftType currentLiftType = LiftType.Snatch; // Placeholder, you need to get the actual liftType
 
-                (Func<List<Step>> getStepsPlan, Action<List<Step>> setStepsPlan, Action stopLive, Func<bool> isLive, Label stepCountLabel, DataGridView dataGridViewSteps) = GetStepContext(currentLiftType);
+                (Func<List<Step>> getStepsPlan, _, Action stopLive, _, _, _) = GetStepContext(currentLiftType);
 
                 stopLive();
 
@@ -1605,12 +1932,10 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void dataGridView_snatch_steps_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private void dataGridView_snatch_steps_CellFormatting(DataGridView dgv, DataGridViewCellFormattingEventArgs e)
         {
             // Ensure we have a valid row and a Step object
             if (e.RowIndex < 0) return;
-
-            if (sender is not DataGridView dgv) return;
 
             if (dgv.Rows[e.RowIndex].DataBoundItem is not Step step) return;
 
@@ -1706,7 +2031,7 @@ namespace Weightlifting_Comp_Warmup.Main
             button_cj_Live_StageAdvance.Select();
             PreventMonitorPowerdown();
         }
-        private void button_cj_Live_StartStop_Click(object sender, EventArgs e)
+        private void button_cj_Live_StartStop_Click()
         {
             if (bool_cj_Live)
             {
@@ -2181,7 +2506,7 @@ namespace Weightlifting_Comp_Warmup.Main
 
             label_cj_Live_CurrentTime.Text = _now.ToString("HH:mm:ss");
         }
-        private void progressBar_cj_Live_StageLift_MouseClick(object sender, MouseEventArgs e)
+        private void progressBar_cj_Live_StageLift_MouseClick(MouseEventArgs e)
         {
             if (bool_cj_Live & bool_cj_LiveLifting)
             {
@@ -2192,7 +2517,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void progressBar_cj_Live_sn_MouseClick(object sender, MouseEventArgs e)
+        private void progressBar_cj_Live_sn_MouseClick(MouseEventArgs e)
         {
             if (bool_cj_Live & bool_cj_SnStillLifting)
             {
@@ -2203,7 +2528,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void progressBar_cj_Live_Break_MouseClick(object sender, MouseEventArgs e)
+        private void progressBar_cj_Live_Break_MouseClick(MouseEventArgs e)
         {
             if (bool_cj_Live & bool_cj_BreakRunning)
             {
@@ -2214,7 +2539,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void button_cj_Live_LiftsDecr_Click(object sender, EventArgs e)
+        private void button_cj_Live_LiftsDecr_Click()
         {
             if (profileActive.CJ_LiftsOut > 0)
             {
@@ -2230,7 +2555,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void button_cj_Live_LiftsIncr_Click(object sender, EventArgs e)
+        private void button_cj_Live_LiftsIncr_Click()
         {
             if (profileActive.CJ_LiftsOut < 99)
             {
@@ -2238,7 +2563,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
             }
         }
-        private void label_cj_Live_LiftsOut_Click(object sender, EventArgs e)
+        private void label_cj_Live_LiftsOut_Click()
         {
             bool_Loading = true;
             textBox_cj_Live_LiftsOut.Location = label_cj_Live_LiftsOut.Location;
@@ -2249,7 +2574,7 @@ namespace Weightlifting_Comp_Warmup.Main
             textBox_cj_Live_LiftsOut.Select();
             bool_Loading = false;
         }
-        private void textBox_cj_Live_LiftsOut_TextChanged(object sender, EventArgs e)
+        private void textBox_cj_Live_LiftsOut_TextChanged()
         {
             if (bool_Loading) { return; }
             string _str_Input = textBox_cj_Live_LiftsOut.Text;
@@ -2262,7 +2587,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
             }
         }
-        private void textBox_cj_Live_LiftsOut_Leave(object sender, EventArgs e)
+        private void textBox_cj_Live_LiftsOut_Leave()
         {
             if (bool_Loading) { return; }
             string _str_Input = textBox_cj_Live_LiftsOut.Text;
@@ -2276,7 +2601,7 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             textBox_cj_Live_LiftsOut.Visible = false;
         }
-        private void button_cj_Live_StageAdvance_Click(object sender, EventArgs e)
+        private void button_cj_Live_StageAdvance_Click()
         {
             if (profileActive.CJ_LiftsOut >= 0 && bool_cj_LiveLifting)
             {
@@ -2309,11 +2634,11 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             progressBar_cj_Live_StageLift.Value = 0;
         }
-        private void checkBox_cj_Live_Auto_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_cj_Live_Auto_CheckedChanged()
         {
             bool_cj_AutoAdvance = checkBox_cj_Live_Auto.Checked;
         }
-        private void numericUpDown_cj_Live_Break_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_cj_Live_Break_ValueChanged()
         {
             if (bool_Loading) { return; }
             cj_Break_Updated();
@@ -2334,7 +2659,7 @@ namespace Weightlifting_Comp_Warmup.Main
             { progressBar_cj_Live_Break.Value = profileActive.CJ_SecondsBreak; }
             progressBar_cj_Live_Break.Maximum = profileActive.CJ_SecondsBreak;
         }
-        private void button_cj_Live_snDecr_Click(object sender, EventArgs e)
+        private void button_cj_Live_snDecr_Click()
         {
             if (profileActive.CJ_SnatchLifts_Out > 0)
             {
@@ -2350,7 +2675,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void button_cj_Live_snIncr_Click(object sender, EventArgs e)
+        private void button_cj_Live_snIncr_Click()
         {
             if (profileActive.CJ_SnatchLifts_Out < 98)
             {
@@ -2358,7 +2683,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
             }
         }
-        private void label_cj_Live_snLeft_Click(object sender, EventArgs e)
+        private void label_cj_Live_snLeft_Click()
         {
             bool_Loading = true;
             textBox_cj_Live_snLeft.Location = label_cj_Live_snLeft.Location;
@@ -2369,12 +2694,12 @@ namespace Weightlifting_Comp_Warmup.Main
             textBox_cj_Live_snLeft.Select();
             bool_Loading = false;
         }
-        private void textBox_cj_Live_snLeft_TextChanged(object sender, EventArgs e)
+        private void textBox_cj_Live_snLeft_TextChanged()
         {
             if (bool_Loading) { return; }
             Override_SnatchesLeft();
         }
-        private void textBox_cj_Live_snLeft_Leave(object sender, EventArgs e)
+        private void textBox_cj_Live_snLeft_Leave()
         {
             if (bool_Loading) { return; }
             Override_SnatchesLeft();
@@ -2392,7 +2717,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
             }
         }
-        private void label_cj_Live_Break_Click(object sender, EventArgs e)
+        private void label_cj_Live_Break_Click()
         {
             bool_Loading = true;
             textBox_cj_Live_Break.Location = label_cj_Live_Break.Location;
@@ -2403,12 +2728,12 @@ namespace Weightlifting_Comp_Warmup.Main
             textBox_cj_Live_Break.Select();
             bool_Loading = false;
         }
-        private void textBox_cj_Live_Break_TextChanged(object sender, EventArgs e)
+        private void textBox_cj_Live_Break_TextChanged()
         {
             if (bool_Loading) { return; }
             Override_BreakLeft();
         }
-        private void textBox_cj_Live_Break_Leave(object sender, EventArgs e)
+        private void textBox_cj_Live_Break_Leave()
         {
             if (bool_Loading) { return; }
             Override_BreakLeft();
@@ -2430,7 +2755,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 label_cj_Live_Break.Text = $"{_int_cj_Break}";
             }
         }
-        private void button_cj_Live_snStageAdvance_Click(object sender, EventArgs e)
+        private void Cj_Advance_SnatchLift()
         {
             if (profileActive.CJ_LiftsOut >= 0 & bool_cj_LiveLifting)
             {
@@ -2450,435 +2775,56 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             progressBar_cj_Live_sn.Value = 0;
         }
-        private void splitContainer_cj_DoubleClick(object sender, EventArgs e)
+        private void Cj_Splitter_DoubleClick()
         {
             splitContainer_cj.SplitterDistance = 0;
         }
+        private void dataGridView_cj_steps_CellClick(DataGridView dgv, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            if (dgv.Rows[e.RowIndex].DataBoundItem is not Step clickedStep) return;
+            if (dgv.Columns[e.ColumnIndex].Name == "ColWeight" && clickedStep.Weight > 0)
+            {
+                LiftType currentLiftType = LiftType.CleanAndJerk;
+                (Func<List<Step>> getStepsPlan, _, Action stopLive, _, _, _) = GetStepContext(currentLiftType);
+                stopLive();
+                string newWeightStr = clickedStep.Weight.ToString();
+                if (ShowInputDialog(ref newWeightStr) == DialogResult.OK && int.TryParse(newWeightStr, out int newWeight))
+                {
+                    if (newWeight == clickedStep.Weight) return; // No change
+                    List<Step> fullStepsPlan = getStepsPlan();
+                    if (fullStepsPlan.Any(s => s.Weight == newWeight && s != clickedStep)) // Ensure not comparing against itself
+                    {
+                        MessageBox.Show($"{newWeight} is already a step.");
+                    }
+                    else
+                    {
+                        clickedStep.Weight = newWeight;
+                        clickedStep.Override = true;
+                        PopulateSteps(currentLiftType, true);
+                    }
+                }
+            }
+        }
+        private void dataGridView_cj_steps_CellFormatting(DataGridView dgv, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            if (dgv.Rows[e.RowIndex].DataBoundItem is not Step step) return;
+            if (step.Override)
+            {
+                Font boldFont = new("Gadugi", 10F, FontStyle.Bold); // Or whatever font you use
+                e.CellStyle.Font = boldFont;
+            }
+            else
+            {
+                e.CellStyle.Font = new Font("Gadugi", 10F, FontStyle.Regular);
+            }
+            if (dgv.Columns[e.ColumnIndex].Name == "ColWeight" && step.Weight == 0)
+            {
+                e.Value = string.Empty; // Hide 0 weight
+                e.FormattingApplied = true;
+            }
+        }
         #endregion
-    }
-    public class WeightBox : PictureBox
-    {
-        // Your properties remain the same for now
-        private bool _isOpener;
-        public bool isOpener
-        {
-            get => _isOpener;
-            set { _isOpener = value; this.Invalidate(); }
-        }
-        private int _barWeight;
-        public int BarWeight
-        {
-            get => _barWeight;
-            set { _barWeight = value; this.Invalidate(); }
-        }
-        private int _weight;
-        public int Weight
-        {
-            get => _weight;
-            set { _weight = value; this.Invalidate(); }
-        }
-        private int _outlineWidth = 1;
-        public int OutlineWidth
-        {
-            get => _outlineWidth;
-            set { _outlineWidth = value; this.Invalidate(); }
-        }
-        private int _plateGap = -1;
-        public int PlateGap
-        {
-            get => _plateGap;
-            set { _plateGap = value; this.Invalidate(); }
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            // It's good practice to call the base method first
-            base.OnPaint(e);
-
-
-            int _int_WeightBar = this.BarWeight;
-            int _int_Weight = this.Weight;
-            int _int_Outline_Width = this.OutlineWidth;
-            int _int_PlateGap = this.PlateGap;
-            bool _bool_Opener = this.isOpener;
-
-            int _int_LBuffer;
-            int _int_TBuffer;
-            int _int_BBuffer;
-            bool _bool_Collars;
-            bool _bool_5KGCollars;
-            if (_bool_Opener)
-            {
-                _bool_Collars = _int_Weight - 5 > _int_WeightBar;
-                _bool_5KGCollars = ((_int_Weight - 15) >= _int_WeightBar);
-                _int_LBuffer = 0;
-                _int_TBuffer = 0;
-                _int_BBuffer = 0;
-            }
-            else
-            {
-                _bool_Collars = _int_Weight > _int_WeightBar;
-                _bool_5KGCollars = false;
-                _int_TBuffer = 1;
-                _int_LBuffer = _int_TBuffer;
-                _int_BBuffer = _int_TBuffer + 4;
-            }
-
-            Dictionary<decimal, int> _plates = Plates_Count_For_Weight(
-                _int_WeightBar: _int_WeightBar,
-                _bool_5KGCollar: _bool_5KGCollars,
-                _int_WeightLift: _int_Weight);
-
-            int _int_Full_Height = this.Height - _int_TBuffer - _int_BBuffer;
-            Dictionary<decimal, PlateParameter> _plateParameters = new()
-            {
-                [25m] = new PlateParameter(width: 16, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Red)),
-                [20m] = new PlateParameter(width: 15, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Blue)),
-                [15m] = new PlateParameter(width: 13, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Yellow)),
-                [10m] = new PlateParameter(width: 11, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Green)),
-            };
-            // 5.0s
-            int _int_Plate_Height = Convert.ToInt32(_int_Full_Height * .75);
-            if (_plates.Any() && _plates.Where(r => r.Value > 0).Max(r => r.Key) == 5.0m)
-            {
-                _plateParameters[5.0m] = new PlateParameter(width: _plateParameters[25m].Width * 2, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_White));
-            }
-            else
-            {
-                _plateParameters[5.0m] = new PlateParameter(width: 9, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_White));
-            }
-            // 2.5s
-            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .85);
-            if (_plates.Any() && _plates.Where(r => r.Value > 0).Max(r => r.Key) == 2.5m)
-            {
-                _plateParameters[2.5m] = new PlateParameter(width: _plateParameters[25m].Width * 2, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_White));
-            }
-            else
-            {
-                _plateParameters[2.5m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Red));
-            }
-            // 2.0s
-            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
-            _plateParameters[2.0m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Blue));
-            // 1.5s
-            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
-            _plateParameters[1.5m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Yellow));
-            // 1.0s
-            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
-            _plateParameters[1.0m] = new PlateParameter(width: 7, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Green));
-            // 0.5s
-            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
-            _plateParameters[0.5m] = new PlateParameter(width: 6, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_White));
-
-            int _int_Collar_Height = _bool_5KGCollars ? 18 : 18;
-            int _int_Collar_Width = _bool_5KGCollars ? 8 : 6;
-            int _int_MainBar_Width = (
-                    _bool_Opener ?
-                    Math.Min(400, this.Width - _int_LBuffer - (2 * _int_Outline_Width)) :
-                    10);
-            int _int_Sleeve_Width =
-                (
-                    _bool_Opener ?
-                    (
-                        _int_Weight > 229 ?
-                        125 :
-                        (
-                            _int_Weight > 149 ?
-                            100 :
-                            75
-                        )
-                    ) :
-                    75
-                );
-            int _int_SleeveKnuckle_Width = 9;
-            bool _bool_Outline = (_int_Outline_Width > 0);
-
-            SolidBrush _brush_BarOutline = new(color: Color.Black);
-            SolidBrush _brush_PlateOutline = new(color: Color.Black);
-            SolidBrush _brush_CollarSilver = new(color: Color.Gainsboro);
-            SolidBrush _brush_BarGrey = new(color: AppColors.Bar_Grey);
-
-            //add bar
-            //add bar Outline
-            Rectangle _rect_MainBar;
-            Rectangle _rectOutline_MainBar;
-            Rectangle _rect_SleeveKnuckle_Right;
-            Rectangle _rectOutline_SleeveKnuckle_Right;
-            Rectangle _rect_Sleeve_Right, _rectOutline_Sleeve_Right;
-            Rectangle _rect_SleeveKnuckle_Left;
-            Rectangle _rectOutline_SleeveKnuckle_Left;
-            Rectangle _rect_Sleeve_Left;
-            Rectangle _rectOutline_Sleeve_Left;
-
-            _rect_MainBar = new(
-                x: _int_LBuffer + _int_Outline_Width,
-                y: 0,
-                width: _int_MainBar_Width,
-                height: 6);
-            _rect_MainBar.Y = (_int_Full_Height / 2) - (_rect_MainBar.Height / 2) + _int_TBuffer;
-            if (_bool_Opener)
-            {
-                _rect_Sleeve_Right = new(
-                    x: _rect_MainBar.X + _rect_MainBar.Width - _int_Sleeve_Width,
-                    y: 0,
-                    width: _int_Sleeve_Width,
-                    height: 10);
-                _rect_SleeveKnuckle_Right = new(
-                    x: _rect_Sleeve_Right.X - _int_SleeveKnuckle_Width,
-                    y: 0,
-                    width: _int_SleeveKnuckle_Width,
-                    height: 16);
-                _rect_Sleeve_Left = new(
-                    x: _int_LBuffer + _int_Outline_Width,
-                    y: 0,
-                    width: _int_Sleeve_Width,
-                    height: 10);
-                _rect_SleeveKnuckle_Left = new(
-                    x: _rect_Sleeve_Left.X + _rect_Sleeve_Left.Width - 1,
-                    y: 0,
-                    width: _int_SleeveKnuckle_Width,
-                    height: 16);
-            }
-            else
-            {
-                _rect_SleeveKnuckle_Right = new(
-                    x: _rect_MainBar.X + _rect_MainBar.Width - 1,
-                    y: 0,
-                    width: _int_SleeveKnuckle_Width,
-                    height: 16);
-                _rect_Sleeve_Right = new(
-                    x: _rect_SleeveKnuckle_Right.X + _rect_SleeveKnuckle_Right.Width - 1,
-                    y: 0,
-                    width: _int_Sleeve_Width,
-                    height: 10);
-                _rect_Sleeve_Left = new();
-                _rect_SleeveKnuckle_Left = new();
-            }
-            _rect_SleeveKnuckle_Right.Y = (_int_Full_Height / 2) - (_rect_SleeveKnuckle_Right.Height / 2) + _int_TBuffer;
-            _rect_Sleeve_Right.Y = (_int_Full_Height / 2) - (_rect_Sleeve_Right.Height / 2) + _int_TBuffer;
-            _rect_SleeveKnuckle_Left.Y = _rect_SleeveKnuckle_Right.Y;
-            _rect_Sleeve_Left.Y = _rect_Sleeve_Right.Y;
-            if (_bool_Outline)
-            {
-                _rectOutline_MainBar = _rect_MainBar;
-                _rectOutline_MainBar.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
-                _rectOutline_SleeveKnuckle_Right = _rect_SleeveKnuckle_Right;
-                _rectOutline_SleeveKnuckle_Right.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
-                _rectOutline_Sleeve_Right = _rect_Sleeve_Right;
-                _rectOutline_Sleeve_Right.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
-                e.Graphics.FillRectangle(
-                    brush: _brush_BarOutline,
-                    rect: _rectOutline_MainBar);
-                e.Graphics.FillRectangle(
-                    brush: _brush_BarOutline,
-                    rect: _rectOutline_SleeveKnuckle_Right);
-                e.Graphics.FillRectangle(
-                    brush: _brush_BarOutline,
-                    rect: _rectOutline_Sleeve_Right);
-                if (_bool_Opener)
-                {
-                    _rectOutline_SleeveKnuckle_Left = _rect_SleeveKnuckle_Left;
-                    _rectOutline_SleeveKnuckle_Left.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
-                    _rectOutline_Sleeve_Left = _rect_Sleeve_Left;
-                    _rectOutline_Sleeve_Left.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
-                    e.Graphics.FillRectangle(
-                        brush: _brush_BarOutline,
-                        rect: _rectOutline_MainBar);
-                    e.Graphics.FillRectangle(
-                        brush: _brush_BarOutline,
-                        rect: _rectOutline_SleeveKnuckle_Left);
-                    e.Graphics.FillRectangle(
-                        brush: _brush_BarOutline,
-                        rect: _rectOutline_Sleeve_Left);
-                }
-            }
-            e.Graphics.FillRectangle(
-                brush: _brush_BarGrey,
-                rect: _rect_MainBar);
-            e.Graphics.FillRectangle(
-                brush: _brush_BarGrey,
-                rect: _rect_SleeveKnuckle_Right);
-            e.Graphics.FillRectangle(
-                brush: _brush_BarGrey,
-                rect: _rect_Sleeve_Right);
-            if (_bool_Opener)
-            {
-                e.Graphics.FillRectangle(
-                    brush: _brush_BarGrey,
-                    rect: _rect_MainBar);
-                e.Graphics.FillRectangle(
-                    brush: _brush_BarGrey,
-                    rect: _rect_SleeveKnuckle_Left);
-                e.Graphics.FillRectangle(
-                    brush: _brush_BarGrey,
-                    rect: _rect_Sleeve_Left);
-            }
-
-            // add plates
-            int _int_Left = _rect_SleeveKnuckle_Right.X + _int_SleeveKnuckle_Width + _int_Outline_Width;
-            int _int_Right = _rect_SleeveKnuckle_Left.X - _int_Outline_Width;
-            bool _bool_CollarsDone = !_bool_Collars; // if not doing collar, mark them already done
-            void doCollars()
-            {
-                Rectangle _rect = new(
-                    x: _int_Left,
-                    y: (_int_Full_Height / 2) - (_int_Collar_Height / 2) + _int_TBuffer,
-                    width: _int_Collar_Width,
-                    height: _int_Collar_Height);
-                Rectangle _rect_Outline = _rect;
-                if (_bool_Outline)
-                {
-                    _rect_Outline.Width += _int_Outline_Width * 2;
-                    _rect.X += _int_Outline_Width;
-                    _rect.Inflate(width: 0, height: -_int_Outline_Width);
-                    e.Graphics.FillRectangle(
-                        brush: _brush_BarOutline,
-                        rect: _rect_Outline);
-                }
-                Brush b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
-                e.Graphics.FillRectangle(
-                    brush: b,
-                    rect: _rect);
-                if (_bool_5KGCollars) // add adjusting arm
-                {
-                    Rectangle _rect_Arm = new(
-                        x: _int_Left + _int_Collar_Width / 2 - 1,
-                        y: _rect.Top - 5,
-                        width: 2,
-                        height: 8);
-                    Rectangle _rect_Arm_Outline = _rect_Arm;
-                    if (_bool_Outline)
-                    {
-                        _rect_Arm_Outline.Width += _int_Outline_Width * 2;
-                        _rect_Arm.X += _int_Outline_Width;
-                        _rect_Arm.Inflate(width: 0, height: -_int_Outline_Width);
-                        e.Graphics.FillRectangle(
-                            brush: _brush_BarOutline,
-                            rect: _rect_Arm_Outline);
-                    }
-                    b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
-                    e.Graphics.FillRectangle(
-                        brush: b,
-                        rect: _rect_Arm);
-                }
-                _int_Left += _rect_Outline.Width + _int_PlateGap;
-                if (_bool_Opener) // must do both sides of the bar
-                {
-                    _int_Right -= _rect_Outline.Width;
-                    _rect.X = _int_Right;
-                    if (_bool_Outline)
-                    {
-                        _rect_Outline.X = _rect.X;
-                        _rect.X += _int_Outline_Width;
-                        e.Graphics.FillRectangle(
-                            brush: _brush_PlateOutline,
-                            rect: _rect_Outline);
-                    }
-                    e.Graphics.FillRectangle(
-                        brush: b,
-                        rect: _rect);
-                    if (_bool_5KGCollars) // add adjusting arm
-                    {
-                        Rectangle _rect_Arm = new(
-                            x: _int_Right + _int_Collar_Width / 2 - 1,
-                            y: _rect.Top - 5,
-                            width: 2,
-                            height: 8);
-                        Rectangle _rect_Arm_Outline = _rect_Arm;
-                        if (_bool_Outline)
-                        {
-                            _rect_Arm_Outline.Width += _int_Outline_Width * 2;
-                            _rect_Arm.X += _int_Outline_Width;
-                            _rect_Arm.Inflate(width: 0, height: -_int_Outline_Width);
-                            e.Graphics.FillRectangle(
-                                brush: _brush_BarOutline,
-                                rect: _rect_Arm_Outline);
-                        }
-                        b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
-                        e.Graphics.FillRectangle(
-                            brush: b,
-                            rect: _rect_Arm);
-                    }
-                    _int_Right -= _int_PlateGap;
-                }
-            }
-            foreach (KeyValuePair<decimal, int> _plate in _plates.OrderByDescending(r => r.Key).Where(r => r.Value > 0))
-            {
-                if (!_bool_CollarsDone && _plate.Key < 2.5m)
-                {
-                    doCollars();
-                    _bool_CollarsDone = true;
-                }
-                if (_plateParameters.TryGetValue(_plate.Key, out PlateParameter _parameter))
-                {
-                    for (int _int_Plate = 1; _int_Plate <= _plate.Value; _int_Plate++)
-                    {
-                        Rectangle _rect = new(
-                            x: _int_Left,
-                            y: (_int_Full_Height / 2) - (_parameter.Height / 2) + _int_TBuffer,
-                            width: _parameter.Width,
-                            height: _parameter.Height);
-                        Rectangle _rect_Outline = _rect;
-                        if (_bool_Outline)
-                        {
-                            _rect_Outline.Width += _int_Outline_Width * 2;
-                            _rect.X += _int_Outline_Width;
-                            _rect.Inflate(width: 0, height: -_int_Outline_Width);
-                            e.Graphics.FillRectangle(
-                                brush: _brush_PlateOutline,
-                                rect: _rect_Outline);
-                        }
-                        e.Graphics.FillRectangle(
-                            brush: _parameter.Brush,
-                            rect: _rect);
-                        _int_Left += _rect_Outline.Width + _int_PlateGap;
-                        if (_bool_Opener)
-                        {
-                            _int_Right -= _rect_Outline.Width;
-                            _rect.X = _int_Right;
-                            if (_bool_Outline)
-                            {
-                                _rect_Outline.X = _rect.X;
-                                _rect.X += _int_Outline_Width;
-                                e.Graphics.FillRectangle(
-                                    brush: _brush_PlateOutline,
-                                    rect: _rect_Outline);
-                            }
-                            e.Graphics.FillRectangle(
-                                brush: _parameter.Brush,
-                                rect: _rect);
-                            _int_Right -= _int_PlateGap;
-                        }
-                    }
-                }
-            }
-            if (!_bool_CollarsDone)
-            {
-                doCollars();
-            }
-        }
-        private Dictionary<decimal, int> Plates_Count_For_Weight(
-            int _int_WeightBar,
-            bool _bool_5KGCollar,
-            int _int_WeightLift)
-        {
-            Dictionary<decimal, int> _plates = [];
-            if (_bool_5KGCollar) { _int_WeightBar += 5; }
-            if (_int_WeightLift > _int_WeightBar)
-            {
-                decimal _decToGo = Convert.ToDecimal(_int_WeightLift - _int_WeightBar) / 2m;
-                decimal[] _decPlateWeights = [25m, 20m, 15m, 10m, 5.0m, 2.5m, 2.0m, 1.5m, 1.0m, 0.5m];
-                foreach (decimal _decPlateWeight in _decPlateWeights)
-                {
-                    int _int = Convert.ToInt32((_decToGo - _decToGo % _decPlateWeight) / _decPlateWeight);
-                    if (_int > 0)
-                    {
-                        _plates[_decPlateWeight] = _int;
-                        _decToGo -= Convert.ToDecimal(_int) * _decPlateWeight;
-                    }
-                }
-            }
-            return _plates;
-        }
     }
 }

@@ -46,22 +46,6 @@ namespace Weightlifting_Comp_Warmup.Main
         private bool bool_cj_AutoAdvance = false;
         private bool bool_Loading = true;
 
-        private const int int_default_Barbell = 20;
-        private const int int_default_snatch_SecondsStage = 55;
-        private const int int_default_snatch_OpenerWeight = 85;
-        private const int int_default_snatch_SecondsEnd = 60;
-        private const int int_default_snatch_Lifts_Out = 0;
-        private const int int_default_cj_SecondsStage = 62;
-        private const int int_default_cj_OpenerWeight = 110;
-        private const int int_default_cj_SecondsEnd = 75;
-        private const int int_default_cj_LiftsOut = 0;
-        private const int int_default_cJ_SnatchLifts_Out = 0;
-        private const int int_default_cJ_SecondsBreak = 600;
-
-        private const bool bool_default_Beep = false;
-        private const bool bool_default_snatch_OpenerInWarmup = true;
-        private const bool bool_default_cj_OpenerInWarmup = false;
-
         private DateTime datetime_snatch_Start;
 
         private Timer timer_snatch_Live;

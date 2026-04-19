@@ -411,4 +411,429 @@ namespace Weightlifting_Comp_Warmup.Main
             }
         }
     }
+    public class WeightBox : PictureBox
+    {
+        // Your properties remain the same for now
+        private bool _isOpener;
+        public bool isOpener
+        {
+            get => _isOpener;
+            set { _isOpener = value; this.Invalidate(); }
+        }
+        private int _barWeight;
+        public int BarWeight
+        {
+            get => _barWeight;
+            set { _barWeight = value; this.Invalidate(); }
+        }
+        private int _weight;
+        public int Weight
+        {
+            get => _weight;
+            set { _weight = value; this.Invalidate(); }
+        }
+        private int _outlineWidth = 1;
+        public int OutlineWidth
+        {
+            get => _outlineWidth;
+            set { _outlineWidth = value; this.Invalidate(); }
+        }
+        private int _plateGap = -1;
+        public int PlateGap
+        {
+            get => _plateGap;
+            set { _plateGap = value; this.Invalidate(); }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            // It's good practice to call the base method first
+            base.OnPaint(e);
+
+
+            int _int_WeightBar = this.BarWeight;
+            int _int_Weight = this.Weight;
+            int _int_Outline_Width = this.OutlineWidth;
+            int _int_PlateGap = this.PlateGap;
+            bool _bool_Opener = this.isOpener;
+
+            int _int_LBuffer;
+            int _int_TBuffer;
+            int _int_BBuffer;
+            bool _bool_Collars;
+            bool _bool_5KGCollars;
+            if (_bool_Opener)
+            {
+                _bool_Collars = _int_Weight - 5 > _int_WeightBar;
+                _bool_5KGCollars = ((_int_Weight - 15) >= _int_WeightBar);
+                _int_LBuffer = 0;
+                _int_TBuffer = 0;
+                _int_BBuffer = 0;
+            }
+            else
+            {
+                _bool_Collars = _int_Weight > _int_WeightBar;
+                _bool_5KGCollars = false;
+                _int_TBuffer = 1;
+                _int_LBuffer = _int_TBuffer;
+                _int_BBuffer = _int_TBuffer + 4;
+            }
+
+            Dictionary<decimal, int> _plates = Plates_Count_For_Weight(
+                _int_WeightBar: _int_WeightBar,
+                _bool_5KGCollar: _bool_5KGCollars,
+                _int_WeightLift: _int_Weight);
+
+            int _int_Full_Height = this.Height - _int_TBuffer - _int_BBuffer;
+            Dictionary<decimal, PlateParameter> _plateParameters = new()
+            {
+                [25m] = new PlateParameter(width: 16, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Red)),
+                [20m] = new PlateParameter(width: 15, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Blue)),
+                [15m] = new PlateParameter(width: 13, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Yellow)),
+                [10m] = new PlateParameter(width: 11, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_Green)),
+            };
+            // 5.0s
+            int _int_Plate_Height = Convert.ToInt32(_int_Full_Height * .75);
+            if (_plates.Any() && _plates.Where(r => r.Value > 0).Max(r => r.Key) == 5.0m)
+            {
+                _plateParameters[5.0m] = new PlateParameter(width: _plateParameters[25m].Width * 2, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_White));
+            }
+            else
+            {
+                _plateParameters[5.0m] = new PlateParameter(width: 9, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_White));
+            }
+            // 2.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .85);
+            if (_plates.Any() && _plates.Where(r => r.Value > 0).Max(r => r.Key) == 2.5m)
+            {
+                _plateParameters[2.5m] = new PlateParameter(width: _plateParameters[25m].Width * 2, height: _int_Full_Height, brush: new SolidBrush(color: AppColors.Plate_White));
+            }
+            else
+            {
+                _plateParameters[2.5m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Red));
+            }
+            // 2.0s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[2.0m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Blue));
+            // 1.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[1.5m] = new PlateParameter(width: 8, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Yellow));
+            // 1.0s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[1.0m] = new PlateParameter(width: 7, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_Green));
+            // 0.5s
+            _int_Plate_Height = Convert.ToInt32(_int_Plate_Height * .90);
+            _plateParameters[0.5m] = new PlateParameter(width: 6, height: _int_Plate_Height, brush: new SolidBrush(color: AppColors.Plate_White));
+
+            int _int_Collar_Height = _bool_5KGCollars ? 18 : 18;
+            int _int_Collar_Width = _bool_5KGCollars ? 8 : 6;
+            int _int_MainBar_Width = (
+                    _bool_Opener ?
+                    Math.Min(400, this.Width - _int_LBuffer - (2 * _int_Outline_Width)) :
+                    10);
+            int _int_Sleeve_Width =
+                (
+                    _bool_Opener ?
+                    (
+                        _int_Weight > 229 ?
+                        125 :
+                        (
+                            _int_Weight > 149 ?
+                            100 :
+                            75
+                        )
+                    ) :
+                    75
+                );
+            int _int_SleeveKnuckle_Width = 9;
+            bool _bool_Outline = (_int_Outline_Width > 0);
+
+            SolidBrush _brush_BarOutline = new(color: Color.Black);
+            SolidBrush _brush_PlateOutline = new(color: Color.Black);
+            SolidBrush _brush_CollarSilver = new(color: Color.Gainsboro);
+            SolidBrush _brush_BarGrey = new(color: AppColors.Bar_Grey);
+
+            //add bar
+            //add bar Outline
+            Rectangle _rect_MainBar;
+            Rectangle _rectOutline_MainBar;
+            Rectangle _rect_SleeveKnuckle_Right;
+            Rectangle _rectOutline_SleeveKnuckle_Right;
+            Rectangle _rect_Sleeve_Right, _rectOutline_Sleeve_Right;
+            Rectangle _rect_SleeveKnuckle_Left;
+            Rectangle _rectOutline_SleeveKnuckle_Left;
+            Rectangle _rect_Sleeve_Left;
+            Rectangle _rectOutline_Sleeve_Left;
+
+            _rect_MainBar = new(
+                x: _int_LBuffer + _int_Outline_Width,
+                y: 0,
+                width: _int_MainBar_Width,
+                height: 6);
+            _rect_MainBar.Y = (_int_Full_Height / 2) - (_rect_MainBar.Height / 2) + _int_TBuffer;
+            if (_bool_Opener)
+            {
+                _rect_Sleeve_Right = new(
+                    x: _rect_MainBar.X + _rect_MainBar.Width - _int_Sleeve_Width,
+                    y: 0,
+                    width: _int_Sleeve_Width,
+                    height: 10);
+                _rect_SleeveKnuckle_Right = new(
+                    x: _rect_Sleeve_Right.X - _int_SleeveKnuckle_Width,
+                    y: 0,
+                    width: _int_SleeveKnuckle_Width,
+                    height: 16);
+                _rect_Sleeve_Left = new(
+                    x: _int_LBuffer + _int_Outline_Width,
+                    y: 0,
+                    width: _int_Sleeve_Width,
+                    height: 10);
+                _rect_SleeveKnuckle_Left = new(
+                    x: _rect_Sleeve_Left.X + _rect_Sleeve_Left.Width - 1,
+                    y: 0,
+                    width: _int_SleeveKnuckle_Width,
+                    height: 16);
+            }
+            else
+            {
+                _rect_SleeveKnuckle_Right = new(
+                    x: _rect_MainBar.X + _rect_MainBar.Width - 1,
+                    y: 0,
+                    width: _int_SleeveKnuckle_Width,
+                    height: 16);
+                _rect_Sleeve_Right = new(
+                    x: _rect_SleeveKnuckle_Right.X + _rect_SleeveKnuckle_Right.Width - 1,
+                    y: 0,
+                    width: _int_Sleeve_Width,
+                    height: 10);
+                _rect_Sleeve_Left = new();
+                _rect_SleeveKnuckle_Left = new();
+            }
+            _rect_SleeveKnuckle_Right.Y = (_int_Full_Height / 2) - (_rect_SleeveKnuckle_Right.Height / 2) + _int_TBuffer;
+            _rect_Sleeve_Right.Y = (_int_Full_Height / 2) - (_rect_Sleeve_Right.Height / 2) + _int_TBuffer;
+            _rect_SleeveKnuckle_Left.Y = _rect_SleeveKnuckle_Right.Y;
+            _rect_Sleeve_Left.Y = _rect_Sleeve_Right.Y;
+            if (_bool_Outline)
+            {
+                _rectOutline_MainBar = _rect_MainBar;
+                _rectOutline_MainBar.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                _rectOutline_SleeveKnuckle_Right = _rect_SleeveKnuckle_Right;
+                _rectOutline_SleeveKnuckle_Right.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                _rectOutline_Sleeve_Right = _rect_Sleeve_Right;
+                _rectOutline_Sleeve_Right.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarOutline,
+                    rect: _rectOutline_MainBar);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarOutline,
+                    rect: _rectOutline_SleeveKnuckle_Right);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarOutline,
+                    rect: _rectOutline_Sleeve_Right);
+                if (_bool_Opener)
+                {
+                    _rectOutline_SleeveKnuckle_Left = _rect_SleeveKnuckle_Left;
+                    _rectOutline_SleeveKnuckle_Left.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                    _rectOutline_Sleeve_Left = _rect_Sleeve_Left;
+                    _rectOutline_Sleeve_Left.Inflate(width: _int_Outline_Width, height: _int_Outline_Width);
+                    e.Graphics.FillRectangle(
+                        brush: _brush_BarOutline,
+                        rect: _rectOutline_MainBar);
+                    e.Graphics.FillRectangle(
+                        brush: _brush_BarOutline,
+                        rect: _rectOutline_SleeveKnuckle_Left);
+                    e.Graphics.FillRectangle(
+                        brush: _brush_BarOutline,
+                        rect: _rectOutline_Sleeve_Left);
+                }
+            }
+            e.Graphics.FillRectangle(
+                brush: _brush_BarGrey,
+                rect: _rect_MainBar);
+            e.Graphics.FillRectangle(
+                brush: _brush_BarGrey,
+                rect: _rect_SleeveKnuckle_Right);
+            e.Graphics.FillRectangle(
+                brush: _brush_BarGrey,
+                rect: _rect_Sleeve_Right);
+            if (_bool_Opener)
+            {
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarGrey,
+                    rect: _rect_MainBar);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarGrey,
+                    rect: _rect_SleeveKnuckle_Left);
+                e.Graphics.FillRectangle(
+                    brush: _brush_BarGrey,
+                    rect: _rect_Sleeve_Left);
+            }
+
+            // add plates
+            int _int_Left = _rect_SleeveKnuckle_Right.X + _int_SleeveKnuckle_Width + _int_Outline_Width;
+            int _int_Right = _rect_SleeveKnuckle_Left.X - _int_Outline_Width;
+            bool _bool_CollarsDone = !_bool_Collars; // if not doing collar, mark them already done
+            void doCollars()
+            {
+                Rectangle _rect = new(
+                    x: _int_Left,
+                    y: (_int_Full_Height / 2) - (_int_Collar_Height / 2) + _int_TBuffer,
+                    width: _int_Collar_Width,
+                    height: _int_Collar_Height);
+                Rectangle _rect_Outline = _rect;
+                if (_bool_Outline)
+                {
+                    _rect_Outline.Width += _int_Outline_Width * 2;
+                    _rect.X += _int_Outline_Width;
+                    _rect.Inflate(width: 0, height: -_int_Outline_Width);
+                    e.Graphics.FillRectangle(
+                        brush: _brush_BarOutline,
+                        rect: _rect_Outline);
+                }
+                Brush b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
+                e.Graphics.FillRectangle(
+                    brush: b,
+                    rect: _rect);
+                if (_bool_5KGCollars) // add adjusting arm
+                {
+                    Rectangle _rect_Arm = new(
+                        x: _int_Left + _int_Collar_Width / 2 - 1,
+                        y: _rect.Top - 5,
+                        width: 2,
+                        height: 8);
+                    Rectangle _rect_Arm_Outline = _rect_Arm;
+                    if (_bool_Outline)
+                    {
+                        _rect_Arm_Outline.Width += _int_Outline_Width * 2;
+                        _rect_Arm.X += _int_Outline_Width;
+                        _rect_Arm.Inflate(width: 0, height: -_int_Outline_Width);
+                        e.Graphics.FillRectangle(
+                            brush: _brush_BarOutline,
+                            rect: _rect_Arm_Outline);
+                    }
+                    b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
+                    e.Graphics.FillRectangle(
+                        brush: b,
+                        rect: _rect_Arm);
+                }
+                _int_Left += _rect_Outline.Width + _int_PlateGap;
+                if (_bool_Opener) // must do both sides of the bar
+                {
+                    _int_Right -= _rect_Outline.Width;
+                    _rect.X = _int_Right;
+                    if (_bool_Outline)
+                    {
+                        _rect_Outline.X = _rect.X;
+                        _rect.X += _int_Outline_Width;
+                        e.Graphics.FillRectangle(
+                            brush: _brush_PlateOutline,
+                            rect: _rect_Outline);
+                    }
+                    e.Graphics.FillRectangle(
+                        brush: b,
+                        rect: _rect);
+                    if (_bool_5KGCollars) // add adjusting arm
+                    {
+                        Rectangle _rect_Arm = new(
+                            x: _int_Right + _int_Collar_Width / 2 - 1,
+                            y: _rect.Top - 5,
+                            width: 2,
+                            height: 8);
+                        Rectangle _rect_Arm_Outline = _rect_Arm;
+                        if (_bool_Outline)
+                        {
+                            _rect_Arm_Outline.Width += _int_Outline_Width * 2;
+                            _rect_Arm.X += _int_Outline_Width;
+                            _rect_Arm.Inflate(width: 0, height: -_int_Outline_Width);
+                            e.Graphics.FillRectangle(
+                                brush: _brush_BarOutline,
+                                rect: _rect_Arm_Outline);
+                        }
+                        b = _bool_5KGCollars ? _brush_CollarSilver : Brushes.Black;
+                        e.Graphics.FillRectangle(
+                            brush: b,
+                            rect: _rect_Arm);
+                    }
+                    _int_Right -= _int_PlateGap;
+                }
+            }
+            foreach (KeyValuePair<decimal, int> _plate in _plates.OrderByDescending(r => r.Key).Where(r => r.Value > 0))
+            {
+                if (!_bool_CollarsDone && _plate.Key < 2.5m)
+                {
+                    doCollars();
+                    _bool_CollarsDone = true;
+                }
+                if (_plateParameters.TryGetValue(_plate.Key, out PlateParameter _parameter))
+                {
+                    for (int _int_Plate = 1; _int_Plate <= _plate.Value; _int_Plate++)
+                    {
+                        Rectangle _rect = new(
+                            x: _int_Left,
+                            y: (_int_Full_Height / 2) - (_parameter.Height / 2) + _int_TBuffer,
+                            width: _parameter.Width,
+                            height: _parameter.Height);
+                        Rectangle _rect_Outline = _rect;
+                        if (_bool_Outline)
+                        {
+                            _rect_Outline.Width += _int_Outline_Width * 2;
+                            _rect.X += _int_Outline_Width;
+                            _rect.Inflate(width: 0, height: -_int_Outline_Width);
+                            e.Graphics.FillRectangle(
+                                brush: _brush_PlateOutline,
+                                rect: _rect_Outline);
+                        }
+                        e.Graphics.FillRectangle(
+                            brush: _parameter.Brush,
+                            rect: _rect);
+                        _int_Left += _rect_Outline.Width + _int_PlateGap;
+                        if (_bool_Opener)
+                        {
+                            _int_Right -= _rect_Outline.Width;
+                            _rect.X = _int_Right;
+                            if (_bool_Outline)
+                            {
+                                _rect_Outline.X = _rect.X;
+                                _rect.X += _int_Outline_Width;
+                                e.Graphics.FillRectangle(
+                                    brush: _brush_PlateOutline,
+                                    rect: _rect_Outline);
+                            }
+                            e.Graphics.FillRectangle(
+                                brush: _parameter.Brush,
+                                rect: _rect);
+                            _int_Right -= _int_PlateGap;
+                        }
+                    }
+                }
+            }
+            if (!_bool_CollarsDone)
+            {
+                doCollars();
+            }
+        }
+        private Dictionary<decimal, int> Plates_Count_For_Weight(
+            int _int_WeightBar,
+            bool _bool_5KGCollar,
+            int _int_WeightLift)
+        {
+            Dictionary<decimal, int> _plates = [];
+            if (_bool_5KGCollar) { _int_WeightBar += 5; }
+            if (_int_WeightLift > _int_WeightBar)
+            {
+                decimal _decToGo = Convert.ToDecimal(_int_WeightLift - _int_WeightBar) / 2m;
+                decimal[] _decPlateWeights = [25m, 20m, 15m, 10m, 5.0m, 2.5m, 2.0m, 1.5m, 1.0m, 0.5m];
+                foreach (decimal _decPlateWeight in _decPlateWeights)
+                {
+                    int _int = Convert.ToInt32((_decToGo - _decToGo % _decPlateWeight) / _decPlateWeight);
+                    if (_int > 0)
+                    {
+                        _plates[_decPlateWeight] = _int;
+                        _decToGo -= Convert.ToDecimal(_int) * _decPlateWeight;
+                    }
+                }
+            }
+            return _plates;
+        }
+    }
 }

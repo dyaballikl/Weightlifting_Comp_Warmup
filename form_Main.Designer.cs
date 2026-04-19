@@ -54,6 +54,10 @@
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.dataGridView_snatch_steps = new System.Windows.Forms.DataGridView();
+            this.Column_Snatch_Step = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_Snatch_Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_Snatch_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_Snatch_TotalTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -115,6 +119,10 @@
             this.button_cj_Reset = new System.Windows.Forms.Button();
             this.button_cj_AddStep = new System.Windows.Forms.Button();
             this.dataGridView_cj_steps = new System.Windows.Forms.DataGridView();
+            this.Column_CJ_Step = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_CJ_Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_CJ_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column_CJ_TotalTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label31 = new System.Windows.Forms.Label();
             this.label32 = new System.Windows.Forms.Label();
             this.label33 = new System.Windows.Forms.Label();
@@ -179,14 +187,6 @@
             this.label_Battery_Percentage = new System.Windows.Forms.Label();
             this.progressBar_Battery = new System.Windows.Forms.ProgressBar();
             this.label_Battery = new System.Windows.Forms.Label();
-            this.Column_Snatch_Step = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column_Snatch_Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column_Snatch_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column_Snatch_TotalTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column_CJ_Step = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column_CJ_Weight = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column_CJ_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column_CJ_TotalTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl_Competition.SuspendLayout();
             this.tabPage_snatch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_snatch)).BeginInit();
@@ -237,7 +237,7 @@
             this.tabControl_Competition.SelectedIndex = 0;
             this.tabControl_Competition.Size = new System.Drawing.Size(1920, 1037);
             this.tabControl_Competition.TabIndex = 0;
-            this.tabControl_Competition.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
+            this.tabControl_Competition.SelectedIndexChanged += new System.EventHandler(this.tabControl_SnatchCJ_SelectedIndexChanged);
             // 
             // tabPage_snatch
             // 
@@ -604,10 +604,42 @@
             this.dataGridView_snatch_steps.RowHeadersVisible = false;
             this.dataGridView_snatch_steps.RowTemplate.Height = 28;
             this.dataGridView_snatch_steps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_snatch_steps.Size = new System.Drawing.Size(424, 298);
+            this.dataGridView_snatch_steps.Size = new System.Drawing.Size(421, 298);
             this.dataGridView_snatch_steps.TabIndex = 10;
             this.dataGridView_snatch_steps.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_snatch_steps_CellClick);
             this.dataGridView_snatch_steps.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView_snatch_steps_CellFormatting);
+            // 
+            // Column_Snatch_Step
+            // 
+            this.Column_Snatch_Step.DataPropertyName = "Action";
+            this.Column_Snatch_Step.HeaderText = "Column_Snatch_Step";
+            this.Column_Snatch_Step.Name = "Column_Snatch_Step";
+            this.Column_Snatch_Step.ReadOnly = true;
+            this.Column_Snatch_Step.Width = 153;
+            // 
+            // Column_Snatch_Weight
+            // 
+            this.Column_Snatch_Weight.DataPropertyName = "FormattedWeight";
+            this.Column_Snatch_Weight.HeaderText = "Column_Snatch_Weight";
+            this.Column_Snatch_Weight.Name = "Column_Snatch_Weight";
+            this.Column_Snatch_Weight.ReadOnly = true;
+            this.Column_Snatch_Weight.Width = 74;
+            // 
+            // Column_Snatch_Time
+            // 
+            this.Column_Snatch_Time.DataPropertyName = "FormattedLength";
+            this.Column_Snatch_Time.HeaderText = "Column_Snatch_Time";
+            this.Column_Snatch_Time.Name = "Column_Snatch_Time";
+            this.Column_Snatch_Time.ReadOnly = true;
+            this.Column_Snatch_Time.Width = 92;
+            // 
+            // Column_Snatch_TotalTime
+            // 
+            this.Column_Snatch_TotalTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column_Snatch_TotalTime.DataPropertyName = "FormattedTotalLength";
+            this.Column_Snatch_TotalTime.HeaderText = "Column_Snatch_TotalTime";
+            this.Column_Snatch_TotalTime.Name = "Column_Snatch_TotalTime";
+            this.Column_Snatch_TotalTime.ReadOnly = true;
             // 
             // label16
             // 
@@ -1353,8 +1385,42 @@
             this.dataGridView_cj_steps.RowHeadersVisible = false;
             this.dataGridView_cj_steps.RowTemplate.Height = 28;
             this.dataGridView_cj_steps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_cj_steps.Size = new System.Drawing.Size(424, 298);
+            this.dataGridView_cj_steps.Size = new System.Drawing.Size(421, 298);
             this.dataGridView_cj_steps.TabIndex = 13;
+            this.dataGridView_cj_steps.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_cj_steps_CellClick);
+            this.dataGridView_cj_steps.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView_cj_steps_CellFormatting);
+            // 
+            // Column_CJ_Step
+            // 
+            this.Column_CJ_Step.DataPropertyName = "Action";
+            this.Column_CJ_Step.HeaderText = "Column_CJ_Step";
+            this.Column_CJ_Step.Name = "Column_CJ_Step";
+            this.Column_CJ_Step.ReadOnly = true;
+            this.Column_CJ_Step.Width = 153;
+            // 
+            // Column_CJ_Weight
+            // 
+            this.Column_CJ_Weight.DataPropertyName = "FormattedWeight";
+            this.Column_CJ_Weight.HeaderText = "Column_CJ_Weight";
+            this.Column_CJ_Weight.Name = "Column_CJ_Weight";
+            this.Column_CJ_Weight.ReadOnly = true;
+            this.Column_CJ_Weight.Width = 74;
+            // 
+            // Column_CJ_Time
+            // 
+            this.Column_CJ_Time.DataPropertyName = "FormattedLength";
+            this.Column_CJ_Time.HeaderText = "Column_CJ_Time";
+            this.Column_CJ_Time.Name = "Column_CJ_Time";
+            this.Column_CJ_Time.ReadOnly = true;
+            this.Column_CJ_Time.Width = 92;
+            // 
+            // Column_CJ_TotalTime
+            // 
+            this.Column_CJ_TotalTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column_CJ_TotalTime.DataPropertyName = "FormattedTotalLength";
+            this.Column_CJ_TotalTime.HeaderText = "Column_CJ_TotalTime";
+            this.Column_CJ_TotalTime.Name = "Column_CJ_TotalTime";
+            this.Column_CJ_TotalTime.ReadOnly = true;
             // 
             // label31
             // 
@@ -2023,7 +2089,6 @@
             this.menuStrip_Profile.Size = new System.Drawing.Size(1920, 24);
             this.menuStrip_Profile.TabIndex = 4;
             this.menuStrip_Profile.Text = "menuStrip_Profile";
-            this.menuStrip_Profile.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip_Profile_ItemClicked);
             // 
             // panel_Battery
             // 
@@ -2075,70 +2140,6 @@
             this.label_Battery.Size = new System.Drawing.Size(99, 15);
             this.label_Battery.TabIndex = 0;
             this.label_Battery.Text = "battery";
-            // 
-            // Column_Snatch_Step
-            // 
-            this.Column_Snatch_Step.DataPropertyName = "Action";
-            this.Column_Snatch_Step.HeaderText = "Column_Snatch_Step";
-            this.Column_Snatch_Step.Name = "Column_Snatch_Step";
-            this.Column_Snatch_Step.ReadOnly = true;
-            this.Column_Snatch_Step.Width = 153;
-            // 
-            // Column_Snatch_Weight
-            // 
-            this.Column_Snatch_Weight.DataPropertyName = "FormattedWeight";
-            this.Column_Snatch_Weight.HeaderText = "Column_Snatch_Weight";
-            this.Column_Snatch_Weight.Name = "Column_Snatch_Weight";
-            this.Column_Snatch_Weight.ReadOnly = true;
-            this.Column_Snatch_Weight.Width = 74;
-            // 
-            // Column_Snatch_Time
-            // 
-            this.Column_Snatch_Time.DataPropertyName = "FormattedLength";
-            this.Column_Snatch_Time.HeaderText = "Column_Snatch_Time";
-            this.Column_Snatch_Time.Name = "Column_Snatch_Time";
-            this.Column_Snatch_Time.ReadOnly = true;
-            this.Column_Snatch_Time.Width = 92;
-            // 
-            // Column_Snatch_TotalTime
-            // 
-            this.Column_Snatch_TotalTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column_Snatch_TotalTime.DataPropertyName = "FormattedTotalLength";
-            this.Column_Snatch_TotalTime.HeaderText = "Column_Snatch_TotalTime";
-            this.Column_Snatch_TotalTime.Name = "Column_Snatch_TotalTime";
-            this.Column_Snatch_TotalTime.ReadOnly = true;
-            // 
-            // Column_CJ_Step
-            // 
-            this.Column_CJ_Step.DataPropertyName = "Action";
-            this.Column_CJ_Step.HeaderText = "Column_CJ_Step";
-            this.Column_CJ_Step.Name = "Column_CJ_Step";
-            this.Column_CJ_Step.ReadOnly = true;
-            this.Column_CJ_Step.Width = 153;
-            // 
-            // Column_CJ_Weight
-            // 
-            this.Column_CJ_Weight.DataPropertyName = "FormattedWeight";
-            this.Column_CJ_Weight.HeaderText = "Column_CJ_Weight";
-            this.Column_CJ_Weight.Name = "Column_CJ_Weight";
-            this.Column_CJ_Weight.ReadOnly = true;
-            this.Column_CJ_Weight.Width = 74;
-            // 
-            // Column_CJ_Time
-            // 
-            this.Column_CJ_Time.DataPropertyName = "FormattedLength";
-            this.Column_CJ_Time.HeaderText = "Column_CJ_Time";
-            this.Column_CJ_Time.Name = "Column_CJ_Time";
-            this.Column_CJ_Time.ReadOnly = true;
-            this.Column_CJ_Time.Width = 92;
-            // 
-            // Column_CJ_TotalTime
-            // 
-            this.Column_CJ_TotalTime.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column_CJ_TotalTime.DataPropertyName = "FormattedTotalLength";
-            this.Column_CJ_TotalTime.HeaderText = "Column_CJ_TotalTime";
-            this.Column_CJ_TotalTime.Name = "Column_CJ_TotalTime";
-            this.Column_CJ_TotalTime.ReadOnly = true;
             // 
             // form_Main
             // 

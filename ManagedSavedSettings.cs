@@ -25,7 +25,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     settings: savedSettings.ii_int_BarbellWeight,
                     id: id,
                     minValue: 1,
-                    defaultGenerator: (_) => int_default_Barbell,
+                    defaultGenerator: (_) => Defaults.int_default_Barbell,
                     setting: out int barbellWeight);
                 setting_TryFetch(
                     settings: savedSettings.ii_hhmm_Start,
@@ -36,76 +36,76 @@ namespace Weightlifting_Comp_Warmup.Main
                     settings: savedSettings.ii_int_Snatch_SecondsStage,
                     id: id,
                     minValue: 1,
-                    defaultGenerator: (_) => int_default_snatch_SecondsStage,
+                    defaultGenerator: (_) => Defaults.int_default_snatch_SecondsStage,
                     setting: out int snatch_SecondsStage);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_Snatch_OpenerWeight,
                     id: id,
                     minValue: 1,
-                    defaultGenerator: (_) => int_default_snatch_OpenerWeight,
+                    defaultGenerator: (_) => Defaults.int_default_snatch_OpenerWeight,
                     setting: out int snatch_OpenerWeight);
                 setting_TryFetch(
                     settings: savedSettings.ii_bool_Snatch_OpenerInWarmup,
                     id: id,
-                    defaultGenerator: (_) => bool_default_snatch_OpenerInWarmup,
+                    defaultGenerator: (_) => Defaults.bool_default_snatch_OpenerInWarmup,
                     setting: out bool snatch_OpenerInWarmup);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_Snatch_SecondsEnd,
                     id: id,
                     minValue: 0,
-                    defaultGenerator: (_) => int_default_snatch_SecondsEnd,
+                    defaultGenerator: (_) => Defaults.int_default_snatch_SecondsEnd,
                     setting: out int snatch_SecondsEnd);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_Snatch_LiftsOut,
                     id: id,
                     minValue: 0,
-                    defaultGenerator: (_) => int_default_snatch_Lifts_Out,
+                    defaultGenerator: (_) => Defaults.int_default_snatch_LiftsOut,
                     setting: out int snatch_LiftsOut);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_CJ_SecondsStage,
                     id: id,
                     minValue: 1,
-                    defaultGenerator: (_) => int_default_cj_SecondsStage,
+                    defaultGenerator: (_) => Defaults.int_default_cj_SecondsStage,
                     setting: out int cj_SecondsStage);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_CJ_OpenerWeight,
                     id: id,
                     minValue: 1,
-                    defaultGenerator: (_) => int_default_cj_OpenerWeight,
+                    defaultGenerator: (_) => Defaults.int_default_cj_OpenerWeight,
                     setting: out int cj_OpenerWeight);
                 setting_TryFetch(
                     settings: savedSettings.ii_bool_CJ_OpenerInWarmup,
                     id: id,
-                    defaultGenerator: (_) => bool_default_cj_OpenerInWarmup,
+                    defaultGenerator: (_) => Defaults.bool_default_cj_OpenerInWarmup,
                     setting: out bool cj_OpenerInWarmup);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_CJ_SecondsEnd,
                     id: id,
                     minValue: 0,
-                    defaultGenerator: (_) => int_default_cj_SecondsEnd,
+                    defaultGenerator: (_) => Defaults.int_default_cj_SecondsEnd,
                     setting: out int cj_SecondsEnd);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_CJ_LiftsOut,
                     id: id,
                     minValue: 0,
-                    defaultGenerator: (_) => int_default_cj_LiftsOut,
+                    defaultGenerator: (_) => Defaults.int_default_cj_LiftsOut,
                     setting: out int cj_LiftsOut);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_CJ_SecondsBreak,
                     id: id,
                     minValue: 0,
-                    defaultGenerator: (_) => int_default_cJ_SecondsBreak,
+                    defaultGenerator: (_) => Defaults.int_default_cJ_SecondsBreak,
                     setting: out int cJ_SecondsBreak);
                 setting_TryFetch(
                     settings: savedSettings.ii_int_CJ_SnatchLifts_Out,
                     id: id,
                     minValue: 0,
-                    defaultGenerator: (_) => int_default_cJ_SnatchLifts_Out,
+                    defaultGenerator: (_) => Defaults.int_default_cJ_SnatchLifts_Out,
                     setting: out int cJ_SnatchLifts_Out);
                 setting_TryFetch(
                     settings: savedSettings.ii_bool_Beep,
                     id: id,
-                    defaultGenerator: (_) => bool_default_Beep,
+                    defaultGenerator: (_) => Defaults.bool_default_Beep,
                     setting: out bool beep);
                 List<Extra> snatchExtras = [];
                 foreach (string str in savedSettings.ii_strings_SnatchExtras)
@@ -183,6 +183,53 @@ namespace Weightlifting_Comp_Warmup.Main
 
                 profiles[id] = _profile;
             }
+            profiles_AddIfNone();
+        }
+        private void profiles_AddIfNone()
+        {
+            if (profiles == null || profiles.Count == 0)
+            {
+                profiles_New(_bool_Demo: true);
+            }
+        }
+        private Profile profiles_New(bool _bool_Demo = false)
+        {
+            profiles ??= [];
+            int id;
+            if (profiles.Any())
+            {
+                id = profiles.Keys.Max() + 1;
+            }
+            else
+            {
+                id = 1;
+            }
+            Profile _profile = new(
+                id: id,
+                name: (_bool_Demo ? "Demo Profile" : $"Profile_{id}"),
+                barbellWeight: Defaults.int_default_Barbell,
+                start: Defaults.timeSpan_default_Start,
+                snatch_SecondsStage: Defaults.int_default_snatch_SecondsStage,
+                snatch_OpenerWeight: Defaults.int_default_snatch_OpenerWeight,
+                snatch_OpenerInWarmup: Defaults.bool_default_snatch_OpenerInWarmup,
+                snatch_SecondsEnd: Defaults.int_default_snatch_SecondsEnd,
+                snatch_LiftsOut: Defaults.int_default_snatch_LiftsOut,
+                cJ_SecondsStage: Defaults.int_default_cj_SecondsStage,
+                cJ_OpenerWeight: Defaults.int_default_cj_OpenerWeight,
+                cJ_OpenerInWarmup: Defaults.bool_default_cj_OpenerInWarmup,
+                cJ_SecondsEnd: Defaults.int_default_cj_SecondsEnd,
+                cJ_LiftsOut: Defaults.int_default_cj_LiftsOut,
+                cJ_SnatchLifts_Out: Defaults.int_default_cJ_SnatchLifts_Out,
+                cJ_SecondsBreak: Defaults.int_default_cJ_SecondsBreak,
+                beep: Defaults.bool_default_Beep,
+                snatchExtras: (_bool_Demo ? Defaults.demo_snatchExtras : []),
+                snatchJumps: (_bool_Demo ? Defaults.demo_snatchJumps : Defaults.default_snatchJumps),
+                snatchTimes: (_bool_Demo ? Defaults.demo_snatchTimes : Defaults.default_snatchTimes),
+                cJExtras: (_bool_Demo ? Defaults.demo_cjExtras : []),
+                cJJumps: (_bool_Demo ? Defaults.demo_cjJumps : Defaults.default_cjJumps),
+                cJTimes: (_bool_Demo ? Defaults.demo_cjTimes : Defaults.default_cjTimes));
+            profiles.Add(_profile.id, _profile);
+            return _profile;
         }
         private void setting_TryFetch( // string
             List<string> settings,
@@ -270,10 +317,6 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 return false;
             }
-            if (_profile.SnatchExtras.Count == 0)
-            {
-                _profile.SnatchExtras = Defaults.default_snatchExtras;
-            }
             if (_profile.SnatchJumps.Count == 0)
             {
                 _profile.SnatchJumps = Defaults.default_snatchJumps;
@@ -281,10 +324,6 @@ namespace Weightlifting_Comp_Warmup.Main
             if (_profile.SnatchTimes.Count == 0)
             {
                 _profile.SnatchTimes = Defaults.default_snatchTimes;
-            }
-            if (_profile.CJExtras.Count == 0)
-            {
-                _profile.CJExtras = Defaults.default_cjExtras;
             }
             if (_profile.CJJumps.Count == 0)
             {
@@ -294,19 +333,19 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 _profile.CJTimes = Defaults.default_cjTimes;
             }
-            if (!_profile.SnatchJumps.TryGetValue(1, out _))
+            if (!_profile.SnatchJumps.ContainsKey(1))
             {
                 _profile.SnatchJumps[1] = 1;
             }
-            if (!_profile.SnatchTimes.TryGetValue(1, out _))
+            if (!_profile.SnatchTimes.ContainsKey(1))
             {
                 _profile.SnatchTimes[1] = 1;
             }
-            if (!_profile.CJJumps.TryGetValue(1, out _))
+            if (!_profile.CJJumps.ContainsKey(1))
             {
                 _profile.CJJumps[1] = 1;
             }
-            if (!_profile.CJTimes.TryGetValue(1, out _))
+            if (!_profile.CJTimes.ContainsKey(1))
             {
                 _profile.CJTimes[1] = 1;
             }
@@ -324,9 +363,16 @@ namespace Weightlifting_Comp_Warmup.Main
             AppColors.Snatch_Live_BG = splitContainer_snatch.Panel2.BackColor;
             AppColors.Cj_Live_BG = splitContainer_cj.Panel2.BackColor;
 
-            if (profileActive.BarbellWeight < numericUpDown_snatch_weight_barbell.Minimum)
+            if (profileActive.BarbellWeight < numericUpDown_snatch_weight_barbell.Minimum || profileActive.BarbellWeight > numericUpDown_snatch_weight_barbell.Maximum)
             {
-                profileActive.BarbellWeight = int_default_Barbell;
+                if (Defaults.int_default_Barbell < numericUpDown_snatch_weight_barbell.Minimum || Defaults.int_default_Barbell > numericUpDown_snatch_weight_barbell.Maximum)
+                {
+                    profileActive.BarbellWeight = (int)numericUpDown_snatch_weight_barbell.Minimum;
+                }
+                else
+                {
+                    profileActive.BarbellWeight = Defaults.int_default_Barbell;
+                }
             }
             numericUpDown_snatch_weight_barbell.Value = profileActive.BarbellWeight;
 
@@ -337,21 +383,29 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             dateTimePicker_snatch_Start.Value = dateTime;
 
-            if (profileActive.Snatch_SecondsStage < numericUpDown_snatch_time_stage.Minimum)
+            if (profileActive.Snatch_SecondsStage < numericUpDown_snatch_time_stage.Minimum || profileActive.Snatch_SecondsStage > numericUpDown_snatch_time_stage.Maximum)
             {
-                profileActive.Snatch_SecondsStage = int_default_snatch_SecondsStage;
+                if (Defaults.int_default_snatch_SecondsStage < numericUpDown_snatch_time_stage.Minimum || Defaults.int_default_snatch_SecondsStage > numericUpDown_snatch_time_stage.Maximum)
+                {
+                    profileActive.Snatch_SecondsStage = (int)numericUpDown_snatch_time_stage.Minimum;
+                }
+                else
+                {
+                    profileActive.Snatch_SecondsStage = Defaults.int_default_snatch_SecondsStage;
+                }
             }
+
             numericUpDown_snatch_time_stage.Value = profileActive.Snatch_SecondsStage;
 
             if (profileActive.Snatch_OpenerWeight < profileActive.BarbellWeight)
             {
-                profileActive.Snatch_OpenerWeight = int_default_snatch_OpenerWeight;
+                profileActive.Snatch_OpenerWeight = Defaults.int_default_snatch_OpenerWeight;
             }
             numericUpDown_snatch_weight_opener.Value = profileActive.Snatch_OpenerWeight;
 
             if (profileActive.Snatch_SecondsEnd < numericUpDown_snatch_time_PostWarmup.Minimum)
             {
-                profileActive.Snatch_SecondsEnd = int_default_snatch_SecondsEnd;
+                profileActive.Snatch_SecondsEnd = Defaults.int_default_snatch_SecondsEnd;
             }
             numericUpDown_snatch_time_PostWarmup.Value = profileActive.Snatch_SecondsEnd;
 
@@ -367,27 +421,34 @@ namespace Weightlifting_Comp_Warmup.Main
             label_snatch_Live_LiftsPassed.Text = string.Empty;
 
 
-            if (profileActive.CJ_SecondsStage < numericUpDown_cj_time_stage.Minimum)
+            if (profileActive.CJ_SecondsStage < numericUpDown_cj_time_stage.Minimum || profileActive.CJ_SecondsStage > numericUpDown_cj_time_stage.Maximum)
             {
-                profileActive.CJ_SecondsStage = int_default_cj_SecondsStage;
+                if (Defaults.int_default_cj_SecondsStage < numericUpDown_cj_time_stage.Minimum || Defaults.int_default_cj_SecondsStage > numericUpDown_cj_time_stage.Maximum)
+                {
+                    profileActive.CJ_SecondsStage = (int)numericUpDown_cj_time_stage.Minimum;
+                }
+                else
+                {
+                    profileActive.CJ_SecondsStage = Defaults.int_default_cj_SecondsStage;
+                }
             }
             numericUpDown_cj_time_stage.Value = profileActive.CJ_SecondsStage;
 
             if (profileActive.CJ_SecondsBreak < (numericUpDown_cj_Live_Break.Minimum * 60))
             {
-                profileActive.CJ_SecondsBreak = int_default_cJ_SecondsBreak;
+                profileActive.CJ_SecondsBreak = Defaults.int_default_cJ_SecondsBreak;
             }
             numericUpDown_cj_Live_Break.Value = (int)((double)profileActive.CJ_SecondsBreak / 60);
 
             if (profileActive.CJ_OpenerWeight < profileActive.BarbellWeight)
             {
-                profileActive.CJ_OpenerWeight = int_default_cj_OpenerWeight;
+                profileActive.CJ_OpenerWeight = Defaults.int_default_cj_OpenerWeight;
             }
             numericUpDown_cj_weight_opener.Value = profileActive.CJ_OpenerWeight;
 
             if (profileActive.CJ_SecondsEnd < numericUpDown_cj_time_PostWarmup.Minimum)
             {
-                profileActive.CJ_SecondsEnd = int_default_cj_SecondsEnd;
+                profileActive.CJ_SecondsEnd = Defaults.int_default_cj_SecondsEnd;
             }
             numericUpDown_cj_time_PostWarmup.Value = profileActive.CJ_SecondsEnd;
 
@@ -419,9 +480,17 @@ namespace Weightlifting_Comp_Warmup.Main
             PopulateExtras(liftType: LiftType.Snatch);
 
             profileActive.SnatchJumps ??= Defaults.default_snatchJumps;
+            if (!profileActive.SnatchJumps.ContainsKey(1))
+            {
+                profileActive.SnatchJumps[1] = Defaults.default_snatchJumps[1];
+            }
             PopulateJumps(liftType: LiftType.Snatch);
 
             profileActive.SnatchTimes ??= Defaults.default_snatchTimes;
+            if (!profileActive.SnatchTimes.ContainsKey(1))
+            {
+                profileActive.SnatchTimes[1] = Defaults.default_snatchTimes[1];
+            }
             PopulateTimes(liftType: LiftType.Snatch);
 
             PopulateSteps(liftType: LiftType.Snatch, preserveLifts: false);
@@ -430,9 +499,17 @@ namespace Weightlifting_Comp_Warmup.Main
             PopulateExtras(liftType: LiftType.CleanAndJerk);
 
             profileActive.CJJumps ??= Defaults.default_cjJumps;
+            if (!profileActive.CJJumps.ContainsKey(1))
+            {
+                profileActive.CJJumps[1] = Defaults.default_cjJumps[1];
+            }
             PopulateJumps(liftType: LiftType.CleanAndJerk);
 
             profileActive.CJTimes ??= Defaults.default_cjTimes;
+            if (!profileActive.CJTimes.ContainsKey(1))
+            {
+                profileActive.CJTimes[1] = Defaults.default_cjTimes[1];
+            }
             PopulateTimes(liftType: LiftType.CleanAndJerk);
 
             PopulateSteps(liftType: LiftType.CleanAndJerk, preserveLifts: false);
@@ -444,40 +521,8 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private Profile Add_Profile(string _str_ProfileName)
         {
-            int _int_ProfileId;
-            if (profiles.Count == 0)
-            {
-                _int_ProfileId = 1;
-            }
-            else
-            {
-                _int_ProfileId = profiles.Max(r => r.Key) + 1;
-            }
-            Profile _profile = new(
-                id: _int_ProfileId,
-                name: _str_ProfileName,
-                barbellWeight: int_default_Barbell,
-                start: new(hours: 9, minutes: 0, seconds: 0),
-                snatch_SecondsStage: int_default_snatch_SecondsStage,
-                snatch_OpenerWeight: int_default_snatch_OpenerWeight,
-                snatch_OpenerInWarmup: bool_default_snatch_OpenerInWarmup,
-                snatch_SecondsEnd: int_default_snatch_SecondsEnd,
-                snatch_LiftsOut: int_default_snatch_Lifts_Out,
-                cJ_SecondsStage: int_default_cj_SecondsStage,
-                cJ_SecondsBreak: int_default_cJ_SecondsBreak,
-                cJ_OpenerWeight: int_default_cj_OpenerWeight,
-                cJ_OpenerInWarmup: bool_default_cj_OpenerInWarmup,
-                cJ_SecondsEnd: int_default_cj_SecondsEnd,
-                cJ_LiftsOut: int_default_cj_LiftsOut,
-                cJ_SnatchLifts_Out: int_default_cJ_SnatchLifts_Out,
-                beep: bool_default_Beep,
-                snatchExtras: [new()],
-                snatchJumps: [],
-                snatchTimes: [],
-                cJExtras: [],
-                cJJumps: [],
-                cJTimes: []);
-            profiles.Add(_int_ProfileId, _profile);
+            Profile _profile = profiles_New(_bool_Demo: false);
+            _profile.Name = _str_ProfileName;
             SaveSettings();
             return _profile;
         }
@@ -562,7 +607,7 @@ namespace Weightlifting_Comp_Warmup.Main
             return int.TryParse(record.Substring(0, 3), out fromWeight) &&
                    int.TryParse(record.Substring(3, 3), out stepValue) && stepValue > 0;
         }
-        private void button_snatch_ClearSettings_Click(object sender, EventArgs e)
+        private void ClearSettings()
         {
             if (MessageBox.Show($"This will erase all profiles and restore all defaults.{Environment.NewLine}{Environment.NewLine}Continue?",
                 "Reset settings?", buttons: MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
@@ -570,8 +615,12 @@ namespace Weightlifting_Comp_Warmup.Main
                 savedSettings.Reset();
                 savedSettings.Save();
                 profiles.Clear();
-                profileActive = Add_Profile(_str_ProfileName: "default");
-                Initialise_Form();
+                profiles_AddIfNone();
+                int _int_ProfileId = profiles.FirstOrDefault().Key;
+                if (!ProfileSelect(_int_ProfileId: _int_ProfileId))
+                {
+                    MessageBox.Show("An error occurred and the profile could not be loaded. Please reopen and try again.", "Profile Loading Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         private void Populate_MenuStrip()
@@ -641,10 +690,9 @@ namespace Weightlifting_Comp_Warmup.Main
                 menuStrip_Profile.Items.Add(toolStripMenuItem);
             }
         }
-        private void ToolStripMenu_Load_Profile(object sender, EventArgs e)
+        private void Load_Profile(ToolStripButton toolStripButton)
         {
             SaveSettings();
-            ToolStripButton toolStripButton = (ToolStripButton)sender;
             string _string_Tag = toolStripButton.Tag.ToString();
             if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId))
             {
@@ -658,9 +706,8 @@ namespace Weightlifting_Comp_Warmup.Main
                 Load_Profile_Values_To_Controls();
             }
         }
-        private void ToolStripMenu_Delete_Profile(object sender, EventArgs e)
+        private void Delete_Profile(ToolStripButton toolStripButton)
         {
-            ToolStripButton toolStripButton = (ToolStripButton)sender;
             string _string_Tag = toolStripButton.Tag.ToString();
             if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId) &&
                 profiles.ContainsKey(_int_ProfileId) &&
@@ -671,17 +718,11 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 int _int_SelectedProfileId = profileActive.id;
                 profiles.Remove(_int_ProfileId);
+                profiles_AddIfNone();
                 SaveSettings();
                 if (_int_ProfileId == _int_SelectedProfileId)
                 {
-                    if (profiles.Any())
-                    {
-                        _int_ProfileId = profiles.First().Key;
-                    }
-                    else
-                    {
-                        _int_ProfileId = Add_Profile(_str_ProfileName: "default").id;
-                    }
+                    _int_ProfileId = profiles.FirstOrDefault().Key;
                     if (!ProfileSelect(_int_ProfileId: _int_ProfileId))
                     {
                         MessageBox.Show("An error occurred and the profile could not be loaded. Please reopen and try again.", "Profile Loading Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -697,7 +738,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void ToolStripMenu_AddNew_Profile(object sender, EventArgs e)
+        private void AddNew_Profile()
         {
             string _str_Name = Interaction.InputBox("Enter a new name:");
             if (!string.IsNullOrEmpty(_str_Name))
@@ -706,9 +747,8 @@ namespace Weightlifting_Comp_Warmup.Main
                 Populate_MenuStrip();
             }
         }
-        private void ToolStripMenu_Rename_Profile(object sender, EventArgs e)
+        private void Rename_Profile(ToolStripButton toolStripButton)
         {
-            ToolStripButton toolStripButton = (ToolStripButton)sender;
             string _string_Tag = toolStripButton.Tag.ToString();
             if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId) &&
                 profiles.TryGetValue(_int_ProfileId, out Profile _profile))
@@ -722,9 +762,8 @@ namespace Weightlifting_Comp_Warmup.Main
                 }
             }
         }
-        private void ToolStripMenu_Duplicate_Profile(object sender, EventArgs e)
+        private void Duplicate_Profile(ToolStripButton toolStripButton)
         {
-            ToolStripButton toolStripButton = (ToolStripButton)sender;
             string _string_Tag = toolStripButton.Tag.ToString();
             if (int.TryParse(s: _string_Tag, result: out int _int_ProfileId) &&
                 profiles.TryGetValue(_int_ProfileId, out Profile _profile_ToCopy))
