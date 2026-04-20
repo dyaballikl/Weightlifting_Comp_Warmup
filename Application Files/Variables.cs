@@ -18,7 +18,7 @@ namespace Weightlifting_Comp_Warmup.Main
             ES_SYSTEM_REQUIRED = 0x00000001
         }
 
-        private const string strVersion = "1.16.0";
+        private const string strVersion = "1.17.0";
 
         private List<Step> snatchStepsLIVE = null;
         private List<Step> snatchStepsPLAN = null;

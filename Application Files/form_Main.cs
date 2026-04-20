@@ -417,14 +417,14 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return (
-                    profileActive.SnatchExtras,
+                    profileActive.snatchExtras,
                     panel_snatch_extra,
                     () => PopulateExtras(LiftType.Snatch));
             }
             else
             {
                 return (
-                    profileActive.CJExtras,
+                    profileActive.cjExtras,
                     panel_cj_extra,
                     () => PopulateExtras(LiftType.CleanAndJerk));
             }
@@ -663,14 +663,14 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return (
-                    profileActive.SnatchJumps,
+                    profileActive.snatchJumps,
                     panel_snatch_jump,
                     Defaults.default_snatchJumps);
             }
             else // CleanAndJerk
             {
                 return (
-                    profileActive.CJJumps,
+                    profileActive.cjJumps,
                     panel_cj_jump,
                     Defaults.default_cjJumps);
             }
@@ -684,9 +684,9 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 if (liftType == LiftType.Snatch)
                 {
-                    profileActive.SnatchJumps = getDefaultJumps;
+                    profileActive.snatchJumps = getDefaultJumps;
                 }
-                else profileActive.CJJumps = getDefaultJumps;
+                else profileActive.cjJumps = getDefaultJumps;
             }
 
             // A local function to create the UI controls for each row
@@ -815,14 +815,14 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return (
-                    profileActive.SnatchTimes,
+                    profileActive.snatchTimes,
                     panel_snatch_time,
                     Defaults.default_snatchTimes);
             }
             else // CleanAndJerk
             {
                 return (
-                    profileActive.CJTimes,
+                    profileActive.cjTimes,
                     panel_cj_time,
                     Defaults.default_cjTimes);
             }
@@ -837,11 +837,11 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 if (liftType == LiftType.Snatch)
                 {
-                    profileActive.SnatchTimes = context.getDefaultTimes;
+                    profileActive.snatchTimes = context.getDefaultTimes;
                 }
                 else
                 {
-                    profileActive.CJTimes = context.getDefaultTimes;
+                    profileActive.cjTimes = context.getDefaultTimes;
                 }
                 // Re-fetch context to ensure we have the newly assigned dictionary
                 context = GetTimeContext(liftType);
@@ -999,23 +999,23 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return x_Steps(
-                    _extras: profileActive.SnatchExtras,
-                    _jumps: profileActive.SnatchJumps,
-                    _times: profileActive.SnatchTimes,
-                    _int_x_Sec_End: profileActive.Snatch_SecondsEnd,
-                    _int_x_Wgt_Opener: profileActive.Snatch_OpenerWeight,
-                    _bool_Opener_in_Warmup: profileActive.Snatch_OpenerInWarmup
+                    _extras: profileActive.snatchExtras,
+                    _jumps: profileActive.snatchJumps,
+                    _times: profileActive.snatchTimes,
+                    _int_x_Sec_End: profileActive.snatch_SecondsEnd,
+                    _int_x_Wgt_Opener: profileActive.snatch_OpenerWeight,
+                    _bool_Opener_in_Warmup: profileActive.snatch_OpenerInWarmup
                 );
             }
             else // CleanAndJerk
             {
                 return x_Steps(
-                    _extras: profileActive.CJExtras,
-                    _jumps: profileActive.CJJumps,
-                    _times: profileActive.CJTimes,
-                    _int_x_Sec_End: profileActive.CJ_SecondsEnd,
-                    _int_x_Wgt_Opener: profileActive.CJ_OpenerWeight,
-                    _bool_Opener_in_Warmup: profileActive.CJ_OpenerInWarmup
+                    _extras: profileActive.cjExtras,
+                    _jumps: profileActive.cjJumps,
+                    _times: profileActive.cjTimes,
+                    _int_x_Sec_End: profileActive.cj_SecondsEnd,
+                    _int_x_Wgt_Opener: profileActive.cj_OpenerWeight,
+                    _bool_Opener_in_Warmup: profileActive.cj_OpenerInWarmup
                 );
             }
         }
@@ -1067,10 +1067,10 @@ namespace Weightlifting_Comp_Warmup.Main
             if (liftType == LiftType.Snatch)
             {
                 return (
-                    (v) => profileActive.Snatch_SecondsStage = v,
-                    (v) => profileActive.Snatch_OpenerWeight = v,
-                    (v) => profileActive.Snatch_OpenerInWarmup = v,
-                    (v) => profileActive.Snatch_SecondsEnd = v,
+                    (v) => profileActive.snatch_SecondsStage = v,
+                    (v) => profileActive.snatch_OpenerWeight = v,
+                    (v) => profileActive.snatch_OpenerInWarmup = v,
+                    (v) => profileActive.snatch_SecondsEnd = v,
                     numericUpDown_snatch_time_stage,
                     numericUpDown_snatch_weight_opener,
                     checkBox_snatch_Param_OpenerWarmup,
@@ -1081,10 +1081,10 @@ namespace Weightlifting_Comp_Warmup.Main
             else // CleanAndJerk
             {
                 return (
-                    (v) => profileActive.CJ_SecondsStage = v,
-                    (v) => profileActive.CJ_OpenerWeight = v,
-                    (v) => profileActive.CJ_OpenerInWarmup = v,
-                    (v) => profileActive.CJ_SecondsEnd = v,
+                    (v) => profileActive.cj_SecondsStage = v,
+                    (v) => profileActive.cj_OpenerWeight = v,
+                    (v) => profileActive.cj_OpenerInWarmup = v,
+                    (v) => profileActive.cj_SecondsEnd = v,
                     numericUpDown_cj_time_stage,
                     numericUpDown_cj_weight_opener,
         checkBox_cj_Param_OpenerWarmup,
@@ -1223,108 +1223,88 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         #endregion
 
-        #region snatch LIVE
-        private void stopSnatchTimer()
+        #region Shared Live
+        private (
+            List<Step> stepsPLAN,
+            Func<List<Step>> getStepsLIVE,
+            Action<List<Step>> setStepsLIVE,
+            int openerWeight,
+            Panel panel_Live_Steps,
+            Color color_Live_BG,
+            Action<int> setWarmupStep,
+            Label label_Live_CurrentTime,
+            Panel panel_Live_Times
+            ) GetContext_PopulateLiveSteps(LiftType liftType)
         {
-            if (timer_snatch_Live != null)
+            if (liftType == LiftType.Snatch)
             {
-                timer_snatch_Live.Stop();
-                timer_snatch_Live.Dispose();
-                timer_snatch_Live = null;
-            }
-            stopBatteryTimer();
-        }
-        private void snatch_Stop_Live()
-        {
-            bool_snatch_Live = false;
-            stopSnatchTimer();
-            textBox_snatch_Live_LiftsOut.Visible = false;
-            label_snatch_Live_TimeTillStart.Text = String.Empty;
-            label_snatch_Live_TimeTillOpener.Text = String.Empty;
-            label_snatch_Live_LiftsPassed.Text = String.Empty;
-            Clear_snatch_Live_Steps();
-            progressBar_snatch_Live_StageLift.Value = 0;
-            button_snatch_Live_StageAdvance.BackColor = AppColors.Snatch_Live_BG;
-            button_snatch_Live_StageAdvance.Tag = 0;
-            bool_snatch_LiveLifting = false;
-            button_snatch_Live_StartStop.Text = "start";
-            panel_snatch_Live_Times.Visible = false;
-            panel_Battery.Visible = false;
-            if (!bool_cj_Live) { AllowMonitorPowerdown(); }
-        }
-        private void snatch_Start_Live()
-        {
-            bool_snatch_Live = true;
-            datetime_snatch_Start = DateTime.Today.AddHours(dateTimePicker_snatch_Start.Value.Hour).AddMinutes(dateTimePicker_snatch_Start.Value.Minute);
-            int_snatch_Lifts_Passed = 0;
-            textBox_snatch_Live_LiftsOut.Visible = false;
-            label_snatch_Live_LiftsPassed.Text = "0";
-            Populate_snatch_Live_Steps();
-            progressBar_snatch_Live_StageLift.Value = 0;
-            progressBar_snatch_Live_StageLift.Maximum = profileActive.Snatch_SecondsStage;
-            label_snatch_Live_TimeTillStart.Text = String.Empty;
-            label_snatch_Live_TimeTillOpener.Text = String.Empty;
-
-            // Run one tick immediately to populate UI without waiting
-            sim_timer_snatch_Live_Tick();
-            timer_snatch_Live = new Timer();
-            timer_snatch_Live.Tick += (s, e) => timer_Live_Tick(s, e, LiftType.Snatch);
-            timer_snatch_Live.Interval = timerInterval;
-            timer_snatch_Live.Start();
-            timer_Battery = new Timer();
-            timer_Battery.Tick += (s, e) => timer_Battery_Tick(s, e);
-            timer_Battery.Interval = 60000;
-            timer_Battery.Start();
-
-            UpdateBattery();
-            button_snatch_Live_StartStop.Text = "stop";
-            button_snatch_Live_StageAdvance.Select();
-            PreventMonitorPowerdown();
-        }
-        private void button_snatch_Live_StartStop_Click()
-        {
-            if (bool_snatch_Live)
-            {
-                snatch_Stop_Live();
+                return (
+                    snatchStepsPLAN,
+                    () => snatchStepsLIVE,
+                    (newList) => { snatchStepsLIVE = newList; },
+                    profileActive.snatch_OpenerWeight,
+                    panel_snatch_Live_Steps,
+                    AppColors.snatch_Live_BG,
+                    (newInt) => { int_snatch_Warmup_Step = newInt; },
+                    label_snatch_Live_CurrentTime,
+                    panel_snatch_Live_Times
+                    );
             }
             else
             {
-                snatch_Start_Live();
+                return (
+                    cjStepsPLAN,
+                    () => cjStepsLIVE,
+                    (newList) => { cjStepsLIVE = newList; },
+                    profileActive.cj_OpenerWeight,
+                    panel_cj_Live_Steps,
+                    AppColors.cj_Live_BG,
+                    (newInt) => { int_cj_Warmup_Step = newInt; },
+                    label_cj_Live_CurrentTime,
+                    panel_cj_Live_Times
+                    );
             }
         }
-        private void Clear_snatch_Live_Steps()
-        {
-            snatchStepsLIVE = null;
-            panel_snatch_Live_Steps.Controls.Clear();
-        }
-        private void Populate_snatch_Live_Steps()
+        private void Populate_Live_Steps(LiftType liftType)
         {
             Clear_snatch_Live_Steps();
+            (
+                List<Step> stepsPLAN,
+                Func<List<Step>> getstepsLIVE,
+                Action<List<Step>> setstepsLIVE,
+                int openerWeight,
+                Panel panel_Live_Steps,
+                Color color_Live_BG,
+                Action<int> setWarmupStep,
+                Label label_Live_CurrentTime,
+                Panel panel_Live_Times
+                ) = GetContext_PopulateLiveSteps(liftType);
+            List<Step> stepsLIVE = getstepsLIVE();
 
-            if (snatchStepsPLAN is null)
+            if (stepsPLAN is null)
             {
-                PopulateSteps(LiftType.Snatch);
+                PopulateSteps(liftType: liftType);
             }
-            if (snatchStepsPLAN is null || !snatchStepsPLAN.Any())
+            if (stepsPLAN is null || !stepsPLAN.Any())
             {
                 MessageBox.Show("An error has occurred. Step plan could not be determined.");
                 this.Close();
                 return;
             }
-            snatchStepsLIVE = [.. snatchStepsPLAN.Select(r => r.Clone())];
-            Step _stepLast = snatchStepsLIVE.Last();
-            snatchStepsLIVE.Add(new(
-                action: $"open at {profileActive.Snatch_OpenerWeight}",
-                weight: profileActive.Snatch_OpenerWeight,
+            stepsLIVE = [.. stepsPLAN.Select(r => r.Clone())];
+            setstepsLIVE(stepsLIVE);
+            Step _stepLast = stepsLIVE.Last();
+            stepsLIVE.Add(new(
+                action: $"open at {openerWeight}",
+                weight: openerWeight,
                 length: 0,
                 totalLength: _stepLast.TotalLength,
                 totalLengthReverse: 0,
                 order: _stepLast.Order + 1,
                 preStep: false,
                 isOpener: true));
-
             int intY = 1;
-            int _int_panel_Live_Step_Width = panel_snatch_Live_Steps.Width - 4;
+            int _int_panel_Live_Step_Width = panel_Live_Steps.Width - 4;
             int _int_progressBar_Step_Width_NoScroll = _int_panel_Live_Step_Width - 350;
             int _int_progressBar_Step_Width_Scroll = _int_progressBar_Step_Width_NoScroll - SystemInformation.VerticalScrollBarWidth;
             int _int_progressBar_Step_Height = 65;
@@ -1333,9 +1313,9 @@ namespace Weightlifting_Comp_Warmup.Main
             Point _point_progressBar_Step_Location = new(300, 6);
 
             SuspendLayout();
-            foreach (Step _step in snatchStepsLIVE)
+            foreach (Step _step in stepsLIVE)
             {
-                if (panel_snatch_Live_Steps.VerticalScroll.Visible)
+                if (panel_Live_Steps.VerticalScroll.Visible)
                 {
                     _int_progressBar_Step_Width = _int_progressBar_Step_Width_Scroll - _int_label_Weight_Width;
                 }
@@ -1349,7 +1329,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 {
                     Size = new Size(_int_panel_Live_Step_Width, 80),
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    BackColor = AppColors.Snatch_Live_BG,
+                    BackColor = color_Live_BG,
                     ForeColor = AppColors.Live_Default_FG,
                     Location = new Point(1, intY)
                 };
@@ -1396,7 +1376,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     Text = String.Empty,
                     BorderStyle = BorderStyle.FixedSingle,
                     AutoSize = false,
-                    Size = new Size(160, 30),
+                    Size = new Size(180, 30),
                     Location = _point_progressBar_Step_Location,
                     Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
                     Visible = false,
@@ -1429,8 +1409,7 @@ namespace Weightlifting_Comp_Warmup.Main
                         isOpener: false,
                         isCompCollars: _step.isOpener,
                         barWeight: profileActive.BarbellWeight,
-                        weight: (int)_step.Weight
-                    )
+                        weight: (int)_step.Weight)
                     {
                         Size = new Size(120, 65),
                         BackColor = Color.FromArgb(196, 196, 196),
@@ -1455,91 +1434,87 @@ namespace Weightlifting_Comp_Warmup.Main
                 _step.Controls.LabelTime = label_Time;
                 label_Progress_Time.BringToFront();
                 _step.Controls.LabelProgressTime = label_Progress_Time;
-                panel_snatch_Live_Steps.Controls.Add(panel_Live_Step);
+                panel_Live_Steps.Controls.Add(panel_Live_Step);
 
                 intY += 81;
             }
-            int_snatch_Warmup_Step = -1;
-            label_snatch_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
-            panel_snatch_Live_Times.Visible = true;
+            setWarmupStep(-1);
+            label_Live_CurrentTime.Text = DateTime.Now.ToString("HH:mm:ss");
+            panel_Live_Times.Visible = true;
             ResumeLayout();
         }
-        private void sim_timer_snatch_Live_Tick()
+        private (
+            Label label_Live_TimeTillOpener,
+            Label label_Live_OpenTime,
+            Action<bool> set_boolLive,
+            Func<List<Step>> getStepsLIVE,
+            int int_Warmup_Step,
+            Action<int> set_WarmupStep,
+            Color color_Live_BG,
+            Action stop_Live,
+            Label label_Live_CurrentTime
+            ) GetContext_LiveTick(LiftType liftType)
         {
-            DateTime _dateTime_Now = _now;
-            int intSecondsToStart = (int)datetime_snatch_Start.Subtract(_dateTime_Now).TotalSeconds + 1;
-            int intSecondsToOpen = 0;
-
-            if (intSecondsToStart > 0)
+            if (liftType == LiftType.Snatch)
             {
-                if ((int)button_snatch_Live_StageAdvance.Tag == 1)
-                {
-                    button_snatch_Live_StageAdvance.Tag = 0;
-                    button_snatch_Live_StageAdvance.BackColor = AppColors.Snatch_Live_BG;
-                }
-                label_snatch_Live_TimeTillStart.Text = Seconds_To_String(intSecondsToStart);
-                intSecondsToOpen = intSecondsToStart + (profileActive.Snatch_LiftsOut * profileActive.Snatch_SecondsStage);
-                bool_snatch_LiveLifting = false;
+                return (
+                    label_snatch_Live_TimeTillOpener,
+                    label_snatch_Live_OpenTime,
+                    (newBool) => { bool_snatch_Live = newBool; },
+                    () => snatchStepsLIVE,
+                    int_snatch_Warmup_Step,
+                    (newInt) => { int_snatch_Warmup_Step = newInt; },
+                    AppColors.snatch_Live_BG,
+                    snatch_Stop_Live,
+                    label_snatch_Live_CurrentTime
+                    );
             }
             else
             {
-                if (!bool_snatch_LiveLifting)
-                {
-                    if (profileActive.Snatch_LiftsOut > 0)
-                    {
-                        bool_snatch_LiveLifting = true;
-                        progressBar_snatch_Live_StageLift.Value = 0;
-                    }
-                    label_snatch_Live_TimeTillStart.Text = "passed";
-                }
-
-                if (profileActive.Snatch_LiftsOut > 0)
-                {
-                    if ((int)button_snatch_Live_StageAdvance.Tag == 0)
-                    {
-                        button_snatch_Live_StageAdvance.Tag = 1;
-                        button_snatch_Live_StageAdvance.BackColor = AppColors.AdvanceButton_Active;
-                    }
-                    progressBar_snatch_Live_StageLift.PerformStep();
-                    if (bool_snatch_AutoAdvance)
-                    {
-                        if (progressBar_snatch_Live_StageLift.Value == progressBar_snatch_Live_StageLift.Maximum)
-                        {
-                            snatch_Advance_StageLift();
-                        }
-                    }
-                    intSecondsToOpen += (profileActive.Snatch_LiftsOut - 1) * profileActive.Snatch_SecondsStage +
-                        progressBar_snatch_Live_StageLift.Maximum - progressBar_snatch_Live_StageLift.Value;
-                }
-                else
-                {
-                    if ((int)button_snatch_Live_StageAdvance.Tag == 1)
-                    {
-                        button_snatch_Live_StageAdvance.Tag = 0;
-                        button_snatch_Live_StageAdvance.BackColor = AppColors.Snatch_Live_BG;
-                    }
-                }
+                return (
+                    label_cj_Live_TimeTillOpener,
+                    label_cj_Live_OpenTime,
+                    (newBool) => { bool_cj_Live = newBool; },
+                    () => cjStepsLIVE,
+                    int_cj_Warmup_Step,
+                    (newInt) => { int_cj_Warmup_Step = newInt; },
+                    AppColors.cj_Live_BG,
+                    cj_Stop_Live,
+                    label_cj_Live_CurrentTime
+                    );
             }
-
-
+        }
+        private void TimerTickProcessing(LiftType liftType, int intSecondsToOpen, DateTime _dateTime_Now)
+        {
             TimeSpan _timeSpan_Open = TimeSpan.FromSeconds(intSecondsToOpen);
+            (
+                Label label_Live_TimeTillOpener,
+                Label label_Live_OpenTime,
+                Action<bool> set_boolLive,
+                Func<List<Step>> getstepsLIVE,
+                int int_Warmup_Step,
+                Action<int> set_WarmupStep,
+                Color color_Live_BG,
+                Action stop_Live,
+                Label label_Live_CurrentTime
+                ) = GetContext_LiveTick(liftType);
+            List<Step> stepsLIVE = getstepsLIVE();
             if (intSecondsToOpen > 0)
             {
-                label_snatch_Live_TimeTillOpener.Text = Seconds_To_String(intSecondsToOpen);
-                label_cj_Live_OpenTime.Text = _now.Add(_timeSpan_Open).ToString(@"HH\:mm\:ss");
+                label_Live_TimeTillOpener.Text = Seconds_To_String(intSecondsToOpen);
+                label_Live_OpenTime.Text = _dateTime_Now.Add(_timeSpan_Open).ToString(@"HH\:mm\:ss");
             }
             else
             {
-                label_snatch_Live_TimeTillOpener.Text = "-";
-                label_snatch_Live_OpenTime.Text = "passed";
-                bool_snatch_Live = false;
+                label_Live_TimeTillOpener.Text = "-";
+                label_Live_OpenTime.Text = "passed";
+                set_boolLive(false);
             }
 
             int _intStep = -1;
-            foreach (Step _step in snatchStepsLIVE)
+            foreach (Step _step in stepsLIVE)
             {
-                if (_step.TotalLengthReverse >= intSecondsToOpen &&
-                    _step.Order > _intStep)
+                if (_step.TotalLengthReverse >= intSecondsToOpen && _step.Order > _intStep)
                 {
                     _intStep = _step.Order;
                 }
@@ -1548,7 +1523,7 @@ namespace Weightlifting_Comp_Warmup.Main
             if (_intStep == -1) // adjust wait time
             {
                 int intTLR = 0;
-                foreach (Step _step in snatchStepsLIVE)
+                foreach (Step _step in stepsLIVE)
                 {
                     if (_step.Order == 1)
                     {
@@ -1559,7 +1534,7 @@ namespace Weightlifting_Comp_Warmup.Main
                 if (intTLR > 0 & intSecondsToOpen > intTLR)
                 {
                     int intSecToAdd = 0;
-                    foreach (Step _step in snatchStepsLIVE)
+                    foreach (Step _step in stepsLIVE)
                     {
                         if (_step.PreStep)
                         {
@@ -1574,7 +1549,7 @@ namespace Weightlifting_Comp_Warmup.Main
                     }
                     if (_intStep == 0 & intSecToAdd != 0)
                     {
-                        foreach (Step _step in snatchStepsLIVE)
+                        foreach (Step _step in stepsLIVE)
                         {
                             if (!_step.PreStep)
                             {
@@ -1590,9 +1565,9 @@ namespace Weightlifting_Comp_Warmup.Main
                 Label label_Action;
                 ProgressBar progressBar_Step;
                 Label label_Progress_Time;
-                bool bool_UpdateStepHighlights = (_intStep != int_snatch_Warmup_Step);
+                bool bool_UpdateStepHighlights = (_intStep != int_Warmup_Step);
 
-                foreach (Step _step in snatchStepsLIVE)
+                foreach (Step _step in stepsLIVE)
                 {
                     int _int_Order = _step.Order;
                     Label label_Time = _step.Controls.LabelTime;
@@ -1605,10 +1580,9 @@ namespace Weightlifting_Comp_Warmup.Main
                     {
                         label_Time.Visible = false;
                     }
-                    Panel panel_Live_Step;
                     if (_int_Order == _intStep)
                     {
-                        panel_Live_Step = _step.Controls.PanelLiveStep;
+                        Panel _panel_Live_Step = _step.Controls.PanelLiveStep;
                         label_Progress_Time = _step.Controls.LabelProgressTime;
                         progressBar_Step = _step.Controls.ProgressBarStep;
 
@@ -1626,28 +1600,26 @@ namespace Weightlifting_Comp_Warmup.Main
 
                         if (bool_UpdateStepHighlights)
                         {
-                            panel_Live_Step.BackColor = AppColors.Live_Highlight_BG;
-                            panel_Live_Step.ForeColor = AppColors.Live_Highlight_FG;
+                            _panel_Live_Step.BackColor = AppColors.Live_Highlight_BG;
+                            _panel_Live_Step.ForeColor = AppColors.Live_Highlight_FG;
                         }
                     }
                     else if (bool_UpdateStepHighlights)
                     {
-                        panel_Live_Step = _step.Controls.PanelLiveStep;
-                        panel_Live_Step.BackColor = AppColors.Snatch_Live_BG;
-                        panel_Live_Step.ForeColor = AppColors.Live_Default_FG;
+                        Panel _panel_Live_Step = _step.Controls.PanelLiveStep;
+                        _panel_Live_Step.BackColor = color_Live_BG;
+                        _panel_Live_Step.ForeColor = AppColors.Live_Default_FG;
                         label_Progress_Time = _step.Controls.LabelProgressTime;
                         label_Progress_Time.Visible = false;
                         progressBar_Step = _step.Controls.ProgressBarStep;
-                        label_Action = _step.Controls.LabelAction;
                         bool _isFuture = (_int_Order >= _intStep);
-                        string strActionText = ActionTextString(_step: _step, _isFuture: _isFuture);
-                        bool boolIsLift = (_step.Weight > 0);
                         progressBar_Step.Value = (_isFuture ? 0 : progressBar_Step.Maximum);
-
-                        label_Action.Text = strActionText;
+                        label_Action = _step.Controls.LabelAction;
+                        label_Action.Text = ActionTextString(_step: _step, _isFuture: _isFuture);
                     }
                 }
-                int_snatch_Warmup_Step = _intStep;
+                set_WarmupStep(_intStep);
+                int_Warmup_Step = _intStep;
                 if (bool_UpdateStepHighlights & profileActive.Beep)
                 {
                     Console.Beep(750, 600);
@@ -1655,10 +1627,277 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             else
             {
-                snatch_Stop_Live();
+                stop_Live();
             }
 
-            label_snatch_Live_CurrentTime.Text = _dateTime_Now.ToString("HH:mm:ss");
+            label_Live_CurrentTime.Text = _dateTime_Now.ToString("HH:mm:ss");
+        }
+        private void TimerTickProcessing_Variant(LiftType liftType, out int intSecondsToOpen, out DateTime _dateTime_Now)
+        {
+            _dateTime_Now = _now;
+            intSecondsToOpen = 0;
+            if (liftType == LiftType.Snatch)
+            {
+                int intSecondsToStart = (int)datetime_snatch_Start.Subtract(_dateTime_Now).TotalSeconds + 1;
+
+                if (intSecondsToStart > 0)
+                {
+                    if ((int)button_snatch_Live_StageAdvance.Tag == 1)
+                    {
+                        button_snatch_Live_StageAdvance.Tag = 0;
+                        button_snatch_Live_StageAdvance.BackColor = AppColors.snatch_Live_BG;
+                    }
+                    label_snatch_Live_TimeTillStart.Text = Seconds_To_String(intSecondsToStart);
+                    intSecondsToOpen = intSecondsToStart + (profileActive.snatch_LiftsOut * profileActive.snatch_SecondsStage);
+                    bool_snatch_LiveLifting = false;
+                }
+                else
+                {
+                    if (!bool_snatch_LiveLifting)
+                    {
+                        if (profileActive.snatch_LiftsOut > 0)
+                        {
+                            bool_snatch_LiveLifting = true;
+                            progressBar_snatch_Live_StageLift.Value = 0;
+                        }
+                        label_snatch_Live_TimeTillStart.Text = "passed";
+                    }
+
+                    SetAdvanceButtonState(button: button_snatch_Live_StageAdvance, isActive: profileActive.snatch_LiftsOut > 0, defaultColor: AppColors.snatch_Live_BG);
+                    if (profileActive.snatch_LiftsOut > 0)
+                    {
+                        progressBar_snatch_Live_StageLift.PerformStep();
+                        if (bool_snatch_AutoAdvance)
+                        {
+                            if (progressBar_snatch_Live_StageLift.Value == progressBar_snatch_Live_StageLift.Maximum)
+                            {
+                                snatch_Advance_StageLift();
+                            }
+                        }
+                        intSecondsToOpen += (profileActive.snatch_LiftsOut - 1) * profileActive.snatch_SecondsStage +
+                            progressBar_snatch_Live_StageLift.Maximum - progressBar_snatch_Live_StageLift.Value;
+                    }
+                }
+            }
+            else
+            {
+                if (bool_cj_SnStillLifting) // snatches still running
+                {
+                    if (profileActive.cj_SnatchLifts_Out == 0)
+                    {
+                        bool_cj_SnStillLifting = false;
+                        bool_cj_BreakRunning = true;
+                        progressBar_cj_Live_Break.Value = 0;
+                        bool_cj_LiveLifting = false;
+                    }
+                    else
+                    {
+                        progressBar_cj_Live_sn.PerformStep();
+                        if (bool_cj_AutoAdvance)
+                        {
+                            if (progressBar_cj_Live_sn.Value == progressBar_cj_Live_sn.Maximum)
+                            {
+                                cj_Advance_snLift();
+                            }
+                        }
+
+                        if (profileActive.cj_SnatchLifts_Out == 0)
+                        {
+                            bool_cj_SnStillLifting = false;
+                            progressBar_cj_Live_Break.Value = 0;
+                            bool_cj_BreakRunning = true;
+                        }
+                        else
+                        {
+                            bool_cj_BreakRunning = false;
+                        }
+                        bool_cj_LiveLifting = false;
+                    }
+                }
+                else if (profileActive.cj_SnatchLifts_Out > 0)
+                {
+                    bool_cj_SnStillLifting = true;
+                    progressBar_cj_Live_Break.Value = 0;
+                    bool_cj_BreakRunning = false;
+                    bool_cj_LiveLifting = false;
+                }
+
+                if (bool_cj_BreakRunning) // break is running
+                {
+                    progressBar_cj_Live_Break.PerformStep();
+                    if (progressBar_cj_Live_Break.Value == progressBar_cj_Live_Break.Maximum)
+                    {
+                        bool_cj_BreakRunning = false;
+                        progressBar_cj_Live_StageLift.Value = 0;
+                        label_cj_Live_Break.Text = String.Empty;
+                        bool_cj_LiveLifting = true;
+                    }
+                    else
+                    {
+                        bool_cj_LiveLifting = false;
+                        label_cj_Live_Break.Text = Seconds_To_String(progressBar_cj_Live_Break.Maximum - progressBar_cj_Live_Break.Value);
+                    }
+                }
+                else if (!bool_cj_SnStillLifting)
+                {
+                    if (progressBar_cj_Live_Break.Value < progressBar_cj_Live_Break.Maximum)
+                    {
+                        bool_cj_BreakRunning = true;
+                        progressBar_cj_Live_StageLift.Value = 0;
+                        label_cj_Live_Break.Text = Seconds_To_String(0);
+                        bool_cj_LiveLifting = false;
+                    }
+                }
+                else
+                {
+                    label_cj_Live_Break.Text = String.Empty;
+                }
+
+                if (bool_cj_LiveLifting) // stage lifts are going
+                {
+                    progressBar_cj_Live_StageLift.PerformStep();
+                    if (progressBar_cj_Live_StageLift.Value == progressBar_cj_Live_StageLift.Maximum)
+                    {
+                        if (bool_cj_AutoAdvance | profileActive.cj_LiftsOut == 1)
+                        {
+                            cj_Advance_StageLift();
+                        }
+                    }
+
+                    if (profileActive.cj_LiftsOut == 0)
+                    {
+                        bool_cj_LiveLifting = false;
+                    }
+                }
+                else if (!bool_cj_SnStillLifting & !bool_cj_BreakRunning)
+                {
+                    if (profileActive.cj_LiftsOut > 0)
+                    {
+                        if (progressBar_cj_Live_StageLift.Value < progressBar_cj_Live_StageLift.Maximum)
+                        {
+                            bool_cj_LiveLifting = true;
+                            progressBar_cj_Live_StageLift.Value = 0;
+                        }
+                    }
+                }
+
+
+                SetAdvanceButtonState(button: button_cj_Live_snStageAdvance, isActive: bool_cj_SnStillLifting, defaultColor: AppColors.cj_Live_BG);
+                SetAdvanceButtonState(button: button_cj_Live_StageAdvance, isActive: bool_cj_LiveLifting, defaultColor: AppColors.cj_Live_BG);
+
+                if (bool_cj_SnStillLifting | bool_cj_BreakRunning | bool_cj_LiveLifting)
+                {
+                    intSecondsToOpen = (profileActive.cj_LiftsOut - 1) * profileActive.cj_SecondsStage +
+                        progressBar_cj_Live_StageLift.Maximum - progressBar_cj_Live_StageLift.Value;
+                }
+
+                if (bool_cj_SnStillLifting | bool_cj_BreakRunning)
+                {
+                    intSecondsToOpen += progressBar_cj_Live_Break.Maximum - progressBar_cj_Live_Break.Value;
+                }
+
+                if (bool_cj_SnStillLifting) // snatches still running
+                {
+                    intSecondsToOpen += (profileActive.cj_SnatchLifts_Out - 1) * profileActive.snatch_SecondsStage +
+                        progressBar_cj_Live_sn.Maximum - progressBar_cj_Live_sn.Value;
+                }
+            }
+        }
+        private void SetAdvanceButtonState(Button button, bool isActive, Color defaultColor)
+        {
+            int requiredTag = isActive ? 1 : 0;
+            if ((int)button.Tag != requiredTag)
+            {
+                button.Tag = requiredTag;
+                button.BackColor = isActive ? AppColors.AdvanceButton_Active : defaultColor;
+            }
+        }
+        #endregion
+
+        #region snatch LIVE
+        private void stopSnatchTimer()
+        {
+            if (timer_snatch_Live != null)
+            {
+                timer_snatch_Live.Stop();
+                timer_snatch_Live.Dispose();
+                timer_snatch_Live = null;
+            }
+            stopBatteryTimer();
+        }
+        private void snatch_Stop_Live()
+        {
+            bool_snatch_Live = false;
+            stopSnatchTimer();
+            textBox_snatch_Live_LiftsOut.Visible = false;
+            label_snatch_Live_TimeTillStart.Text = String.Empty;
+            label_snatch_Live_TimeTillOpener.Text = String.Empty;
+            label_snatch_Live_LiftsPassed.Text = String.Empty;
+            Clear_snatch_Live_Steps();
+            progressBar_snatch_Live_StageLift.Value = 0;
+            button_snatch_Live_StageAdvance.BackColor = AppColors.snatch_Live_BG;
+            button_snatch_Live_StageAdvance.Tag = 0;
+            bool_snatch_LiveLifting = false;
+            button_snatch_Live_StartStop.Text = "start";
+            panel_snatch_Live_Times.Visible = false;
+            panel_Battery.Visible = false;
+            if (!bool_cj_Live) { AllowMonitorPowerdown(); }
+        }
+        private void snatch_Start_Live()
+        {
+            bool_snatch_Live = true;
+            datetime_snatch_Start = DateTime.Today.AddHours(dateTimePicker_snatch_Start.Value.Hour).AddMinutes(dateTimePicker_snatch_Start.Value.Minute);
+            int_snatch_Lifts_Passed = 0;
+            textBox_snatch_Live_LiftsOut.Visible = false;
+            label_snatch_Live_LiftsPassed.Text = "0";
+            Populate_snatch_Live_Steps();
+            progressBar_snatch_Live_StageLift.Value = 0;
+            progressBar_snatch_Live_StageLift.Maximum = profileActive.snatch_SecondsStage;
+            label_snatch_Live_TimeTillStart.Text = String.Empty;
+            label_snatch_Live_TimeTillOpener.Text = String.Empty;
+
+            // Run one tick immediately to populate UI without waiting
+            sim_timer_snatch_Live_Tick();
+            timer_snatch_Live = new Timer();
+            timer_snatch_Live.Tick += (s, e) => timer_Live_Tick(s, e, LiftType.Snatch);
+            timer_snatch_Live.Interval = timerInterval;
+            timer_snatch_Live.Start();
+            timer_Battery = new Timer();
+            timer_Battery.Tick += (s, e) => timer_Battery_Tick(s, e);
+            timer_Battery.Interval = 60000;
+            timer_Battery.Start();
+
+            UpdateBattery();
+            button_snatch_Live_StartStop.Text = "stop";
+            button_snatch_Live_StageAdvance.Select();
+            PreventMonitorPowerdown();
+        }
+        private void sim_timer_snatch_Live_Tick()
+        {
+            TimerTickProcessing_Variant(liftType: LiftType.Snatch, intSecondsToOpen: out int intSecondsToOpen, _dateTime_Now: out DateTime _dateTime_Now);
+            TimerTickProcessing(liftType: LiftType.Snatch, intSecondsToOpen: intSecondsToOpen, _dateTime_Now: _dateTime_Now);
+        }
+        private void button_snatch_Live_StartStop_Click()
+        {
+            if (bool_snatch_Live)
+            {
+                snatch_Stop_Live();
+            }
+            else
+            {
+                snatch_Start_Live();
+            }
+        }
+        private void Clear_snatch_Live_Steps()
+        {
+            snatchStepsLIVE = null;
+            panel_snatch_Live_Steps.Controls.Clear();
+        }
+        private void Populate_snatch_Live_Steps()
+        {
+            Clear_snatch_Live_Steps();
+            Populate_Live_Steps(liftType: LiftType.Snatch);
+
         }
         private void progressBar_snatch_Live_StageLift_MouseClick(MouseEventArgs e)
         {
@@ -1673,11 +1912,11 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_snatch_Live_LiftsDecr_Click()
         {
-            if (profileActive.Snatch_LiftsOut > 0)
+            if (profileActive.snatch_LiftsOut > 0)
             {
-                profileActive.Snatch_LiftsOut--;
-                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
-                if (profileActive.Snatch_LiftsOut == 0)
+                profileActive.snatch_LiftsOut--;
+                label_snatch_Live_LiftsOut.Text = profileActive.snatch_LiftsOut.ToString();
+                if (profileActive.snatch_LiftsOut == 0)
                 {
                     if (bool_snatch_LiveLifting)
                     {
@@ -1689,15 +1928,15 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_snatch_Live_LiftsIncr_Click()
         {
-            if (profileActive.Snatch_LiftsOut < 99)
+            if (profileActive.snatch_LiftsOut < 99)
             {
-                profileActive.Snatch_LiftsOut++;
-                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
+                profileActive.snatch_LiftsOut++;
+                label_snatch_Live_LiftsOut.Text = profileActive.snatch_LiftsOut.ToString();
             }
         }
         private void button_snatch_Live_StageAdvance_Click()
         {
-            if (profileActive.Snatch_LiftsOut >= 0 & bool_snatch_LiveLifting)
+            if (profileActive.snatch_LiftsOut >= 0 & bool_snatch_LiveLifting)
             {
                 snatch_Advance_StageLift();
             }
@@ -1711,7 +1950,7 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_Loading = true;
             textBox_snatch_Live_LiftsOut.Location = label_snatch_Live_LiftsOut.Location;
             textBox_snatch_Live_LiftsOut.Size = label_snatch_Live_LiftsOut.Size;
-            textBox_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
+            textBox_snatch_Live_LiftsOut.Text = profileActive.snatch_LiftsOut.ToString();
             textBox_snatch_Live_LiftsOut.Visible = true;
             textBox_snatch_Live_LiftsOut.BringToFront();
             textBox_snatch_Live_LiftsOut.Select();
@@ -1724,10 +1963,10 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_snatch_Lifts_Out) &&
                 _int_snatch_Lifts_Out >= 0 &&
                 _int_snatch_Lifts_Out < 100 &&
-                profileActive.Snatch_LiftsOut != _int_snatch_Lifts_Out)
+                profileActive.snatch_LiftsOut != _int_snatch_Lifts_Out)
             {
-                profileActive.Snatch_LiftsOut = _int_snatch_Lifts_Out;
-                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
+                profileActive.snatch_LiftsOut = _int_snatch_Lifts_Out;
+                label_snatch_Live_LiftsOut.Text = profileActive.snatch_LiftsOut.ToString();
             }
         }
         private void textBox_snatch_Live_LiftsOut_Leave()
@@ -1737,19 +1976,19 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_snatch_Lifts_Out) &&
                 _int_snatch_Lifts_Out >= 0 &&
                 _int_snatch_Lifts_Out < 100 &&
-                profileActive.Snatch_LiftsOut != _int_snatch_Lifts_Out)
+                profileActive.snatch_LiftsOut != _int_snatch_Lifts_Out)
             {
-                profileActive.Snatch_LiftsOut = _int_snatch_Lifts_Out;
-                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
+                profileActive.snatch_LiftsOut = _int_snatch_Lifts_Out;
+                label_snatch_Live_LiftsOut.Text = profileActive.snatch_LiftsOut.ToString();
             }
             textBox_snatch_Live_LiftsOut.Visible = false;
         }
         private void snatch_Advance_StageLift()
         {
-            if (profileActive.Snatch_LiftsOut > 0)
+            if (profileActive.snatch_LiftsOut > 0)
             {
-                profileActive.Snatch_LiftsOut--;
-                label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
+                profileActive.snatch_LiftsOut--;
+                label_snatch_Live_LiftsOut.Text = profileActive.snatch_LiftsOut.ToString();
                 if (bool_snatch_Live && datetime_snatch_Start < DateTime.Now)
                 {
                     int_snatch_Lifts_Passed++;
@@ -1816,9 +2055,9 @@ namespace Weightlifting_Comp_Warmup.Main
             progressBar_cj_Live_sn.Value = 0;
             progressBar_cj_Live_Break.Value = 0;
             label_cj_Live_Break.Text = String.Empty;
-            button_cj_Live_StageAdvance.BackColor = AppColors.Cj_Live_BG;
+            button_cj_Live_StageAdvance.BackColor = AppColors.cj_Live_BG;
             button_cj_Live_StageAdvance.Tag = 0;
-            button_cj_Live_snStageAdvance.BackColor = AppColors.Cj_Live_BG;
+            button_cj_Live_snStageAdvance.BackColor = AppColors.cj_Live_BG;
             button_cj_Live_snStageAdvance.Tag = 0;
             bool_cj_LiveLifting = false;
             bool_cj_BreakRunning = false;
@@ -1838,11 +2077,11 @@ namespace Weightlifting_Comp_Warmup.Main
             label_cj_Live_LiftsPassed.Text = "0";
             Populate_cj_Live_Steps();
             progressBar_cj_Live_StageLift.Value = 0;
-            progressBar_cj_Live_StageLift.Maximum = profileActive.CJ_SecondsStage;
+            progressBar_cj_Live_StageLift.Maximum = profileActive.cj_SecondsStage;
             progressBar_cj_Live_sn.Value = 0;
-            progressBar_cj_Live_sn.Maximum = profileActive.Snatch_SecondsStage;
+            progressBar_cj_Live_sn.Maximum = profileActive.snatch_SecondsStage;
             progressBar_cj_Live_Break.Value = 0;
-            progressBar_cj_Live_Break.Maximum = profileActive.CJ_SecondsBreak;
+            progressBar_cj_Live_Break.Maximum = profileActive.cj_SecondsBreak;
             label_cj_Live_Break.Text = String.Empty;
             label_cj_Live_TimeTillOpener.Text = String.Empty;
 
@@ -1861,6 +2100,11 @@ namespace Weightlifting_Comp_Warmup.Main
             button_cj_Live_StartStop.Text = "stop";
             button_cj_Live_StageAdvance.Select();
             PreventMonitorPowerdown();
+        }
+        private void sim_timer_cj_Live_Tick()
+        {
+            TimerTickProcessing_Variant(liftType: LiftType.CleanAndJerk, intSecondsToOpen: out int intSecondsToOpen, _dateTime_Now: out DateTime _dateTime_Now);
+            TimerTickProcessing(liftType: LiftType.CleanAndJerk, intSecondsToOpen: intSecondsToOpen, _dateTime_Now: _dateTime_Now);
         }
         private void button_cj_Live_StartStop_Click()
         {
@@ -1881,450 +2125,8 @@ namespace Weightlifting_Comp_Warmup.Main
         private void Populate_cj_Live_Steps()
         {
             Clear_cj_Live_Steps();
+            Populate_Live_Steps(liftType: LiftType.CleanAndJerk);
 
-            if (cjStepsPLAN is null)
-            {
-                PopulateSteps(LiftType.CleanAndJerk);
-            }
-            if (cjStepsPLAN is null)
-            {
-                MessageBox.Show("An error has occurred. Step plan could not be determined.");
-                this.Close();
-                return;
-            }
-            cjStepsLIVE = [.. cjStepsPLAN.Select(r => r.Clone())];
-
-            int intY = 1;
-            int _int_panel_Live_Step_Width = panel_cj_Live_Steps.Width - 4;
-            int _int_progressBar_Step_Width_NoScroll = _int_panel_Live_Step_Width - 350;
-            int _int_progressBar_Step_Width_Scroll = _int_progressBar_Step_Width_NoScroll - SystemInformation.VerticalScrollBarWidth;
-            int _int_progressBar_Step_Width;
-            Point _point_progressBar_Step_Location = new(300, 6);
-
-            SuspendLayout();
-            foreach (Step _step in cjStepsLIVE)
-            {
-                if (panel_cj_Live_Steps.VerticalScroll.Visible)
-                {
-                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_Scroll;
-                }
-                else
-                {
-                    _int_progressBar_Step_Width = _int_progressBar_Step_Width_NoScroll;
-                }
-                string strActionText = ActionTextString(_step: _step, _isFuture: true);
-                Panel panel_Live_Step = new()
-                {
-                    Size = new Size(_int_panel_Live_Step_Width, 80),
-                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    BackColor = AppColors.Cj_Live_BG,
-                    ForeColor = AppColors.Live_Default_FG,
-                    Location = new Point(1, intY)
-                };
-                Label label_Action = new()
-                {
-                    Text = strActionText,
-                    AutoSize = false,
-                    Size = new Size(280, 75),
-                    TextAlign = ContentAlignment.TopRight,
-                    Location = new Point(6, 1)
-                };
-                ProgressBar progressBar_Step = new()
-                {
-                    Size = new Size(_int_progressBar_Step_Width, 65),
-                    Location = _point_progressBar_Step_Location,
-                    Maximum = _step.Length,
-                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                };
-                if (progressBar_Step.Maximum == 0)
-                {
-                    progressBar_Step.Maximum = 1;
-                    progressBar_Step.Value = 1;
-                }
-                Label label_Weight = null;
-                bool boolIsLift = ((_step.Weight ?? 0) > 0);
-                if (boolIsLift)
-                {
-                    label_Weight = new Label
-                    {
-                        BorderStyle = BorderStyle.FixedSingle,
-                        BackColor = Color.Black,
-                        AutoSize = false,
-                        Size = new Size(105, 30),
-                        Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
-                        ForeColor = SystemColors.Window,
-                        Text = $"{(_step.isOpener ? "open at" : "lift")} {_step.Weight}",
-                        TextAlign = ContentAlignment.MiddleCenter,
-                        Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    };
-                    label_Weight.Text = "lift " + _step.Weight.ToString();
-                    label_Action.Font = new Font("Gadugi", 14.0F, FontStyle.Regular);
-                    label_Weight.Font = new Font("Gadugi", 18.0F, FontStyle.Bold);
-                }
-                Label label_Time = new()
-                {
-                    Text = String.Empty,
-                    BorderStyle = BorderStyle.FixedSingle,
-                    AutoSize = false,
-                    Size = new Size(120, 30),
-                    Location = _point_progressBar_Step_Location,
-                    Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
-                    Visible = false,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Anchor = AnchorStyles.Top | AnchorStyles.Left,
-                };
-                Label label_Progress_Time = new()
-                {
-                    Text = String.Empty,
-                    BorderStyle = BorderStyle.FixedSingle,
-                    AutoSize = false,
-                    Size = new Size(105, 30),
-                    Location = new Point(_point_progressBar_Step_Location.X + _int_progressBar_Step_Width - 105, 6),
-                    Font = new Font("Gadugi", 18.0F, FontStyle.Bold),
-                    Visible = false,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                };
-                panel_Live_Step.Controls.AddRange(
-                [
-                    label_Action,
-                    progressBar_Step,
-                    label_Progress_Time,
-                    label_Time
-                ]);
-                WeightBox weightBoxGraphic = null;
-                if (boolIsLift)
-                {
-                    weightBoxGraphic = new(
-                        isOpener: false,
-                        isCompCollars: _step.isOpener,
-                        barWeight: profileActive.BarbellWeight,
-                        weight: _step.Weight ?? 0)
-                    {
-                        Size = new Size(120, 65),
-                        BackColor = Color.FromArgb(196, 196, 196),
-                        BorderStyle = BorderStyle.Fixed3D,
-                        Location = new Point(10, 6),
-                        Visible = true
-                    };
-                    panel_Live_Step.Controls.Add(weightBoxGraphic);
-                }
-                progressBar_Step.BringToFront();
-                _step.Controls.PanelLiveStep = panel_Live_Step;
-                _step.Controls.LabelAction = label_Action;
-                _step.Controls.ProgressBarStep = progressBar_Step;
-                weightBoxGraphic?.BringToFront();
-                if (label_Weight != null)
-                {
-                    panel_Live_Step.Controls.Add(label_Weight);
-                    _step.Controls.LabelWeight = label_Weight;
-                    label_Weight.BringToFront();
-                }
-                label_Time.BringToFront();
-                _step.Controls.LabelTime = label_Time;
-                label_Progress_Time.BringToFront();
-                _step.Controls.LabelProgressTime = label_Progress_Time;
-                panel_cj_Live_Steps.Controls.Add(panel_Live_Step);
-
-                intY += 81;
-            }
-            int_cj_Warmup_Step = -1;
-            label_cj_Live_CurrentTime.Text = _now.ToString("HH:mm:ss");
-            panel_cj_Live_Times.Visible = true;
-            ResumeLayout();
-        }
-        private void sim_timer_cj_Live_Tick()
-        {
-            int intSecondsToOpen = 0;
-
-            if (bool_cj_SnStillLifting) // snatches still running
-            {
-                if (profileActive.CJ_SnatchLifts_Out == 0)
-                {
-                    bool_cj_SnStillLifting = false;
-                    bool_cj_BreakRunning = true;
-                    progressBar_cj_Live_Break.Value = 0;
-                    bool_cj_LiveLifting = false;
-                }
-                else
-                {
-                    progressBar_cj_Live_sn.PerformStep();
-                    if (bool_cj_AutoAdvance)
-                    {
-                        if (progressBar_cj_Live_sn.Value == progressBar_cj_Live_sn.Maximum)
-                        {
-                            cj_Advance_snLift();
-                        }
-                    }
-
-                    if (profileActive.CJ_SnatchLifts_Out == 0)
-                    {
-                        bool_cj_SnStillLifting = false;
-                        progressBar_cj_Live_Break.Value = 0;
-                        bool_cj_BreakRunning = true;
-                    }
-                    else
-                    {
-                        bool_cj_BreakRunning = false;
-                    }
-                    bool_cj_LiveLifting = false;
-                }
-            }
-            else if (profileActive.CJ_SnatchLifts_Out > 0)
-            {
-                bool_cj_SnStillLifting = true;
-                progressBar_cj_Live_Break.Value = 0;
-                bool_cj_BreakRunning = false;
-                bool_cj_LiveLifting = false;
-            }
-
-            if (bool_cj_BreakRunning) // break is running
-            {
-                progressBar_cj_Live_Break.PerformStep();
-                if (progressBar_cj_Live_Break.Value == progressBar_cj_Live_Break.Maximum)
-                {
-                    bool_cj_BreakRunning = false;
-                    progressBar_cj_Live_StageLift.Value = 0;
-                    label_cj_Live_Break.Text = String.Empty;
-                    bool_cj_LiveLifting = true;
-                }
-                else
-                {
-                    bool_cj_LiveLifting = false;
-                    label_cj_Live_Break.Text = Seconds_To_String(progressBar_cj_Live_Break.Maximum - progressBar_cj_Live_Break.Value);
-                }
-            }
-            else if (!bool_cj_SnStillLifting)
-            {
-                if (progressBar_cj_Live_Break.Value < progressBar_cj_Live_Break.Maximum)
-                {
-                    bool_cj_BreakRunning = true;
-                    progressBar_cj_Live_StageLift.Value = 0;
-                    label_cj_Live_Break.Text = Seconds_To_String(0);
-                    bool_cj_LiveLifting = false;
-                }
-            }
-            else
-            {
-                label_cj_Live_Break.Text = String.Empty;
-            }
-
-            if (bool_cj_LiveLifting) // stage lifts are going
-            {
-                progressBar_cj_Live_StageLift.PerformStep();
-                if (progressBar_cj_Live_StageLift.Value == progressBar_cj_Live_StageLift.Maximum)
-                {
-                    if (bool_cj_AutoAdvance | profileActive.CJ_LiftsOut == 1)
-                    {
-                        cj_Advance_StageLift();
-                    }
-                }
-
-                if (profileActive.CJ_LiftsOut == 0)
-                {
-                    bool_cj_LiveLifting = false;
-                }
-            }
-            else if (!bool_cj_SnStillLifting & !bool_cj_BreakRunning)
-            {
-                if (profileActive.CJ_LiftsOut > 0)
-                {
-                    if (progressBar_cj_Live_StageLift.Value < progressBar_cj_Live_StageLift.Maximum)
-                    {
-                        bool_cj_LiveLifting = true;
-                        progressBar_cj_Live_StageLift.Value = 0;
-                    }
-                }
-            }
-
-
-            if (bool_cj_SnStillLifting)
-            {
-                if ((int)button_cj_Live_snStageAdvance.Tag == 0)
-                {
-                    button_cj_Live_snStageAdvance.Tag = 1;
-                    button_cj_Live_snStageAdvance.BackColor = AppColors.AdvanceButton_Active;
-                }
-            }
-            else
-            {
-                if ((int)button_cj_Live_snStageAdvance.Tag == 1)
-                {
-                    button_cj_Live_snStageAdvance.Tag = 0;
-                    button_cj_Live_snStageAdvance.BackColor = AppColors.Cj_Live_BG;
-                }
-            }
-
-            if (bool_cj_LiveLifting)
-            {
-                if ((int)button_cj_Live_StageAdvance.Tag == 0)
-                {
-                    button_cj_Live_StageAdvance.Tag = 1;
-                    button_cj_Live_StageAdvance.BackColor = AppColors.AdvanceButton_Active;
-                }
-            }
-            else
-            {
-                if ((int)button_cj_Live_StageAdvance.Tag == 1)
-                {
-                    button_cj_Live_StageAdvance.Tag = 0;
-                    button_cj_Live_StageAdvance.BackColor = AppColors.Cj_Live_BG;
-                }
-            }
-
-
-            if (bool_cj_SnStillLifting | bool_cj_BreakRunning | bool_cj_LiveLifting)
-            {
-                intSecondsToOpen = (profileActive.CJ_LiftsOut - 1) * profileActive.CJ_SecondsStage +
-                    progressBar_cj_Live_StageLift.Maximum - progressBar_cj_Live_StageLift.Value;
-            }
-
-            if (bool_cj_SnStillLifting | bool_cj_BreakRunning)
-            {
-                intSecondsToOpen += progressBar_cj_Live_Break.Maximum - progressBar_cj_Live_Break.Value;
-            }
-
-            if (bool_cj_SnStillLifting) // snatches still running
-            {
-                intSecondsToOpen += (profileActive.CJ_SnatchLifts_Out - 1) * profileActive.Snatch_SecondsStage +
-                    progressBar_cj_Live_sn.Maximum - progressBar_cj_Live_sn.Value;
-            }
-
-
-            TimeSpan _timeSpan_Open = TimeSpan.FromSeconds(intSecondsToOpen);
-            if (intSecondsToOpen > 0)
-            {
-                label_cj_Live_TimeTillOpener.Text = Seconds_To_String(intSecondsToOpen);
-                label_cj_Live_OpenTime.Text = _now.Add(_timeSpan_Open).ToString(@"HH\:mm\:ss");
-            }
-            else
-            {
-                label_cj_Live_TimeTillOpener.Text = "-";
-                label_cj_Live_OpenTime.Text = "passed";
-                bool_cj_Live = false;
-            }
-
-            int _intStep = -1;
-            foreach (Step _step in cjStepsLIVE)
-            {
-                if (_step.TotalLengthReverse >= intSecondsToOpen && _step.Order > _intStep)
-                {
-                    _intStep = _step.Order;
-                }
-            }
-
-            if (_intStep == -1) // adjust wait time
-            {
-                int intTLR = 0;
-                foreach (Step _step in cjStepsLIVE)
-                {
-                    if (_step.Order == 1)
-                    {
-                        intTLR = _step.TotalLengthReverse;
-                        break;
-                    }
-                }
-                if (intTLR > 0 & intSecondsToOpen > intTLR)
-                {
-                    int intSecToAdd = 0;
-                    foreach (Step _step in cjStepsLIVE)
-                    {
-                        if (_step.PreStep)
-                        {
-                            intSecToAdd = (intSecondsToOpen - intTLR) - _step.Length;
-                            _step.Length = intSecondsToOpen - intTLR;
-                            _step.Controls.ProgressBarStep.Maximum = intSecondsToOpen - intTLR;
-                            _step.TotalLength = intSecondsToOpen - intTLR;
-                            _step.TotalLengthReverse = intSecondsToOpen;
-                            _intStep = 0;
-                            break;
-                        }
-                    }
-                    if (_intStep == 0 & intSecToAdd != 0)
-                    {
-                        foreach (Step _step in cjStepsLIVE)
-                        {
-                            if (!_step.PreStep)
-                            {
-                                _step.TotalLength += intSecToAdd;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (_intStep > -1)
-            {
-                Label label_Action;
-                ProgressBar progressBar_Step;
-                Label label_Progress_Time;
-                bool bool_UpdateStepHighlights = (_intStep != int_cj_Warmup_Step);
-
-                foreach (Step _step in cjStepsLIVE)
-                {
-                    int _int_Order = _step.Order;
-                    Label label_Time = _step.Controls.LabelTime;
-                    if (_int_Order > _intStep)
-                    {
-                        label_Time.Visible = true;
-                        label_Time.Text = $"in {Seconds_To_String((int)_timeSpan_Open.Add(TimeSpan.FromSeconds(-_step.TotalLengthReverse)).TotalSeconds)}";
-                    }
-                    else
-                    {
-                        label_Time.Visible = false;
-                    }
-                    if (_int_Order == _intStep)
-                    {
-                        Panel _panel_Live_Step = _step.Controls.PanelLiveStep;
-                        label_Progress_Time = _step.Controls.LabelProgressTime;
-                        progressBar_Step = _step.Controls.ProgressBarStep;
-
-                        int intStepLength = _step.Length;
-                        int intSecIntoStep = _step.TotalLengthReverse - intSecondsToOpen;
-                        label_Progress_Time.Text = Seconds_To_String(_int_Seconds: intStepLength - intSecIntoStep, _bool_ShortString: true);
-                        progressBar_Step.Value = intSecIntoStep;
-
-                        if (bool_UpdateStepHighlights)
-                        {
-                            string strActionText = ActionTextString(_step: _step, _isFuture: false);
-                            label_Action = _step.Controls.LabelAction;
-                            label_Action.Text = strActionText;
-                            label_Progress_Time.Visible = true;
-                        }
-
-                        if (bool_UpdateStepHighlights)
-                        {
-                            _panel_Live_Step.BackColor = AppColors.Live_Highlight_BG;
-                            _panel_Live_Step.ForeColor = AppColors.Live_Highlight_FG;
-                        }
-                    }
-                    else if (bool_UpdateStepHighlights)
-                    {
-                        Panel _panel_Live_Step = _step.Controls.PanelLiveStep;
-                        _panel_Live_Step.BackColor = AppColors.Cj_Live_BG;
-                        _panel_Live_Step.ForeColor = AppColors.Live_Default_FG;
-                        label_Progress_Time = _step.Controls.LabelProgressTime;
-                        label_Progress_Time.Visible = false;
-                        progressBar_Step = _step.Controls.ProgressBarStep;
-                        bool _isFuture = (_int_Order >= _intStep);
-                        progressBar_Step.Value = (_isFuture ? 0 : progressBar_Step.Maximum);
-                        label_Action = _step.Controls.LabelAction;
-                        string strActionText = ActionTextString(_step: _step, _isFuture: _isFuture);
-                        label_Action.Text = strActionText;
-                    }
-                }
-                int_cj_Warmup_Step = _intStep;
-                if (bool_UpdateStepHighlights & profileActive.Beep)
-                {
-                    Console.Beep(750, 600);
-                }
-            }
-            else
-            {
-                cj_Stop_Live();
-            }
-
-            label_cj_Live_CurrentTime.Text = _now.ToString("HH:mm:ss");
         }
         private void progressBar_cj_Live_StageLift_MouseClick(MouseEventArgs e)
         {
@@ -2361,11 +2163,11 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_Live_LiftsDecr_Click()
         {
-            if (profileActive.CJ_LiftsOut > 0)
+            if (profileActive.cj_LiftsOut > 0)
             {
-                profileActive.CJ_LiftsOut--;
-                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
-                if (profileActive.CJ_LiftsOut == 0)
+                profileActive.cj_LiftsOut--;
+                label_cj_Live_LiftsOut.Text = profileActive.cj_LiftsOut.ToString();
+                if (profileActive.cj_LiftsOut == 0)
                 {
                     if (bool_cj_LiveLifting)
                     {
@@ -2377,10 +2179,10 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_Live_LiftsIncr_Click()
         {
-            if (profileActive.CJ_LiftsOut < 99)
+            if (profileActive.cj_LiftsOut < 99)
             {
-                profileActive.CJ_LiftsOut++;
-                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
+                profileActive.cj_LiftsOut++;
+                label_cj_Live_LiftsOut.Text = profileActive.cj_LiftsOut.ToString();
             }
         }
         private void label_cj_Live_LiftsOut_Click()
@@ -2388,7 +2190,7 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_Loading = true;
             textBox_cj_Live_LiftsOut.Location = label_cj_Live_LiftsOut.Location;
             textBox_cj_Live_LiftsOut.Size = label_cj_Live_LiftsOut.Size;
-            textBox_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
+            textBox_cj_Live_LiftsOut.Text = profileActive.cj_LiftsOut.ToString();
             textBox_cj_Live_LiftsOut.Visible = true;
             textBox_cj_Live_LiftsOut.BringToFront();
             textBox_cj_Live_LiftsOut.Select();
@@ -2401,10 +2203,10 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_cj_Lifts_Out) &&
                 _int_cj_Lifts_Out >= 0 &&
                 _int_cj_Lifts_Out < 100 &&
-                profileActive.CJ_LiftsOut != _int_cj_Lifts_Out)
+                profileActive.cj_LiftsOut != _int_cj_Lifts_Out)
             {
-                profileActive.CJ_LiftsOut = _int_cj_Lifts_Out;
-                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
+                profileActive.cj_LiftsOut = _int_cj_Lifts_Out;
+                label_cj_Live_LiftsOut.Text = profileActive.cj_LiftsOut.ToString();
             }
         }
         private void textBox_cj_Live_LiftsOut_Leave()
@@ -2414,20 +2216,20 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_cj_Lifts_Out) &&
                 _int_cj_Lifts_Out >= 0 &&
                 _int_cj_Lifts_Out < 100 &&
-                profileActive.CJ_LiftsOut != _int_cj_Lifts_Out)
+                profileActive.cj_LiftsOut != _int_cj_Lifts_Out)
             {
-                profileActive.CJ_LiftsOut = _int_cj_Lifts_Out;
-                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
+                profileActive.cj_LiftsOut = _int_cj_Lifts_Out;
+                label_cj_Live_LiftsOut.Text = profileActive.cj_LiftsOut.ToString();
             }
             textBox_cj_Live_LiftsOut.Visible = false;
         }
         private void button_cj_Live_StageAdvance_Click()
         {
-            if (profileActive.CJ_LiftsOut >= 0 && bool_cj_LiveLifting)
+            if (profileActive.cj_LiftsOut >= 0 && bool_cj_LiveLifting)
             {
                 cj_Advance_StageLift();
             }
-            else if (profileActive.CJ_SnatchLifts_Out >= 0 && bool_cj_SnStillLifting)
+            else if (profileActive.cj_SnatchLifts_Out >= 0 && bool_cj_SnStillLifting)
             {
                 cj_Advance_snLift();
             }
@@ -2438,10 +2240,10 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void cj_Advance_StageLift()
         {
-            if (profileActive.CJ_LiftsOut > 0)
+            if (profileActive.cj_LiftsOut > 0)
             {
-                profileActive.CJ_LiftsOut--;
-                label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
+                profileActive.cj_LiftsOut--;
+                label_cj_Live_LiftsOut.Text = profileActive.cj_LiftsOut.ToString();
                 if (bool_cj_Live && !bool_cj_SnStillLifting && !bool_cj_BreakRunning)
                 {
                     int_cj_Lifts_Passed++;
@@ -2468,24 +2270,24 @@ namespace Weightlifting_Comp_Warmup.Main
             int _int_cj_Sec_Break = (int)(numericUpDown_cj_Live_Break.Value);
             if (_int_cj_Sec_Break < 1)
             {
-                profileActive.CJ_SecondsBreak = 1;
+                profileActive.cj_SecondsBreak = 1;
             }
             else
             {
-                profileActive.CJ_SecondsBreak = _int_cj_Sec_Break * 60;
+                profileActive.cj_SecondsBreak = _int_cj_Sec_Break * 60;
             }
 
-            if (progressBar_cj_Live_Break.Value > profileActive.CJ_SecondsBreak)
-            { progressBar_cj_Live_Break.Value = profileActive.CJ_SecondsBreak; }
-            progressBar_cj_Live_Break.Maximum = profileActive.CJ_SecondsBreak;
+            if (progressBar_cj_Live_Break.Value > profileActive.cj_SecondsBreak)
+            { progressBar_cj_Live_Break.Value = profileActive.cj_SecondsBreak; }
+            progressBar_cj_Live_Break.Maximum = profileActive.cj_SecondsBreak;
         }
         private void button_cj_Live_snDecr_Click()
         {
-            if (profileActive.CJ_SnatchLifts_Out > 0)
+            if (profileActive.cj_SnatchLifts_Out > 0)
             {
-                profileActive.CJ_SnatchLifts_Out--;
-                label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
-                if (profileActive.CJ_SnatchLifts_Out == 0)
+                profileActive.cj_SnatchLifts_Out--;
+                label_cj_Live_snLeft.Text = profileActive.cj_SnatchLifts_Out.ToString();
+                if (profileActive.cj_SnatchLifts_Out == 0)
                 {
                     if (bool_cj_SnStillLifting)
                     {
@@ -2497,10 +2299,10 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void button_cj_Live_snIncr_Click()
         {
-            if (profileActive.CJ_SnatchLifts_Out < 98)
+            if (profileActive.cj_SnatchLifts_Out < 98)
             {
-                profileActive.CJ_SnatchLifts_Out++;
-                label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
+                profileActive.cj_SnatchLifts_Out++;
+                label_cj_Live_snLeft.Text = profileActive.cj_SnatchLifts_Out.ToString();
             }
         }
         private void label_cj_Live_snLeft_Click()
@@ -2508,7 +2310,7 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_Loading = true;
             textBox_cj_Live_snLeft.Location = label_cj_Live_snLeft.Location;
             textBox_cj_Live_snLeft.Size = label_cj_Live_snLeft.Size;
-            textBox_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
+            textBox_cj_Live_snLeft.Text = profileActive.cj_SnatchLifts_Out.ToString();
             textBox_cj_Live_snLeft.Visible = true;
             textBox_cj_Live_snLeft.BringToFront();
             textBox_cj_Live_snLeft.Select();
@@ -2531,10 +2333,10 @@ namespace Weightlifting_Comp_Warmup.Main
             if (int.TryParse(s: _str_Input, result: out int _int_cj_snLifts_Out) &&
                 _int_cj_snLifts_Out >= 0 &&
                 _int_cj_snLifts_Out < 100 &&
-                profileActive.CJ_SnatchLifts_Out != _int_cj_snLifts_Out)
+                profileActive.cj_SnatchLifts_Out != _int_cj_snLifts_Out)
             {
-                profileActive.CJ_SnatchLifts_Out = _int_cj_snLifts_Out;
-                label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
+                profileActive.cj_SnatchLifts_Out = _int_cj_snLifts_Out;
+                label_cj_Live_snLeft.Text = profileActive.cj_SnatchLifts_Out.ToString();
             }
         }
         private void label_cj_Live_Break_Click()
@@ -2542,7 +2344,7 @@ namespace Weightlifting_Comp_Warmup.Main
             bool_Loading = true;
             textBox_cj_Live_Break.Location = label_cj_Live_Break.Location;
             textBox_cj_Live_Break.Size = label_cj_Live_Break.Size;
-            textBox_cj_Live_Break.Text = profileActive.CJ_SnatchLifts_Out.ToString();
+            textBox_cj_Live_Break.Text = profileActive.cj_SnatchLifts_Out.ToString();
             textBox_cj_Live_Break.Visible = true;
             textBox_cj_Live_Break.BringToFront();
             textBox_cj_Live_Break.Select();
@@ -2577,21 +2379,21 @@ namespace Weightlifting_Comp_Warmup.Main
         }
         private void Cj_Advance_SnatchLift()
         {
-            if (profileActive.CJ_LiftsOut >= 0 & bool_cj_LiveLifting)
+            if (profileActive.cj_LiftsOut >= 0 & bool_cj_LiveLifting)
             {
                 cj_Advance_StageLift();
             }
-            else if (profileActive.CJ_SnatchLifts_Out >= 0 & bool_cj_SnStillLifting)
+            else if (profileActive.cj_SnatchLifts_Out >= 0 & bool_cj_SnStillLifting)
             {
                 cj_Advance_snLift();
             }
         }
         private void cj_Advance_snLift()
         {
-            if (profileActive.CJ_SnatchLifts_Out > 0)
+            if (profileActive.cj_SnatchLifts_Out > 0)
             {
-                profileActive.CJ_SnatchLifts_Out--;
-                label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
+                profileActive.cj_SnatchLifts_Out--;
+                label_cj_Live_snLeft.Text = profileActive.cj_SnatchLifts_Out.ToString();
             }
             progressBar_cj_Live_sn.Value = 0;
         }
