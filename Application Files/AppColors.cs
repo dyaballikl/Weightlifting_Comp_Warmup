@@ -20,7 +20,7 @@ namespace Weightlifting_Comp_Warmup.Main
         // Barbell Graphic Color
         public static readonly Color Bar_Grey = Color.LightSteelBlue;
 
-        public static Color Snatch_Live_BG;
-        public static Color Cj_Live_BG;
+        public static Color snatch_Live_BG;
+        public static Color cj_Live_BG;
     }
 }

@@ -6,41 +6,41 @@ using System.Windows.Forms;
 
 namespace Weightlifting_Comp_Warmup.Main
 {
-    public class Profile(int id, string name, int barbellWeight, TimeSpan start, int snatch_SecondsStage, int snatch_OpenerWeight, bool snatch_OpenerInWarmup, int snatch_SecondsEnd, int snatch_LiftsOut, int cJ_SecondsStage, int cJ_SecondsBreak, int cJ_OpenerWeight, bool cJ_OpenerInWarmup, int cJ_SecondsEnd, int cJ_LiftsOut, int cJ_SnatchLifts_Out, bool beep, List<Extra> snatchExtras, Dictionary<int, int> snatchJumps, Dictionary<int, int> snatchTimes, List<Extra> cJExtras, Dictionary<int, int> cJJumps, Dictionary<int, int> cJTimes)
+    public class Profile(int id, string name, int barbellWeight, TimeSpan start, int snatch_SecondsStage, int snatch_OpenerWeight, bool snatch_OpenerInWarmup, int snatch_SecondsEnd, int snatch_LiftsOut, int cJ_SecondsStage, int cJ_SecondsBreak, int cJ_OpenerWeight, bool cJ_OpenerInWarmup, int cJ_SecondsEnd, int cJ_LiftsOut, int cJ_SnatchLifts_Out, bool beep, List<Extra> snatchExtras, Dictionary<int, int> snatchJumps, Dictionary<int, int> snatchTimes, List<Extra> cjExtras, Dictionary<int, int> cjJumps, Dictionary<int, int> cjTimes)
     {
         public int id { get; set; } = id;
         public string Name { get; set; } = name;
         public int BarbellWeight { get; set; } = barbellWeight;
         public TimeSpan Start { get; set; } = start;
-        public int Snatch_SecondsStage { get; set; } = snatch_SecondsStage;
-        public int Snatch_OpenerWeight { get; set; } = snatch_OpenerWeight;
-        public bool Snatch_OpenerInWarmup { get; set; } = snatch_OpenerInWarmup;
-        public int Snatch_SecondsEnd { get; set; } = snatch_SecondsEnd;
-        public int Snatch_LiftsOut { get; set; } = snatch_LiftsOut;
-        public int CJ_SecondsStage { get; set; } = cJ_SecondsStage;
-        public int CJ_SecondsBreak { get; set; } = cJ_SecondsBreak;
-        public int CJ_OpenerWeight { get; set; } = cJ_OpenerWeight;
-        public bool CJ_OpenerInWarmup { get; set; } = cJ_OpenerInWarmup;
-        public int CJ_SecondsEnd { get; set; } = cJ_SecondsEnd;
-        public int CJ_LiftsOut { get; set; } = cJ_LiftsOut;
-        public int CJ_SnatchLifts_Out { get; set; } = cJ_SnatchLifts_Out;
+        public int snatch_SecondsStage { get; set; } = snatch_SecondsStage;
+        public int snatch_OpenerWeight { get; set; } = snatch_OpenerWeight;
+        public bool snatch_OpenerInWarmup { get; set; } = snatch_OpenerInWarmup;
+        public int snatch_SecondsEnd { get; set; } = snatch_SecondsEnd;
+        public int snatch_LiftsOut { get; set; } = snatch_LiftsOut;
+        public int cj_SecondsStage { get; set; } = cJ_SecondsStage;
+        public int cj_SecondsBreak { get; set; } = cJ_SecondsBreak;
+        public int cj_OpenerWeight { get; set; } = cJ_OpenerWeight;
+        public bool cj_OpenerInWarmup { get; set; } = cJ_OpenerInWarmup;
+        public int cj_SecondsEnd { get; set; } = cJ_SecondsEnd;
+        public int cj_LiftsOut { get; set; } = cJ_LiftsOut;
+        public int cj_SnatchLifts_Out { get; set; } = cJ_SnatchLifts_Out;
         public bool Beep { get; set; } = beep;
-        public List<Extra> SnatchExtras { get; set; } = snatchExtras;
-        public Dictionary<int /*from weight*/, int /*jump size*/> SnatchJumps { get; set; } = snatchJumps;
-        public Dictionary<int /*from weight*/, int /*time length*/> SnatchTimes { get; set; } = snatchTimes;
-        public List<Extra> CJExtras { get; set; } = cJExtras;
-        public Dictionary<int /*from weight*/, int /*jump size*/> CJJumps { get; set; } = cJJumps;
-        public Dictionary<int /*from weight*/, int /*time length*/> CJTimes { get; set; } = cJTimes;
+        public List<Extra> snatchExtras { get; set; } = snatchExtras;
+        public Dictionary<int /*from weight*/, int /*jump size*/> snatchJumps { get; set; } = snatchJumps;
+        public Dictionary<int /*from weight*/, int /*time length*/> snatchTimes { get; set; } = snatchTimes;
+        public List<Extra> cjExtras { get; set; } = cjExtras;
+        public Dictionary<int /*from weight*/, int /*jump size*/> cjJumps { get; set; } = cjJumps;
+        public Dictionary<int /*from weight*/, int /*time length*/> cjTimes { get; set; } = cjTimes;
         public Profile Clone(int idNew)
         {
             Profile clone = (Profile)this.MemberwiseClone();
             clone.id = idNew;
-            clone.SnatchExtras = [.. this.SnatchExtras.Select(e => e.Clone())];
-            clone.CJExtras = [.. this.CJExtras.Select(e => e.Clone())];
-            clone.SnatchJumps = new(this.SnatchJumps);
-            clone.SnatchTimes = new(this.SnatchTimes);
-            clone.CJJumps = new(this.CJJumps);
-            clone.CJTimes = new(this.CJTimes);
+            clone.snatchExtras = [.. this.snatchExtras.Select(e => e.Clone())];
+            clone.cjExtras = [.. this.cjExtras.Select(e => e.Clone())];
+            clone.snatchJumps = new(this.snatchJumps);
+            clone.snatchTimes = new(this.snatchTimes);
+            clone.cjJumps = new(this.cjJumps);
+            clone.cjTimes = new(this.cjTimes);
             return clone;
         }
     }

@@ -177,9 +177,9 @@ namespace Weightlifting_Comp_Warmup.Main
                     snatchExtras: snatchExtras,
                     snatchJumps: snatchJumps,
                     snatchTimes: snatchTimes,
-                    cJExtras: cJExtras,
-                    cJJumps: cJJumps,
-                    cJTimes: cJTimes);
+                    cjExtras: cJExtras,
+                    cjJumps: cJJumps,
+                    cjTimes: cJTimes);
 
                 profiles[id] = _profile;
             }
@@ -225,9 +225,9 @@ namespace Weightlifting_Comp_Warmup.Main
                 snatchExtras: (_bool_Demo ? Defaults.demo_snatchExtras : []),
                 snatchJumps: (_bool_Demo ? Defaults.demo_snatchJumps : Defaults.default_snatchJumps),
                 snatchTimes: (_bool_Demo ? Defaults.demo_snatchTimes : Defaults.default_snatchTimes),
-                cJExtras: (_bool_Demo ? Defaults.demo_cjExtras : []),
-                cJJumps: (_bool_Demo ? Defaults.demo_cjJumps : Defaults.default_cjJumps),
-                cJTimes: (_bool_Demo ? Defaults.demo_cjTimes : Defaults.default_cjTimes));
+                cjExtras: (_bool_Demo ? Defaults.demo_cjExtras : []),
+                cjJumps: (_bool_Demo ? Defaults.demo_cjJumps : Defaults.default_cjJumps),
+                cjTimes: (_bool_Demo ? Defaults.demo_cjTimes : Defaults.default_cjTimes));
             profiles.Add(_profile.id, _profile);
             return _profile;
         }
@@ -317,37 +317,37 @@ namespace Weightlifting_Comp_Warmup.Main
             {
                 return false;
             }
-            if (_profile.SnatchJumps.Count == 0)
+            if (_profile.snatchJumps.Count == 0)
             {
-                _profile.SnatchJumps = Defaults.default_snatchJumps;
+                _profile.snatchJumps = Defaults.default_snatchJumps;
             }
-            if (_profile.SnatchTimes.Count == 0)
+            if (_profile.snatchTimes.Count == 0)
             {
-                _profile.SnatchTimes = Defaults.default_snatchTimes;
+                _profile.snatchTimes = Defaults.default_snatchTimes;
             }
-            if (_profile.CJJumps.Count == 0)
+            if (_profile.cjJumps.Count == 0)
             {
-                _profile.CJJumps = Defaults.default_cjJumps;
+                _profile.cjJumps = Defaults.default_cjJumps;
             }
-            if (_profile.CJTimes.Count == 0)
+            if (_profile.cjTimes.Count == 0)
             {
-                _profile.CJTimes = Defaults.default_cjTimes;
+                _profile.cjTimes = Defaults.default_cjTimes;
             }
-            if (!_profile.SnatchJumps.ContainsKey(1))
+            if (!_profile.snatchJumps.ContainsKey(1))
             {
-                _profile.SnatchJumps[1] = 1;
+                _profile.snatchJumps[1] = 1;
             }
-            if (!_profile.SnatchTimes.ContainsKey(1))
+            if (!_profile.snatchTimes.ContainsKey(1))
             {
-                _profile.SnatchTimes[1] = 1;
+                _profile.snatchTimes[1] = 1;
             }
-            if (!_profile.CJJumps.ContainsKey(1))
+            if (!_profile.cjJumps.ContainsKey(1))
             {
-                _profile.CJJumps[1] = 1;
+                _profile.cjJumps[1] = 1;
             }
-            if (!_profile.CJTimes.ContainsKey(1))
+            if (!_profile.cjTimes.ContainsKey(1))
             {
-                _profile.CJTimes[1] = 1;
+                _profile.cjTimes[1] = 1;
             }
             profileActive = _profile;
             return true;
@@ -360,8 +360,8 @@ namespace Weightlifting_Comp_Warmup.Main
             snatch_Stop_Live();
             cj_Stop_Live();
 
-            AppColors.Snatch_Live_BG = splitContainer_snatch.Panel2.BackColor;
-            AppColors.Cj_Live_BG = splitContainer_cj.Panel2.BackColor;
+            AppColors.snatch_Live_BG = splitContainer_snatch.Panel2.BackColor;
+            AppColors.cj_Live_BG = splitContainer_cj.Panel2.BackColor;
 
             if (profileActive.BarbellWeight < numericUpDown_snatch_weight_barbell.Minimum || profileActive.BarbellWeight > numericUpDown_snatch_weight_barbell.Maximum)
             {
@@ -383,132 +383,132 @@ namespace Weightlifting_Comp_Warmup.Main
             }
             dateTimePicker_snatch_Start.Value = dateTime;
 
-            if (profileActive.Snatch_SecondsStage < numericUpDown_snatch_time_stage.Minimum || profileActive.Snatch_SecondsStage > numericUpDown_snatch_time_stage.Maximum)
+            if (profileActive.snatch_SecondsStage < numericUpDown_snatch_time_stage.Minimum || profileActive.snatch_SecondsStage > numericUpDown_snatch_time_stage.Maximum)
             {
                 if (Defaults.int_default_snatch_SecondsStage < numericUpDown_snatch_time_stage.Minimum || Defaults.int_default_snatch_SecondsStage > numericUpDown_snatch_time_stage.Maximum)
                 {
-                    profileActive.Snatch_SecondsStage = (int)numericUpDown_snatch_time_stage.Minimum;
+                    profileActive.snatch_SecondsStage = (int)numericUpDown_snatch_time_stage.Minimum;
                 }
                 else
                 {
-                    profileActive.Snatch_SecondsStage = Defaults.int_default_snatch_SecondsStage;
+                    profileActive.snatch_SecondsStage = Defaults.int_default_snatch_SecondsStage;
                 }
             }
 
-            numericUpDown_snatch_time_stage.Value = profileActive.Snatch_SecondsStage;
+            numericUpDown_snatch_time_stage.Value = profileActive.snatch_SecondsStage;
 
-            if (profileActive.Snatch_OpenerWeight < profileActive.BarbellWeight)
+            if (profileActive.snatch_OpenerWeight < profileActive.BarbellWeight)
             {
-                profileActive.Snatch_OpenerWeight = Defaults.int_default_snatch_OpenerWeight;
+                profileActive.snatch_OpenerWeight = Defaults.int_default_snatch_OpenerWeight;
             }
-            numericUpDown_snatch_weight_opener.Value = profileActive.Snatch_OpenerWeight;
+            numericUpDown_snatch_weight_opener.Value = profileActive.snatch_OpenerWeight;
 
-            if (profileActive.Snatch_SecondsEnd < numericUpDown_snatch_time_PostWarmup.Minimum)
+            if (profileActive.snatch_SecondsEnd < numericUpDown_snatch_time_PostWarmup.Minimum)
             {
-                profileActive.Snatch_SecondsEnd = Defaults.int_default_snatch_SecondsEnd;
+                profileActive.snatch_SecondsEnd = Defaults.int_default_snatch_SecondsEnd;
             }
-            numericUpDown_snatch_time_PostWarmup.Value = profileActive.Snatch_SecondsEnd;
+            numericUpDown_snatch_time_PostWarmup.Value = profileActive.snatch_SecondsEnd;
 
-            if (profileActive.Snatch_LiftsOut < 0)
+            if (profileActive.snatch_LiftsOut < 0)
             {
-                profileActive.Snatch_LiftsOut = 3;
+                profileActive.snatch_LiftsOut = 3;
             }
-            else if (profileActive.Snatch_LiftsOut > 99)
+            else if (profileActive.snatch_LiftsOut > 99)
             {
-                profileActive.Snatch_LiftsOut = 99;
+                profileActive.snatch_LiftsOut = 99;
             }
-            label_snatch_Live_LiftsOut.Text = profileActive.Snatch_LiftsOut.ToString();
+            label_snatch_Live_LiftsOut.Text = profileActive.snatch_LiftsOut.ToString();
             label_snatch_Live_LiftsPassed.Text = string.Empty;
 
 
-            if (profileActive.CJ_SecondsStage < numericUpDown_cj_time_stage.Minimum || profileActive.CJ_SecondsStage > numericUpDown_cj_time_stage.Maximum)
+            if (profileActive.cj_SecondsStage < numericUpDown_cj_time_stage.Minimum || profileActive.cj_SecondsStage > numericUpDown_cj_time_stage.Maximum)
             {
                 if (Defaults.int_default_cj_SecondsStage < numericUpDown_cj_time_stage.Minimum || Defaults.int_default_cj_SecondsStage > numericUpDown_cj_time_stage.Maximum)
                 {
-                    profileActive.CJ_SecondsStage = (int)numericUpDown_cj_time_stage.Minimum;
+                    profileActive.cj_SecondsStage = (int)numericUpDown_cj_time_stage.Minimum;
                 }
                 else
                 {
-                    profileActive.CJ_SecondsStage = Defaults.int_default_cj_SecondsStage;
+                    profileActive.cj_SecondsStage = Defaults.int_default_cj_SecondsStage;
                 }
             }
-            numericUpDown_cj_time_stage.Value = profileActive.CJ_SecondsStage;
+            numericUpDown_cj_time_stage.Value = profileActive.cj_SecondsStage;
 
-            if (profileActive.CJ_SecondsBreak < (numericUpDown_cj_Live_Break.Minimum * 60))
+            if (profileActive.cj_SecondsBreak < (numericUpDown_cj_Live_Break.Minimum * 60))
             {
-                profileActive.CJ_SecondsBreak = Defaults.int_default_cJ_SecondsBreak;
+                profileActive.cj_SecondsBreak = Defaults.int_default_cJ_SecondsBreak;
             }
-            numericUpDown_cj_Live_Break.Value = (int)((double)profileActive.CJ_SecondsBreak / 60);
+            numericUpDown_cj_Live_Break.Value = (int)((double)profileActive.cj_SecondsBreak / 60);
 
-            if (profileActive.CJ_OpenerWeight < profileActive.BarbellWeight)
+            if (profileActive.cj_OpenerWeight < profileActive.BarbellWeight)
             {
-                profileActive.CJ_OpenerWeight = Defaults.int_default_cj_OpenerWeight;
+                profileActive.cj_OpenerWeight = Defaults.int_default_cj_OpenerWeight;
             }
-            numericUpDown_cj_weight_opener.Value = profileActive.CJ_OpenerWeight;
+            numericUpDown_cj_weight_opener.Value = profileActive.cj_OpenerWeight;
 
-            if (profileActive.CJ_SecondsEnd < numericUpDown_cj_time_PostWarmup.Minimum)
+            if (profileActive.cj_SecondsEnd < numericUpDown_cj_time_PostWarmup.Minimum)
             {
-                profileActive.CJ_SecondsEnd = Defaults.int_default_cj_SecondsEnd;
+                profileActive.cj_SecondsEnd = Defaults.int_default_cj_SecondsEnd;
             }
-            numericUpDown_cj_time_PostWarmup.Value = profileActive.CJ_SecondsEnd;
+            numericUpDown_cj_time_PostWarmup.Value = profileActive.cj_SecondsEnd;
 
-            if (profileActive.CJ_LiftsOut < 0)
+            if (profileActive.cj_LiftsOut < 0)
             {
-                profileActive.CJ_LiftsOut = 3;
+                profileActive.cj_LiftsOut = 3;
             }
-            else if (profileActive.CJ_LiftsOut > 99)
+            else if (profileActive.cj_LiftsOut > 99)
             {
-                profileActive.CJ_LiftsOut = 99;
+                profileActive.cj_LiftsOut = 99;
             }
-            label_cj_Live_LiftsOut.Text = profileActive.CJ_LiftsOut.ToString();
+            label_cj_Live_LiftsOut.Text = profileActive.cj_LiftsOut.ToString();
             label_cj_Live_LiftsPassed.Text = string.Empty;
 
-            if (profileActive.CJ_SnatchLifts_Out < 0)
+            if (profileActive.cj_SnatchLifts_Out < 0)
             {
-                profileActive.CJ_SnatchLifts_Out = 0;
+                profileActive.cj_SnatchLifts_Out = 0;
             }
-            label_cj_Live_snLeft.Text = profileActive.CJ_SnatchLifts_Out.ToString();
+            label_cj_Live_snLeft.Text = profileActive.cj_SnatchLifts_Out.ToString();
 
-            checkBox_snatch_Param_OpenerWarmup.Checked = profileActive.Snatch_OpenerInWarmup;
-            checkBox_cj_Param_OpenerWarmup.Checked = profileActive.CJ_OpenerInWarmup;
+            checkBox_snatch_Param_OpenerWarmup.Checked = profileActive.snatch_OpenerInWarmup;
+            checkBox_cj_Param_OpenerWarmup.Checked = profileActive.cj_OpenerInWarmup;
 
 
             checkBox_snatch_Live_Beep.Checked = profileActive.Beep;
             checkBox_cj_Live_Beep.Checked = profileActive.Beep;
 
-            profileActive.SnatchExtras ??= Defaults.default_snatchExtras;
+            profileActive.snatchExtras ??= Defaults.default_snatchExtras;
             PopulateExtras(liftType: LiftType.Snatch);
 
-            profileActive.SnatchJumps ??= Defaults.default_snatchJumps;
-            if (!profileActive.SnatchJumps.ContainsKey(1))
+            profileActive.snatchJumps ??= Defaults.default_snatchJumps;
+            if (!profileActive.snatchJumps.ContainsKey(1))
             {
-                profileActive.SnatchJumps[1] = Defaults.default_snatchJumps[1];
+                profileActive.snatchJumps[1] = Defaults.default_snatchJumps[1];
             }
             PopulateJumps(liftType: LiftType.Snatch);
 
-            profileActive.SnatchTimes ??= Defaults.default_snatchTimes;
-            if (!profileActive.SnatchTimes.ContainsKey(1))
+            profileActive.snatchTimes ??= Defaults.default_snatchTimes;
+            if (!profileActive.snatchTimes.ContainsKey(1))
             {
-                profileActive.SnatchTimes[1] = Defaults.default_snatchTimes[1];
+                profileActive.snatchTimes[1] = Defaults.default_snatchTimes[1];
             }
             PopulateTimes(liftType: LiftType.Snatch);
 
             PopulateSteps(liftType: LiftType.Snatch);
 
-            profileActive.CJExtras ??= Defaults.default_cjExtras;
+            profileActive.cjExtras ??= Defaults.default_cjExtras;
             PopulateExtras(liftType: LiftType.CleanAndJerk);
 
-            profileActive.CJJumps ??= Defaults.default_cjJumps;
-            if (!profileActive.CJJumps.ContainsKey(1))
+            profileActive.cjJumps ??= Defaults.default_cjJumps;
+            if (!profileActive.cjJumps.ContainsKey(1))
             {
-                profileActive.CJJumps[1] = Defaults.default_cjJumps[1];
+                profileActive.cjJumps[1] = Defaults.default_cjJumps[1];
             }
             PopulateJumps(liftType: LiftType.CleanAndJerk);
 
-            profileActive.CJTimes ??= Defaults.default_cjTimes;
-            if (!profileActive.CJTimes.ContainsKey(1))
+            profileActive.cjTimes ??= Defaults.default_cjTimes;
+            if (!profileActive.cjTimes.ContainsKey(1))
             {
-                profileActive.CJTimes[1] = Defaults.default_cjTimes[1];
+                profileActive.cjTimes[1] = Defaults.default_cjTimes[1];
             }
             PopulateTimes(liftType: LiftType.CleanAndJerk);
 
